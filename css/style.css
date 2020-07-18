@@ -4,6 +4,7 @@
     box-sizing: border-box;
     /* background: rgba(0,0,0,0.1); */
     color: #ffffff;
+    /* overflow: hidden; */
       
 }
 
@@ -170,7 +171,7 @@ nav{
 
 }
 
-.title{
+.title h1{
     font-size: 4rem;
     margin-top: 1rem;
 }
@@ -306,6 +307,9 @@ p a:hover{
     .left{
         text-align: center;
     }
+    /* .hack{
+        height: 0vh;
+    } */
   
   }
 

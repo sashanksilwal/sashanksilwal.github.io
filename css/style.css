@@ -4,6 +4,7 @@
     box-sizing: border-box;
     /* background: rgba(0,0,0,0.1); */
     color: #ffffff;
+      
 }
 
 nav{
@@ -209,11 +210,22 @@ h2{
     /* margin-top: 2%; */
     /* padding-top: 10%; */
 }
+p{
+    font-size: 1.2rem;
+}
 p,h3{
     color: black;
+
 }
 p b{
     color: black;
+}
+p a{
+    color: rgb(0, 10, 151);
+}
+p a:hover{
+    color: rgb(26, 39, 226);
+    cursor: pointer;
 }
 .container {
     max-width: 960px;
@@ -235,7 +247,7 @@ p b{
 }
 .grid-21 {
     display: grid;
-    grid-gap: 20px;
+    grid-gap: 40px;
     grid-template-columns: 1.5fr 1fr;
 }
 .mobile{
@@ -427,4 +439,9 @@ p{
     .footer-distributed .footer-left p.footer-links {
       line-height: 1.8;
     }
+  }
+
+  .blur{
+    filter: blur(8px);
+    -webkit-filter: blur(8px);
   }

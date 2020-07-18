@@ -6,11 +6,16 @@ const navslide = ()=>{
     const burger = document.querySelector(".burger");
     const logo = document.querySelector(".logo");
     const navLinks = document.querySelectorAll(".nav-links li");
+    const about = document.querySelector("#about");
+    const projects = document.querySelector("#projects");
+    const intro = document.querySelector(".intro");
 
     burger.addEventListener('click',() => {
         // Toggle Nav
         nav.classList.toggle("nav-active");
-
+        about.classList.toggle("blur");
+        projects.classList.toggle("blur");
+        intro.classList.toggle("blur");
         // if (window.scrollY <= 50 ) {
         //     myNav.classList.toggle("nav-bg-color");
         //     myNav.classList.toggle("nav-bg-transparent");

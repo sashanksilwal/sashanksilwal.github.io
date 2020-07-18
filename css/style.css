@@ -193,8 +193,8 @@ nav{
     }
 }
 .about{
-    height: 60vh;
     width: 100vw;
+    /* height: 60vh; */
     /* background-color: #000; */
 }
 
@@ -238,6 +238,12 @@ p b{
     grid-gap: 20px;
     grid-template-columns: 1.5fr 1fr;
 }
+.mobile{
+    display: none;
+}
+.bigger_screen{
+    display: block;
+}
 .description{
     line-height: 2em;
 }
@@ -245,6 +251,9 @@ p b{
     text-align: right;
     /* margin: auto; */
     /* justify-content: space-between; */
+}
+.left{
+    text-align: left;
 }
 .center{
     text-align: center;
@@ -256,7 +265,7 @@ p b{
       height: 50vh;
     }
     .about{
-        height: 100vh;
+        height: 115vh;
         margin-top: 5%;
     }
     .content {
@@ -275,6 +284,13 @@ p b{
     .grid-21 {
         grid-template-columns: 1fr;
       }
+      .mobile{
+        display: block;
+    }
+    .bigger_screen{
+        
+        display: none;
+    }
   
   }
 

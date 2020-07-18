@@ -291,6 +291,9 @@ p b{
         
         display: none;
     }
+    .left{
+        text-align: center;
+    }
   
   }
 

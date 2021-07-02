@@ -20,6 +20,7 @@ nav{
     font-weight: bolder;
     font-size: 1.2rem;
 }
+
 .nav-bg-transparent{
     background-color:transparent;
 }
@@ -449,3 +450,4 @@ p{
     filter: blur(8px);
     -webkit-filter: blur(8px);
   }
+

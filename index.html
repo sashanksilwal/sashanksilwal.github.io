@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="description" content="Sashank Silwal's design">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <script src="assets/lib/p5.min.js"></script>
+    <script src="js/background.js"></script>
+
+    <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/styles.css">
+    <title>Sashank Silwal</title>
+</head>
+<body>
+    <!-- loader -->
+    <div class="loader">
+        <img src="assets/images/loader.gif" alt="" srcset="">
+
+    </div>
+
+    <!-- audio -->
+    <audio id="sound-audio">
+        <source src="assets/audio/sound.ogg" type="audio/ogg">
+        <source src="assets/audio/sound.mp3" type="audio/mpeg">
+      Your browser does not support the audio element.
+    </audio> 
+
+    <!-- web design background -->
+    <div id="canvas1">
+
+    </div>
+
+    <!-- container for the videos -->
+    <div class="video-container">
+        <video id="videography-video" class="video" muted autoplay loop>
+            <source src="assets/video/video.mp4" type="video/mp4">
+        </video>
+        <video id="sound-video" class="video" muted autoplay loop>
+            <source src="assets/video/lll.mp4" type="video/mp4">
+        </video>
+        <video id="about-video" class="video" muted autoplay loop>
+            <source src="assets/video/coading.mp4" type="video/mp4">
+        </video>
+    </div>
+
+    <!-- container for the main content -->
+    <div class="main-container">
+        <h1>
+            This is Sashank Silwal’s Homepage.
+            <span class="about"><a class="boxlink" href="about.html">Sashank</a></span>
+             is a student at New York University Abu Dhabi. He likes interacting with 
+            and designing for the worldwide web. Sashank is genuinely Interested in 
+            <span class="web"><a class="boxlink" href="web.html" >web&nbsp;design</a></span>,
+            <span class="sound"><a class="boxlink" href="sound.html" >sound&nbsp;design</a></span>
+            and 
+            <span class="videography"><a class="boxlink" href="video.html" >videography</a></span>.
+            He is currently looking for part-time opportunities, freelance or collaborative projects.
+            You can view his  
+            <span class="resume"><a class="boxlink" href="assets/resume.pdf" target="_blank">resume</a></span>
+            and contact him via 
+            <span class="email"><a class="boxlink" href="mailto:sashanksilwal7@gmail.com">email</a></span> 
+             or 
+             <span class="insta"><a class="boxlink" href="https://github.com/sashanksilwal" target="_blank">GitHub</a></span>.
+        </h1>
+      </div>
+
+      <div id="alert">
+        <button id="mute" onclick="muteAudio()"><img src="assets/mute.png" class="muteImg" alt="" srcset=""></button>
+        <button id="unmute" onclick="unmuteAudio()"><img src="assets/unmute.png" class="muteImg" alt="" srcset=""></button>
+      </div>
+
+    <script src="js/script.js"></script>
+
+
+
+</body>
+</html>

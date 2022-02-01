@@ -1,0 +1,146 @@
+body{
+    background: white;
+}
+.carousel{
+    position: relative;
+    height: 520px;
+    width: 100%;
+    margin: 0 auto;
+}
+.carousel_image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+}
+
+.carousle_track-container{
+    /* background-color: rgb(9, 133, 144); */
+    height: 100%;
+    position: relative;
+    overflow: hidden;
+}
+
+.carousel_track{
+    padding: 0;
+    margin: 0;
+
+    list-style: none;
+    position: relative;
+    height: 100%;
+
+    transition: transform 250ms ease-in;
+}
+
+.carousel_slide{
+    position: absolute;
+    top: 0;
+    bottom:0;
+    width: 100%;
+}
+
+.carousel_button{
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%);
+    border: 0;
+    background: transparent;
+    z-index: 1000;
+    cursor: pointer;
+
+}
+.button--left{
+    left: 30px;
+}
+.button--right{
+    right: 0px;
+}
+.carousel_button img{
+    width: 30px;
+}
+
+.carousel_nav{
+    /* background: pink; */
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+}
+.carousel_indicator{
+    border: 0;
+    border-radius: 50%;
+    width: 15px;
+    height: 15px;
+    background: rgb(8, 187, 187);
+    margin: 0 12px;
+    cursor: pointer;
+
+}
+
+.carousel_indicator.current-slide{
+    background-color: rgb(4, 65, 65);
+}
+.project_description{
+    margin-top: 8%;
+}
+
+
+@media only screen and (max-width: 1000px) {
+    .project_description{
+        margin-top: 60px;
+    }
+    
+}
+@media only screen and (min-width:700px) and (max-width: 1000px) {
+    .project_description{
+        margin-top: 60px;
+    }
+    .carousel{
+        
+        height: 420px;
+        width: 100%;
+        
+    }
+    
+}
+
+
+@media only screen and (max-width: 700px) {
+    .project_description{
+        margin-top: 60px;
+    }
+    .carousel{
+        
+        height: 320px;
+        width: 100%;
+        
+    }
+    .carousel_indicator{
+        
+        width: 10px;
+        height: 10px;
+        background: rgb(8, 187, 187);
+        margin: 0 12px;
+    
+    }
+}
+@media only screen and (max-width: 500px) {
+    .project_description{
+        margin-top: 60px;
+        
+    }
+    .carousel{
+        
+        height: 220px;
+        width: 100%;
+        
+    }
+    
+}
+
+
+
+
+
+.is-hidden{
+    display: none;
+}

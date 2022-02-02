@@ -1,6 +1,6 @@
 // took inspiration from: https://www.youtube.com/watch?v=H-9jCNhLe-Q
 const particles =[];
-let x1, x2, x3, x4,x5, y1, y2, y3, y4, y5;
+let x1, x2, x3, x4,x5,x6,x7,x8, y1, y2, y3, y4, y5,y6, y7,y8;
 
 function setup(){
     let cnv = createCanvas(window.innerWidth, window.innerHeight);
@@ -25,26 +25,37 @@ function draw(){
         x1= random(width*0.85, width*0.95);
         x2 = random(width*0.85, width*0.95);
         x3 = random(0,width*0.10);
+        x6 = random(0,width*0.10);
+        
        
         y1 = random(height);
         y2 = random(height);
         y3 = random(height);
+        y6 = random(height);
+        
         
     }
     if (frameCount % 60 == 0){
         x4 = random(0,width*0.10);
         x5=  random(width*0.95);
+        x7 = random(0,width*0.80);
+        x8 = random(0,width*0.70);
 
         y4 = random(height);
         y5 = random(height*0.85,height*0.98);
+        y7 = random(height*0.85);
+        y8 = random(height*0.95);
     }
         textSize(32);
         fill('rgba(70, 204, 204, 0.5)')
-        text("HTML", x1, y1, 70, 80);
-        text("CSS", x2, y2, 70, 80);
+        text("Python", x1, y1, 70, 80);
+        text("React", x2, y2, 70, 80);
         text("JavaScript", x3, y3, 70, 80);
-        text("Bootstrap", x4, y4, 70, 80);
-         text("SAAS", x5, y5, 70, 80);
+        text("Redux", x4, y4, 70, 80);
+         text("Swift", x5, y5, 70, 80);
+         text("Node.js", x6, y6, 70, 80);
+         text("Matplotlib", x7, y7, 70, 80);
+         text("Numpy", x8, y8, 70, 80);
 }
 
 class Particle{

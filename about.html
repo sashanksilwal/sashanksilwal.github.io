@@ -7,6 +7,7 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Roboto&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="css/projects.css">
 
     <link rel="stylesheet" href="css/styles.css">
 </head>
@@ -21,17 +22,50 @@
             ’s About page. 
         </h1>
         <br>
-       <h1>
-         
-           
+       
+        <div class="carousel">
+            <button class="carousel_button button--left is-hidden">
+                <img src="assets/images/left.png" alt="" srcset="">
+            </button>
+            <div class="carousle_track-container">
+                <ul class = "carousel_track">
+                    <li class="carousel_slide current-slide">
+                        <img class="carousel_image" src="assets/images/myphoto.jpg" alt="" srcset="">
+                    </li>
+                    <li class="carousel_slide">
+                        <img class="carousel_image" src="assets/images/myphoto.jpg" alt="" srcset="">
 
-        </h1>
+                    </li>
+                    <li class="carousel_slide">
+                        <img class="carousel_image" src="assets/images/myphoto.jpg" alt="" srcset="">
 
+                    </li>
+                    <li class="carousel_slide">
+                        <img class="carousel_image" src="assets/images/myphoto.jpg" alt="" srcset="">
+
+                    </li>
+
+                </ul>
+            </div>
+            <button class="carousel_button button--right">
+                <img src="assets/images/right.png" alt="" srcset="">
+            </button>
+
+            <div class="carousel_nav">
+                <button class="carousel_indicator current-slide"></button>
+                <button class="carousel_indicator"></button>
+                <button class="carousel_indicator"></button>
+                <button class="carousel_indicator"></button>
+            </div>
+        </div>
+<br>
         <!-- #1 -->
         <section>
-            <div class="gallery-container">
+
+  
+            <!-- <div class="gallery-container">
                    <img class="image" src="assets/images/myphoto.jpg" alt="" srcset="">
-            </div>
+            </div> -->
             <h1>
                 To learn more about me, you can follow the following links:
         
@@ -53,5 +87,6 @@
             </section>
             
     </div>
+    <script src="js/projects.js"></script>
 </body>
 </html>

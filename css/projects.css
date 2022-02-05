@@ -79,6 +79,26 @@ body{
 .carousel_indicator.current-slide{
     background-color: rgb(4, 65, 65);
 }
+.iframe{
+        
+    height: 450px;
+    width: 100%;
+    
+}
+.image{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+
+}
+.image_div{
+    position: relative;
+    /* height: 520px; */
+    width: 50%;
+    margin: 0 auto;
+}
+
+
 .project_description{
     margin-top: 8%;
 }
@@ -95,6 +115,18 @@ body{
         margin-top: 60px;
     }
     .carousel{
+        
+        height: 420px;
+        width: 100%;
+        
+    }
+    .iframe{
+        
+        height: 420px;
+        width: 100%;
+        
+    }
+    .image{
         
         height: 420px;
         width: 100%;
@@ -122,6 +154,18 @@ body{
         margin: 0 12px;
     
     }
+    .iframe{
+        
+        height: 320px;
+        width: 100%;
+        
+    }
+    .image{
+        
+        height: 320px;
+        width: 100%;
+        
+    }
 }
 @media only screen and (max-width: 500px) {
     .project_description{
@@ -129,6 +173,18 @@ body{
         
     }
     .carousel{
+        
+        height: 220px;
+        width: 100%;
+        
+    }
+    .iframe{
+        
+        height: 220px;
+        width: 100%;
+        
+    }
+    .image{
         
         height: 220px;
         width: 100%;

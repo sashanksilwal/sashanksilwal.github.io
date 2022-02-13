@@ -93,8 +93,7 @@ body{
 }
 .image_div{
     position: relative;
-    /* height: 520px; */
-    width: 50%;
+     width: 50%;
     margin: 0 auto;
 }
 

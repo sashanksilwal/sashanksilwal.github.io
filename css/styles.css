@@ -1,7 +1,7 @@
 *{
     padding: 0;
     margin: 0;
-    /*background: white;*/
+    /* background: white; */
     color: black;
     /* overflow: hidden; */
 }
@@ -69,6 +69,13 @@ h1{
 h1::selection { 
     background-color: #52f7f7; 
 }
+.link{
+    text-decoration: none;
+}
+.link:hover{
+    text-decoration: underline;
+    /* text-decoration-color: #52f7f7; */
+}
 .video-container{
     position: absolute;
     left: 0;
@@ -126,6 +133,7 @@ video.video {
     h1{
         font-size: 1.7rem;
     }
+
 }
 
 @media only screen and (max-width: 700px) {
@@ -144,7 +152,14 @@ video.video {
     #canvas1{
         display: none;
     }
-    
+    .boxlink{
+    text-decoration: none;
+    color: #08bbbb;    
+    border-radius: .8rem;
+    padding: 0.8% 1%;
+    margin-top: 1%;
+    border: 1px solid #08bbbb; 
+}
    
   }
 

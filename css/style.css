@@ -1,0 +1,95 @@
+@import 'variables.css';
+
+a{
+  color: var(--ahref-color);
+  text-decoration: none;
+}
+
+a:hover{
+  color: var(--ahref-hover-color);
+  text-decoration: underline;
+}
+
+
+h1 {
+  font-size: var(--font-size-h1);
+  color: var(--secondary-color);
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  color: var(--primary-color);
+}
+
+strong{
+  font-size: var(--font-size-h3);
+}
+
+#header-container {
+  position: relative;
+  text-align: center;
+  margin: 0 auto;
+  height: 100px; 
+  overflow: hidden;
+}
+
+.close-headers {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  opacity: 0;
+  transition: opacity 1s ease-in-out;
+  width: 100%;
+  white-space: nowrap;
+}
+
+.date{
+  display: flex;
+  justify-content: space-between;
+}
+
+.footer-content{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: var(--primary-color);
+}
+
+.footer-content a {
+  color: var(--ahref-footer-color);
+  text-decoration: none;
+  margin: 0 10px;
+}
+
+.main-content {
+  padding: 20px;
+  width: 60%;
+  height: 80%;
+  margin: 5% auto;
+  color: var(--primary-color);
+  font-size: var(--font-size-base);
+  font-family: var(--font-face);
+}
+
+.points{
+  list-style-type: none;
+}
+
+.reference-links {
+  display: block;
+  /* color: var(--ahref-color); */
+  text-decoration: none;
+  font-size: var(--font-size-h4);
+  margin-top: 0.2em;
+  margin-left: 0;
+  
+}
+ul {
+  margin-bottom: 0;
+}
+
+.show-header {
+  opacity: 1;
+}
+

@@ -1,0 +1,27 @@
+/* variables.css */
+:root {
+    /* colors */
+    --primary-color: #000000;
+    --secondary-color: #2ecc71;
+    --ahref-color: #0084ff;
+    --ahref-hover-color: #0084ff7a;
+    --binance-color: #f0b90b;
+    --binance-color-hover: #000000;
+    --ahref-footer-color: #000;
+
+    /* spacing */
+    --spacing-unit: 8px;
+    --border-radius: 4px;
+
+    /* fonts */
+    --font-face: 'Lato', sans-serif;
+    --font-size-base: 20px;
+    --font-size-lg: 20px;
+    --font-size-xl: 24px;
+    --font-size-xxl: 32px;
+    --font-size-h1: 32px;
+    --font-size-h2: 24px;
+    --font-size-h3: 20px;
+    --font-size-h4: 12px;
+  }
+  

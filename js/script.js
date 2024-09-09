@@ -20,8 +20,7 @@ function toggleHeaders() {
 // Call the function to start the toggling when the page loads
 window.onload = toggleHeaders;
 
-
-  function updateThemeToggle() {
+function updateThemeToggle() {
     const themeToggle = document.getElementById('themeToggle');
     const icon = themeToggle.querySelector('i');
     const isDarkTheme = document.body.classList.contains('dark-theme');
@@ -46,11 +45,23 @@ window.onload = toggleHeaders;
     updateThemeToggle();
   }
   
+  // Initialize theme based on user's previous preference
+  function initTheme() {
+    const savedTheme = localStorage.getItem('darkTheme');
+    
+    // If a saved preference exists, apply it
+    if (savedTheme === 'true') {
+      document.body.classList.add('dark-theme');
+    } else {
+      document.body.classList.remove('dark-theme');
+    }
+  }
+  
   document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('themeToggle');
     themeToggle.addEventListener('click', toggleDarkTheme);
     
-    // Initialize theme based on user's previous preference
+    // Initialize theme on page load
     initTheme();
     updateThemeToggle();
   });

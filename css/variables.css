@@ -1,6 +1,8 @@
 /* variables.css */
 :root {
     /* colors */
+    --primary-background-color: #ffffff;
+    --primary-transparent-background-color: #f0f0f000;
     --primary-color: #000000;
     --secondary-color: #2ecc71;
     --ahref-color: #0084ff;
@@ -23,5 +25,23 @@
     --font-size-h2: 24px;
     --font-size-h3: 20px;
     --font-size-h4: 12px;
+ 
+    /* Dark theme colors */
+    --dark-primary-color: #ffffff;
+    --dark-secondary-color: #1a9c4d;
+    --dark-background-color: #121212;
+    --dark-ahref-color: #4db8ff;
+    --dark-ahref-hover-color: #4db8ff7a;
+    --dark-ahref-footer-color: #ffffff;
+  }
+  
+  /* Dark theme class */
+  .dark-theme {
+    --primary-color: var(--dark-primary-color);
+    --secondary-color: var(--dark-secondary-color);
+    --ahref-color: var(--dark-ahref-color);
+    --ahref-hover-color: var(--dark-ahref-hover-color);
+    --ahref-footer-color: var(--dark-ahref-footer-color);
+    background-color: var(--dark-background-color);
   }
   

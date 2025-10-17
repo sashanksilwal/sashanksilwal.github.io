@@ -1,67 +1,101 @@
+// === HEADER TOGGLING ===
 function toggleHeaders() {
-    const headers = document.querySelectorAll('.close-headers');
-    let currentIndex = 0;
+  const headers = document.querySelectorAll('.close-headers');
+  let currentIndex = 0;
 
-    // Initial display of the first header
-    headers[currentIndex].classList.add('show-header');
+  // Show first header
+  headers[currentIndex].classList.add('show-header');
 
-    setInterval(() => {
-        // Hide the current header
-        headers[currentIndex].classList.remove('show-header');
+  setInterval(() => {
+    const nextIndex = (currentIndex + 1) % headers.length;
 
-        // Move to the next header
-        currentIndex = (currentIndex + 1) % headers.length;
+    // Start fade-out
+    headers[currentIndex].classList.remove('show-header');
 
-        // Show the next header
-        headers[currentIndex].classList.add('show-header');
-    }, 5000); // Change every 5000ms or 5 seconds
+    // Wait briefly before fade-in for overlap
+    setTimeout(() => {
+      headers[nextIndex].classList.add('show-header');
+      currentIndex = nextIndex;
+    }, 300);
+  }, 5000);
 }
 
-// Call the function to start the toggling when the page loads
+
 window.onload = toggleHeaders;
 
+
+// === THEME MANAGEMENT ===
 function updateThemeToggle() {
-    const themeToggle = document.getElementById('themeToggle');
-    const icon = themeToggle.querySelector('i');
-    const isDarkTheme = document.body.classList.contains('dark-theme');
-  
-    if (isDarkTheme) {
-      icon.classList.replace('fa-moon', 'fa-sun');
-      themeToggle.textContent = '';
-    } else {
-      icon.classList.replace('fa-sun', 'fa-moon');
-      themeToggle.textContent = '';
-    }
-    themeToggle.prepend(icon);
+  const themeToggle = document.getElementById('themeToggle');
+  const icon = themeToggle.querySelector('i');
+  const isDarkTheme = document.body.classList.contains('dark-theme');
+
+  // Update icon (moon/sun)
+  if (isDarkTheme) {
+    icon.classList.replace('fa-moon', 'fa-sun');
+  } else {
+    icon.classList.replace('fa-sun', 'fa-moon');
   }
-  
-  function toggleDarkTheme() {
-    const body = document.body;
-    body.classList.toggle('dark-theme');
-    
-    // Save the current theme preference to localStorage
-    const isDarkTheme = body.classList.contains('dark-theme');
-    localStorage.setItem('darkTheme', isDarkTheme);
-    updateThemeToggle();
+
+  themeToggle.textContent = '';
+  themeToggle.prepend(icon);
+}
+
+function toggleDarkTheme() {
+  const body = document.body;
+  body.classList.toggle('dark-theme');
+
+  // Save preference
+  const isDarkTheme = body.classList.contains('dark-theme');
+  localStorage.setItem('darkTheme', isDarkTheme);
+
+  updateThemeToggle();
+}
+
+function initTheme() {
+  const savedTheme = localStorage.getItem('darkTheme');
+
+  if (savedTheme === null) {
+    // No saved preference → follow system setting
+    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+    document.body.classList.toggle('dark-theme', prefersDark);
+  } else {
+    // Apply stored user preference
+    document.body.classList.toggle('dark-theme', savedTheme === 'true');
   }
-  
-  // Initialize theme based on user's previous preference
-  function initTheme() {
-    const savedTheme = localStorage.getItem('darkTheme');
-    
-    // If a saved preference exists, apply it
-    if (savedTheme === 'true') {
-      document.body.classList.add('dark-theme');
-    } else {
-      document.body.classList.remove('dark-theme');
-    }
+}
+
+
+// === VISIT COUNTER ===
+function trackVisits() {
+  let visitCount = localStorage.getItem('visitCount');
+
+  if (visitCount === null) {
+    visitCount = 1;
+  } else {
+    visitCount = parseInt(visitCount) + 1;
   }
-  
-  document.addEventListener('DOMContentLoaded', () => {
-    const themeToggle = document.getElementById('themeToggle');
+
+  localStorage.setItem('visitCount', visitCount);
+
+  console.log(`Welcome back! Visit count: ${visitCount}`);
+
+  // Optional: Display it on the page if element exists
+  const counterDisplay = document.getElementById('visitCounter');
+  if (counterDisplay) {
+    counterDisplay.textContent = `Visit #${visitCount}`;
+  }
+}
+
+
+// === INITIALIZATION ===
+document.addEventListener('DOMContentLoaded', () => {
+  const themeToggle = document.getElementById('themeToggle');
+  if (themeToggle) {
     themeToggle.addEventListener('click', toggleDarkTheme);
-    
-    // Initialize theme on page load
-    initTheme();
-    updateThemeToggle();
-  });
+  }
+
+  initTheme();
+  updateThemeToggle();
+  trackVisits();
+});

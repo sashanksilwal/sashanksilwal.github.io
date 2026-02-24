@@ -118,6 +118,26 @@
   margin-bottom: 16px;
 }
 
+.post-body figure {
+  margin: 32px 0;
+  text-align: center;
+}
+
+.post-body figure img {
+  display: block;
+  max-width: 100%;
+  margin: 0 auto;
+  border-radius: var(--border-radius);
+}
+
+.post-body figure figcaption {
+  margin-top: 10px;
+  font-size: 14px;
+  opacity: 0.6;
+  font-style: italic;
+  line-height: 1.4;
+}
+
 .post-body img {
   display: block;
   max-width: 100%;

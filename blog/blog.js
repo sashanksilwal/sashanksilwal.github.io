@@ -112,13 +112,19 @@ async function loadPost() {
     // Protect math blocks from Marked's parser
     const { text: safeMd, blocks: mathBlocks } = protectMath(mdText);
 
-    // Configure marked with highlight.js
-    marked.setOptions({
-      highlight: function(code, lang) {
-        if (lang && hljs.getLanguage(lang)) {
-          return hljs.highlight(code, { language: lang }).value;
+    // Configure marked with highlight.js and custom image renderer
+    marked.use({
+      renderer: {
+        image({ href, text }) {
+          const caption = text && text !== href ? `<figcaption>${text}</figcaption>` : '';
+          return `<figure><img src="${href}" alt="${text}" loading="lazy">${caption}</figure>`;
+        },
+        code({ text, lang }) {
+          if (lang && hljs.getLanguage(lang)) {
+            return `<pre><code class="hljs language-${lang}">${hljs.highlight(text, { language: lang }).value}</code></pre>`;
+          }
+          return `<pre><code class="hljs">${hljs.highlightAuto(text).value}</code></pre>`;
         }
-        return hljs.highlightAuto(code).value;
       }
     });
 

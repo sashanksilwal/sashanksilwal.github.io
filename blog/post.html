@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blog | Sashank Silwal</title>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- Marked.js -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title"></h1>
+            <time id="post-date" class="post-meta-date"></time>
+            <div id="post-tags" class="post-tags"></div>
+        </div>
+        <div id="post-content" class="post-body"></div>
+    </article>
+
+    <div class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github" style="font-size:28px; margin-right:12px;"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin" style="font-size:28px; margin-right:12px;"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter" style="font-size:28px;"></i>
+        </a>
+    </div>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

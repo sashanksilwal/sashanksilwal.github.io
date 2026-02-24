@@ -1,0 +1,23 @@
+[
+  {
+    "slug": "fraud-rule-generation",
+    "title": "Automated Rule Generation for Fraud Detection Using Deep Learning and Explainability",
+    "date": "2026-02-25",
+    "description": "Surveying the landscape of approaches to automatically extract interpretable, auditable fraud detection rules from LSTM models using SHAP, Anchors, knowledge distillation, and temporal pattern mining.",
+    "tags": ["ml", "explainability", "fraud"]
+  },
+  {
+    "slug": "urbantherm",
+    "title": "UrbanTherm: GPU-Accelerated Surface Energy Balance for Urban Microclimate Modeling",
+    "date": "2026-02-24",
+    "description": "How we extended SOLWEIG with a full surface energy balance solver, Newton-Raphson surface temperatures, multi-layer conduction, canopy transpiration, and spatial air temperature, all running on GPU at 1m resolution.",
+    "tags": ["urban climate", "physics", "gpu"]
+  },
+  {
+    "slug": "rag-guide",
+    "title": "Industry-Level RAG Practices: A Comprehensive Reference",
+    "date": "2026-02-15",
+    "description": "A detailed guide covering the full RAG pipeline: chunking, embeddings, vector databases, retrieval strategies, reranking, advanced architectures (CRAG, Self-RAG, Graph RAG, RAPTOR), evaluation, and production deployment.",
+    "tags": ["ml", "rag", "llm"]
+  }
+]

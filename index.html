@@ -3,7 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sashank</title>
+    <title>Sashank Silwal</title>
+    <meta name="description" content="Sashank Silwal — MS CS at Purdue. Machine learning, computational modeling, and software engineering.">
+    <meta property="og:title" content="Sashank Silwal">
+    <meta property="og:description" content="MS CS at Purdue. Machine learning, computational modeling, and software engineering.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ssilwal.com.np">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Sashank Silwal">
+    <meta name="twitter:description" content="MS CS at Purdue. Machine learning, computational modeling, and software engineering.">
     <link rel="stylesheet" href="css/style.css">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
@@ -11,58 +19,83 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-
     gtag('config', 'G-TEPTW01GNL');
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body>
 
     <div class="main-content">
-    <div id="theme-toggle-container">
-        <button id="themeToggle"><i class="fas fa-moon"></i></button>
-    </div>
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link active">Home</a>
+            <a href="/blog/" class="nav-link">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
 
     <div id="header-container">
         <h1 class="close-headers">Sashank Silwal</h1>
         <h1 class="close-headers">शशांक सिलवाल</h1>
     </div>
 
-    <p><b>Hello, I'm Sashank.</b> I'm currently pursuing my 
-        <b>Master of Science in Computer Science</b> at 
-        <a href="https://www.cs.purdue.edu/" target="_blank" rel="noopener noreferrer">Purdue University</a>, 
+    <p><b>Hello, I'm Sashank.</b> I'm currently pursuing my
+        <b>Master of Science in Computer Science</b> at
+        <a href="https://www.cs.purdue.edu/" target="_blank" rel="noopener noreferrer">Purdue University</a>,
         where I explore the intersection of machine learning and computational modeling.
     </p>
 
-
-
-    <p>I hold a <b>Bachelor of Science in Computer Science</b> from 
-        <a href="https://nyuad.nyu.edu/en/" target="_blank" rel="noopener noreferrer">New York University Abu Dhabi</a>, 
+    <p>I hold a <b>Bachelor of Science in Computer Science</b> from
+        <a href="https://nyuad.nyu.edu/en/" target="_blank" rel="noopener noreferrer">New York University Abu Dhabi</a>,
         with minors in Applied Mathematics and Interactive Media. My background blends theory and practice across AI and software engineering.
     </p>
 
-    <p>Previously, I worked as a <b>Data Scientist</b> at 
-        <a href="https://www.binance.com/en/blog/tech/4582519158590222265" target="_blank" rel="noopener noreferrer">Binance</a>, 
-        building AI-driven systems for fraud detection and risk analytics. Before that, I was a <b>Data Analyst</b> at 
-        <a href="https://bearaby.com/" target="_blank" rel="noopener noreferrer">Bearaby</a>, 
+    <p>Previously, I worked as a <b>Data Scientist</b> at
+        <a href="https://www.binance.com/en/blog/tech/4582519158590222265" target="_blank" rel="noopener noreferrer">Binance</a>,
+        building AI-driven systems for fraud detection and risk analytics. Before that, I was a <b>Data Analyst</b> at
+        <a href="https://bearaby.com/" target="_blank" rel="noopener noreferrer">Bearaby</a>,
         where I developed data pipelines and A/B testing frameworks for e-commerce growth.
     </p>
 
+    <div class="recent-posts">
+        <h2>Recent Posts</h2>
+        <div id="recent-post-list"></div>
+    </div>
+
     <div class="footer-content">
-        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer">
-        <i class="fa fa-linkedin-square" style="font-size:28px; margin-right:12px;"></i>
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github" style="font-size:28px; margin-right:12px;"></i>
         </a>
-        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer">
-        <i class="fa fa-twitter-square" style="font-size:28px;"></i>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin" style="font-size:28px; margin-right:12px;"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter" style="font-size:28px;"></i>
         </a>
     </div>
     </div>
 
     <script src="js/script.js"></script>
-
-   
+    <script>
+    (async function() {
+      const container = document.getElementById('recent-post-list');
+      if (!container) return;
+      try {
+        const res = await fetch('/blog/posts.json');
+        const posts = await res.json();
+        posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+        const recent = posts.slice(0, 3);
+        if (recent.length === 0) { container.innerHTML = '<p style="opacity:0.6">No posts yet.</p>'; return; }
+        container.innerHTML = recent.map(p => {
+          const date = new Date(p.date + 'T00:00:00').toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' });
+          return `<a href="/blog/post.html?post=${p.slug}" class="recent-post-card">
+            <span class="recent-post-title">${p.title}</span>
+            <span class="recent-post-date">${date}</span>
+          </a>`;
+        }).join('');
+      } catch(e) {}
+    })();
+    </script>
 
 </body>
 </html>

@@ -11,22 +11,27 @@
 
 <body>
   <div class="main-content">
-    <div id="theme-toggle-container">
-      <button id="themeToggle"><i class="fas fa-moon"></i></button>
-    </div>
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/blog/" class="nav-link">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
 
     <div class="error-container">
       <i class="fa-solid fa-satellite-dish error-icon"></i>
       <h1 class="error-title">404</h1>
       <h2 class="error-subtitle">Signal Lost</h2>
       <p class="error-message">
-        The page you’re trying to reach might be a WIP.
+        The page you're trying to reach might be a WIP.
       </p>
 
       <div class="error-links">
-        <a href="/" class="error-home-btn">🏠 Home</a>
-        <a href="/nlp/sarcasm" class="error-alt-btn">🤖 Sarcasm</a>
-        <a href="/dm/color-me" class="error-alt-btn">🎨 Color Me</a>
+        <a href="/" class="error-home-btn">Home</a>
+        <a href="/blog/" class="error-alt-btn">Blog</a>
+        <a href="/nlp/sarcasm" class="error-alt-btn">Sarcasm</a>
+        <a href="/dm/color-me" class="error-alt-btn">Color Me</a>
       </div>
     </div>
   </div>

@@ -1,6 +1,7 @@
 // === HEADER TOGGLING ===
 function toggleHeaders() {
   const headers = document.querySelectorAll('.close-headers');
+  if (headers.length === 0) return;
   let currentIndex = 0;
 
   // Show first header
@@ -27,6 +28,7 @@ window.onload = toggleHeaders;
 // === THEME MANAGEMENT ===
 function updateThemeToggle() {
   const themeToggle = document.getElementById('themeToggle');
+  if (!themeToggle) return;
   const icon = themeToggle.querySelector('i');
   const isDarkTheme = document.body.classList.contains('dark-theme');
 
@@ -66,28 +68,6 @@ function initTheme() {
 }
 
 
-// === VISIT COUNTER ===
-function trackVisits() {
-  let visitCount = localStorage.getItem('visitCount');
-
-  if (visitCount === null) {
-    visitCount = 1;
-  } else {
-    visitCount = parseInt(visitCount) + 1;
-  }
-
-  localStorage.setItem('visitCount', visitCount);
-
-  console.log(`Welcome back! Visit count: ${visitCount}`);
-
-  // Optional: Display it on the page if element exists
-  const counterDisplay = document.getElementById('visitCounter');
-  if (counterDisplay) {
-    counterDisplay.textContent = `Visit #${visitCount}`;
-  }
-}
-
-
 // === INITIALIZATION ===
 document.addEventListener('DOMContentLoaded', () => {
   const themeToggle = document.getElementById('themeToggle');
@@ -97,5 +77,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   initTheme();
   updateThemeToggle();
-  trackVisits();
 });

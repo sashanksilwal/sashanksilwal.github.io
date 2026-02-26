@@ -1,0 +1,114 @@
+.page-title {
+    font-size: var(--font-size-h1);
+    margin-bottom: 40px;
+}
+
+/* Section headers */
+.exp-section {
+    margin-bottom: 48px;
+}
+
+.exp-section h2 {
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--text-muted);
+    margin-bottom: 24px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--divider-color);
+}
+
+/* Individual experience cards */
+.exp-item {
+    position: relative;
+    padding: 16px 0 16px 16px;
+    margin-bottom: 8px;
+    border-left: 2px solid var(--divider-color);
+    transition: border-color 0.2s ease;
+}
+
+.exp-item:hover {
+    border-left-color: var(--secondary-color);
+}
+
+.exp-item:last-child {
+    margin-bottom: 0;
+}
+
+/* Role + Company header */
+.exp-header {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 8px;
+}
+
+.exp-role {
+    font-family: var(--font-heading);
+    font-weight: 600;
+    font-size: 16px;
+    color: var(--primary-color);
+}
+
+.exp-company {
+    font-size: 15px;
+    color: var(--text-muted);
+}
+
+.exp-company::before {
+    content: "at ";
+}
+
+.exp-company a {
+    color: var(--ahref-color);
+}
+
+.exp-company a:hover {
+    color: var(--ahref-hover-color);
+}
+
+/* Supervision line */
+.exp-supervision {
+    font-size: 14px;
+    color: var(--text-muted);
+    margin: 0 0 8px;
+    font-style: italic;
+}
+
+/* Bullet points */
+.exp-item ul {
+    padding-left: 18px;
+    margin: 0;
+}
+
+.exp-item li {
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--primary-color);
+    margin-bottom: 4px;
+}
+
+.exp-item li:last-child {
+    margin-bottom: 0;
+}
+
+/* Links (poster, repo) */
+.exp-links {
+    margin-top: 8px;
+    display: flex;
+    gap: 12px;
+}
+
+.exp-links a {
+    font-size: 13px;
+    font-family: var(--font-heading);
+    font-weight: 500;
+    color: var(--ahref-color);
+    transition: color 0.2s ease;
+}
+
+.exp-links a:hover {
+    color: var(--ahref-hover-color);
+}

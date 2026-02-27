@@ -3,6 +3,49 @@
   margin-bottom: 40px;
 }
 
+.read-check {
+  color: var(--secondary-color);
+  font-size: 0.75em;
+  font-weight: 600;
+}
+
+.resume-banner {
+  background-color: var(--code-bg);
+  border: 1px solid var(--divider-color);
+  border-radius: var(--border-radius);
+  padding: 10px 16px;
+  margin-bottom: 20px;
+  font-size: 14px;
+  color: var(--text-muted);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  animation: fadeIn 0.3s ease;
+}
+
+.resume-btn {
+  background: none;
+  border: 1px solid var(--secondary-color);
+  color: var(--secondary-color);
+  padding: 3px 12px;
+  border-radius: var(--border-radius);
+  font-family: var(--font-heading);
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.resume-btn:hover {
+  background-color: var(--secondary-color);
+  color: var(--primary-background-color);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
 .post-card {
   display: block;
   padding: 24px 0;

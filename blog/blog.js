@@ -149,8 +149,95 @@ async function loadPost() {
 const observer = new MutationObserver(syncHljsTheme);
 observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
 
+// === READING PROGRESS ===
+function getReadProgress() {
+  try {
+    return JSON.parse(localStorage.getItem('readProgress') || '{}');
+  } catch { return {}; }
+}
+
+function saveScrollProgress(slug) {
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  if (docHeight <= 0) return;
+  const percent = Math.min(Math.round((window.scrollY / docHeight) * 100), 100);
+  const progress = getReadProgress();
+  // Only save if further than before
+  if (percent > (progress[slug] || 0)) {
+    progress[slug] = percent;
+    localStorage.setItem('readProgress', JSON.stringify(progress));
+  }
+}
+
+function trackScrollProgress(slug) {
+  let ticking = false;
+  window.addEventListener('scroll', () => {
+    if (!ticking) {
+      requestAnimationFrame(() => {
+        saveScrollProgress(slug);
+        ticking = false;
+      });
+      ticking = true;
+    }
+  });
+}
+
+function resumePosition(slug) {
+  const progress = getReadProgress();
+  const percent = progress[slug];
+  if (!percent || percent >= 100 || percent < 5) return;
+  const docHeight = document.documentElement.scrollHeight - window.innerHeight;
+  const targetY = Math.round((percent / 100) * docHeight);
+
+  const banner = document.createElement('div');
+  banner.className = 'resume-banner';
+  banner.innerHTML = `You were ${percent}% through this post. <button class="resume-btn">Resume</button>`;
+  document.querySelector('.main-content').prepend(banner);
+
+  banner.querySelector('.resume-btn').addEventListener('click', () => {
+    window.scrollTo({ top: targetY, behavior: 'smooth' });
+    banner.remove();
+  });
+
+  setTimeout(() => { if (banner.parentNode) banner.remove(); }, 8000);
+}
+
+function showReadIndicators() {
+  const progress = getReadProgress();
+  document.querySelectorAll('.post-card').forEach(card => {
+    const href = card.getAttribute('href') || '';
+    const match = href.match(/post=([^&]+)/);
+    if (!match) return;
+    const slug = match[1];
+    const percent = progress[slug];
+    if (!percent) return;
+
+    const title = card.querySelector('.post-card-title');
+    if (title && !title.querySelector('.read-check')) {
+      const badge = document.createElement('span');
+      badge.className = 'read-check';
+      if (percent >= 90) {
+        badge.textContent = ' ✓';
+        badge.title = 'Read';
+      } else {
+        badge.textContent = ` ${percent}%`;
+        badge.title = `${percent}% read`;
+      }
+      title.appendChild(badge);
+    }
+  });
+}
+
 // === INIT ===
 document.addEventListener('DOMContentLoaded', () => {
-  loadPostList();
-  loadPost();
+  loadPostList().then(() => showReadIndicators());
+
+  const slug = new URLSearchParams(window.location.search).get('post');
+  if (slug) {
+    loadPost().then(() => {
+      resumePosition(slug);
+      trackScrollProgress(slug);
+    });
+  } else {
+    loadPost();
+  }
 });

@@ -68,8 +68,17 @@ function initTheme() {
 }
 
 
+// === VISIT COUNTER ===
+function trackVisit() {
+  const count = parseInt(localStorage.getItem('visitCount') || '0') + 1;
+  localStorage.setItem('visitCount', count);
+  const suffix = count === 1 ? 'st' : count === 2 ? 'nd' : count === 3 ? 'rd' : 'th';
+  console.log(`👋 Welcome! This is your ${count}${suffix} visit.`);
+}
+
 // === INITIALIZATION ===
 document.addEventListener('DOMContentLoaded', () => {
+  trackVisit();
   const themeToggle = document.getElementById('themeToggle');
   if (themeToggle) {
     themeToggle.addEventListener('click', toggleDarkTheme);

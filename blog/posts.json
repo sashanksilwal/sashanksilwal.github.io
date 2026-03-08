@@ -1,23 +1,82 @@
 [
   {
+    "slug": "claude-code-basics",
+    "title": "Getting Started with Claude Code: Everything I Wish I Knew on Day One",
+    "date": "2026-03-08",
+    "description": "A beginner's guide to Claude Code covering CLAUDE.md, context management, key commands, and the feedback loop that makes it actually useful.",
+    "tags": ["llm", "developer-tools", "claude-code"],
+    "category": "non-technical"
+  },
+  {
+    "slug": "claude-code-intermediate",
+    "title": "Claude Code Beyond the Basics: Agents, Context Engineering, and Production Workflows",
+    "date": "2026-03-08",
+    "description": "An intermediate guide to Claude Code covering context management, CLAUDE.md patterns, subagents, custom commands, hooks, MCP, skills, and CI integration.",
+    "tags": ["llm", "developer-tools", "claude-code"],
+    "category": "technical"
+  },
+  {
+    "slug": "context-poisoning",
+    "title": "Context Poisoning: How Attackers Manipulate LLM Context Windows",
+    "date": "2026-03-06",
+    "description": "Prompt injection, data poisoning in RAG systems, and adversarial inputs that hijack LLM behavior. Real attack vectors and practical defenses for production systems.",
+    "tags": ["security", "llm", "rag"],
+    "category": "technical"
+  },
+  {
+    "slug": "building-rag-from-scratch",
+    "title": "Building a RAG System from Scratch",
+    "date": "2026-03-08",
+    "description": "A step-by-step guide to building retrieval-augmented generation with Python. Embeddings, vector search, and generation, no frameworks required.",
+    "tags": ["ml", "rag", "llm", "python"],
+    "category": "non-technical"
+  },
+  {
+    "slug": "what-is-fine-tuning",
+    "title": "What is Fine-Tuning, and Why Does Every AI Company Do It?",
+    "date": "2026-03-04",
+    "description": "RLHF, LoRA, full fine-tuning explained without the jargon. How companies take a base model and turn it into something actually useful.",
+    "tags": ["ml", "llm", "fine-tuning"],
+    "category": "non-technical"
+  },
+  {
+    "slug": "fitting-big-models-small-gpus",
+    "title": "Fitting Big Models on Small GPUs",
+    "date": "2026-03-03",
+    "description": "Quantization techniques (GPTQ, GGUF, AWQ), distillation as a size reduction strategy, and practical tradeoffs for running 70B models on consumer hardware.",
+    "tags": ["ml", "llm", "quantization", "inference"],
+    "category": "technical"
+  },
+  {
+    "slug": "model-distillation",
+    "title": "Model Distillation: The Technique, The Controversy, and How To Do It",
+    "date": "2026-03-02",
+    "description": "What model distillation is, how DeepSeek allegedly used it on frontier model outputs, and a practical guide with lessons from our reasoning distillation paper.",
+    "tags": ["ml", "llm", "distillation"],
+    "category": "technical"
+  },
+  {
     "slug": "fraud-rule-generation",
     "title": "Automated Rule Generation for Fraud Detection Using Deep Learning and Explainability",
     "date": "2026-02-25",
-    "description": "Surveying the landscape of approaches to automatically extract interpretable, auditable fraud detection rules from LSTM models using SHAP, Anchors, knowledge distillation, and temporal pattern mining.",
-    "tags": ["ml", "explainability", "fraud"]
+    "description": "How to automatically extract interpretable, auditable fraud detection rules from LSTM models using SHAP, Anchors, knowledge distillation, and temporal pattern mining.",
+    "tags": ["ml", "explainability", "fraud"],
+    "category": "technical"
   },
   {
     "slug": "urbantherm",
     "title": "UrbanTherm: GPU-Accelerated Surface Energy Balance for Urban Microclimate Modeling",
     "date": "2026-02-24",
     "description": "How we extended SOLWEIG with a full surface energy balance solver, Newton-Raphson surface temperatures, multi-layer conduction, canopy transpiration, and spatial air temperature, all running on GPU at 1m resolution.",
-    "tags": ["urban climate", "physics", "gpu"]
+    "tags": ["urban climate", "physics", "gpu"],
+    "category": "technical"
   },
   {
     "slug": "rag-guide",
     "title": "Industry-Level RAG Practices: A Comprehensive Reference",
     "date": "2026-02-15",
     "description": "A detailed guide covering the full RAG pipeline: chunking, embeddings, vector databases, retrieval strategies, reranking, advanced architectures (CRAG, Self-RAG, Graph RAG, RAPTOR), evaluation, and production deployment.",
-    "tags": ["ml", "rag", "llm"]
+    "tags": ["ml", "rag", "llm"],
+    "category": "technical"
   }
 ]

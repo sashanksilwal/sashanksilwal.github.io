@@ -1,6 +1,6 @@
-Summer Yue is the director of alignment at Meta's Superintelligence Labs. Her LinkedIn says she's "passionate about ensuring powerful AIs are aligned with human values." In February, she let an OpenClaw AI agent loose on her real email inbox. It started speedrun-deleting everything. She frantically typed "STOP OPENCLAW" from her phone. It kept going. She had to physically run to her Mac Mini and yank the connection to stop it. When someone asked if she was testing the agent's guardrails on purpose, she replied: "Rookie mistake tbh."
+I used GitHub Copilot for about two years. It was fine. Autocomplete on steroids, basically. Then two months ago I tried Claude Code for the first time and it genuinely changed how I write software. Not in a hype-y "this changes everything" way, but in a "wait, I just built in 20 minutes what would have taken me an afternoon" way.
 
-If Meta's head of AI safety can get burned by an autonomous agent, the rest of us probably need a game plan. Claude Code is one of these agentic tools, and this post covers absolutely everything you need to go from zero to productive with it.
+The thing is, to really feel that difference, you have to actually use it. Reading about it doesn't do it justice. So I wanted to write the simplest possible guide to get you from zero to running Claude Code on your own project.
 
 ## What Is Claude Code?
 

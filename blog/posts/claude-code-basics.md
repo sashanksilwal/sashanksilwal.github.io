@@ -1,126 +1,202 @@
 Summer Yue is the director of alignment at Meta's Superintelligence Labs. Her LinkedIn says she's "passionate about ensuring powerful AIs are aligned with human values." In February, she let an OpenClaw AI agent loose on her real email inbox. It started speedrun-deleting everything. She frantically typed "STOP OPENCLAW" from her phone. It kept going. She had to physically run to her Mac Mini and yank the connection to stop it. When someone asked if she was testing the agent's guardrails on purpose, she replied: "Rookie mistake tbh."
 
-If Meta's head of AI safety can get burned by an autonomous agent, the rest of us probably need a game plan. Claude Code is one of these agentic tools, and it operates directly on your codebase. Here's everything I wish someone had told me on day one.
+If Meta's head of AI safety can get burned by an autonomous agent, the rest of us probably need a game plan. Claude Code is one of these agentic tools, and this post covers absolutely everything you need to go from zero to productive with it.
 
-## It's Not a Chatbot
+## What Is Claude Code?
 
-First, let's get this out of the way. Claude Code is not ChatGPT in your terminal. It's an agentic coding tool. That means it can read your files, edit them, run shell commands, install packages, create directories, and execute tests. It operates directly on your codebase. When you ask it to refactor a function, it actually opens the file and changes the code. When you ask it to fix a failing test, it runs the test, reads the error, and modifies your source until the test passes.
+Claude Code is an AI that lives in your terminal (the black window where you type commands). Unlike ChatGPT or regular Claude on the web, it doesn't just give you text answers. It can actually read your files, edit your code, run commands, install packages, and create new files. When you tell it to fix a bug, it opens the file and changes the code itself.
 
-This distinction matters because it changes how you interact with it. You're not asking for code snippets to copy-paste. You're directing an agent that has real access to your project. That's powerful, and it means you need to be thoughtful about what you ask for.
+Think of it like having a programmer sitting next to you who can type really fast, but needs you to tell them what to do.
 
-## Starting Your First Session
+## What You Need Before Starting
 
-Open your terminal, navigate to your project directory, and type `claude`. That's it. Claude Code launches and immediately starts building an understanding of your project structure.
+Three things:
 
-Here's the thing that tripped me up early on: **specificity is everything**. Compare these two prompts:
+1. **A terminal.** On Mac, search for "Terminal" in Spotlight. On Windows, use PowerShell. If you've never used a terminal before, Anthropic has a [beginner-friendly terminal guide](https://code.claude.com/docs/en/terminal-guide).
+2. **A code project.** Any folder with code in it works. Even a folder with a single HTML file.
+3. **A Claude subscription.** You need a paid plan (Pro, Max, Teams, or Enterprise). You can sign up at [claude.com/pricing](https://claude.com/pricing).
 
-Bad: "Fix the authentication."
+## Step 1: Install It
 
-Good: "The login endpoint in `src/api/auth.ts` returns a 500 error when the user's email contains a plus sign. The validation regex on line 42 is probably too strict. Fix it and make sure the existing tests in `tests/auth.test.ts` still pass."
+Open your terminal and paste this command:
 
-The second prompt gives Claude Code exactly what it needs: the file, the problem, a hypothesis, and a way to verify the fix. The first prompt forces it to guess what you mean, and guessing wastes your context window (more on that in a minute).
-
-As the Anthropic team recommends, treat your prompts like instructions to a capable junior developer. You wouldn't tell a new hire to "fix the authentication" without any context. Give Claude Code the same courtesy.
-
-## CLAUDE.md: Your Project's Instruction Manual
-
-Every time Claude Code starts a session, it looks for a file called `CLAUDE.md` in your project root. Think of it as onboarding documentation for a new team member. If it exists, Claude reads it automatically and uses it to understand your project.
-
-What should you put in it? The HumanLayer blog post on Claude Code recommends a WHY/WHAT/HOW framework, and I think that's exactly right:
-
-- **WHY**: What does this project do? What problem does it solve? A sentence or two is enough.
-- **WHAT**: Tech stack, project structure, key directories, important files. Where does the business logic live? Where are the tests?
-- **HOW**: Build commands, test commands, lint commands, deployment steps. How do you run this thing locally?
-
-Here's a rough example:
-
-```markdown
-## Why
-Personal finance tracker that syncs with bank APIs.
-
-## What
-- Next.js 14 with App Router
-- PostgreSQL via Prisma ORM
-- Key dirs: src/app (routes), src/lib (business logic), src/components (UI)
-
-## How
-- Install: npm install
-- Dev server: npm run dev
-- Tests: npm run test (uses Vitest)
-- Lint: npm run lint
-- DB migrations: npx prisma migrate dev
+**Mac or Linux:**
+```bash
+curl -fsSL https://claude.ai/install.sh | bash
 ```
 
-Keep it under 200 lines. If your CLAUDE.md is longer than that, you're probably including things Claude can figure out on its own by reading your code. Focus on the stuff that isn't obvious from the codebase itself.
+**Windows PowerShell:**
+```powershell
+irm https://claude.ai/install.ps1 | iex
+```
 
-## Context Window Management (This Is the Big One)
+If you use Homebrew on Mac, you can also do:
+```bash
+brew install --cask claude-code
+```
 
-If you only remember one concept from this post, make it this.
+That's the entire installation. It takes about a minute.
 
-Claude Code has a context window of roughly 200,000 tokens. That sounds like a lot. It isn't. Every file Claude reads, every command it runs, every output it receives, all of it fills up that window. You can check where you stand anytime with the `/context` command, which shows a breakdown like "Messages: 39.7k tokens (19.8%), Free space: 113k (56.7%)." Once that free space shrinks, Claude starts losing track of earlier information. Your carefully crafted instructions from the beginning of the session? Gone. The file structure it analyzed twenty minutes ago? Fading.
+## Step 2: Open It in Your Project
 
-This is why the `/clear` command exists. Use it aggressively. Finished a task? `/clear`. Moving on to a different part of the codebase? `/clear`. Notice Claude starting to repeat itself or forget earlier decisions? Definitely `/clear`.
+Navigate to your project folder in the terminal and type `claude`:
 
-Think of each task as a fresh conversation. As the Anthropic best practices guide puts it, you want to keep your context focused on the current task. Don't let residue from previous work pollute your current session.
+```bash
+cd /path/to/your/project
+claude
+```
 
-A practical rule I follow: one task, one context. If I'm fixing a bug and then want to add a feature, I clear between them. It takes two seconds and saves you from confusing, context-muddled responses.
+Replace `/path/to/your/project` with the actual path to your code. For example, if your project is on your Desktop in a folder called "my-app":
 
-## Commands You'll Use Every Day
+```bash
+cd ~/Desktop/my-app
+claude
+```
 
-Claude Code has a handful of built-in commands that you should know from the start:
+The first time you run it, it'll ask you to log in. Just follow the prompts. Pick your account, authorize it, and you're done. You only need to do this once.
 
-- **`/init`**: Generates a CLAUDE.md for your project by analyzing your codebase. If you don't have one yet, start here. It won't be perfect but it gives you a solid starting point to edit.
-- **`/clear`**: Wipes the conversation context. Start fresh without restarting the session. Use it between tasks.
-- **`/compact`**: Compresses the current conversation into a shorter summary, freeing up context space. Useful when you're mid-task but running low on context.
-- **`/context`**: Shows your current token usage broken down by category. Check it often.
-- **`/cost`**: Shows how much you've spent in the current session. Good habit to check periodically so you don't get surprised on your bill.
-- **`/rewind`**: Goes back to a previous point in the conversation. More powerful than Esc Esc because you can roll back multiple steps, not just the last one.
-- **`/help`**: Shows all available commands. Run it once so you know what's there.
-- **Shift+Tab**: Toggles between "plan mode" and "code mode." Plan mode lets Claude think and outline an approach without making any changes. Code mode lets it actually edit files and run commands. I start almost every complex task in plan mode, review the plan, then switch to code mode.
-- **Esc Esc** (double-press Escape): Undoes the last action Claude took. Made an edit you don't like? Hit Escape twice. It's your safety net.
-- **Ctrl+C**: Cancels the current generation mid-stream. If Claude is going in the wrong direction, don't wait for it to finish. Kill it and redirect.
-- **`@` mentions**: Type `@` in your prompt to autocomplete file paths. Way faster than typing out full paths, and it ensures Claude reads the exact file you mean.
-- **`!` prefix**: Type `!` at the start of your message to run a bash command directly. For example, `! npm test` runs your tests without leaving the Claude Code session.
+You should see a welcome screen. You're in.
 
-Shrivu Shankar's breakdown of Claude Code features highlights that the plan-then-execute workflow is one of the most underused patterns. I agree completely. Letting Claude draft a plan before it starts changing files catches bad approaches before they become bad code.
+## Step 3: Talk to It
 
-## The Feedback Loop: Let Claude Check Its Own Work
+Now you can just type what you want in plain English. Here are some things to try first:
 
-Claude Code works best when it can verify what it just did. This is probably the single biggest difference between people who get great results and people who get frustrated.
+```
+what does this project do?
+```
 
-Here's the pattern:
+```
+explain the folder structure
+```
 
-1. Ask Claude to write or modify code
-2. Have it run the tests (or lint, or build, or whatever verification step makes sense)
-3. If something fails, Claude sees the error output and fixes it
-4. Repeat until green
+```
+what technologies does this project use?
+```
 
-The key insight is that you should include the verification step in your prompt. Don't just say "write a function that parses CSV files." Say "write a function that parses CSV files, then run `npm test` to make sure it passes the existing test suite." That way Claude doesn't stop at writing code. It closes the loop.
+Claude reads your files automatically. You don't need to copy-paste anything.
 
-If your project doesn't have tests, you can still create feedback loops. Ask Claude to write the code and then run it with sample input. Ask it to add a quick sanity check. Anything that produces output Claude can evaluate. The goal is to move from "write and hope" to "write and verify."
+## Step 4: Ask It to Change Something
 
-## Commit Often
+This is where it gets interesting. Try something like:
 
-This one is simple but people (including me) forget it constantly.
+```
+add a hello world function to the main file
+```
 
-When you're working with Claude Code, commit your changes frequently. At least once per hour, more often if you're making substantial changes. Here's why: if Claude goes down a wrong path and makes a dozen file changes before you notice, you want a recent commit to roll back to. Without one, you're left doing `git diff` archaeology trying to figure out what was intentional and what was a mistake.
+Claude will:
+1. Find the right file
+2. Show you what it wants to change
+3. Wait for you to approve
+4. Make the edit
 
-My workflow looks like this:
+It always asks permission before changing your files. You'll see a prompt asking you to accept or reject each change.
 
-1. Start a task
-2. Claude makes changes
-3. I review the changes (`git diff`)
-4. If they look good, I commit
-5. Move to the next task
+## How to Talk to Claude Code (This Matters a Lot)
 
-Don't let Claude accumulate a mountain of uncommitted changes. Small, frequent commits give you checkpoints. They're your undo button at a much larger scale than Esc Esc.
+The more specific you are, the better the results. Compare these two:
 
-## The Mental Model That Helped Me Most
+**Vague:** "Fix the login"
 
-After a few weeks of daily use, I realized the best way to think about Claude Code is as a very fast, very knowledgeable pair programmer who has amnesia. It can do incredible work within a focused session. It can see patterns you miss, write boilerplate in seconds, and debug errors faster than you can read the stack trace. But it forgets everything between contexts, and it will do exactly what you tell it to do, even if what you told it was wrong.
+**Specific:** "The login form in src/login.js doesn't show an error message when the password is wrong. Add an error message that appears below the password field."
 
-Your job is to be the one with memory and judgment. Set the direction. Be specific. Clear the context when it gets stale. Commit your work. And always, always have a way to verify the output.
+The specific version tells Claude exactly where to look and what to do. The vague version makes it guess, and guessing wastes time and tokens.
 
-That deleted directory I mentioned at the start? I got everything back because I had committed ten minutes earlier. Lesson learned, lesson applied, and now it's yours too.
+A good rule: talk to it like you'd talk to a new teammate on their first day. Give context. Point to specific files. Describe the problem clearly.
 
-If you're already comfortable with the basics and want to go further, I wrote a follow-up on [agents, context engineering, and advanced workflows](/blog/post.html?post=claude-code-intermediate).
+## The Five Commands You Need to Know
+
+You don't need to memorize a lot. These five will cover 90% of what you do:
+
+| What you type | What it does |
+|---|---|
+| `/help` | Shows all available commands. Start here if you forget anything. |
+| `/clear` | Clears the conversation and starts fresh. Use this between tasks. |
+| `/init` | Auto-generates a CLAUDE.md file for your project (more on this below). |
+| `/cost` | Shows how much you've spent this session. |
+| `Ctrl+C` | Stops Claude mid-response if it's going in the wrong direction. |
+
+That's it for now. There are more commands, but these are the ones you'll actually use every day.
+
+## Useful Shortcuts
+
+A few keyboard tricks that save time:
+
+- **Shift+Tab**: Switches between "plan mode" and "code mode." Plan mode means Claude will think through the problem and outline a plan without changing any files. Code mode means it can actually edit things. Good habit: start in plan mode, review the plan, then switch to code mode.
+- **Esc Esc** (press Escape twice): Undoes the last thing Claude did. Your safety net.
+- **`@` in your prompt**: Autocompletes file paths. Type `@` and start typing a filename. Way easier than typing full paths.
+- **`!` before a command**: Runs a terminal command without leaving Claude. For example: `! npm test` or `! python main.py`.
+
+## What Is CLAUDE.md?
+
+When Claude Code starts, it looks for a file called `CLAUDE.md` in your project folder. This file tells Claude about your project, like a cheat sheet for a new team member.
+
+You can create one automatically by typing `/init`. Claude will look at your code and generate one. It won't be perfect, but it's a good starting point you can edit.
+
+A simple CLAUDE.md might look like this:
+
+```markdown
+# My Project
+A personal portfolio website built with HTML, CSS, and JavaScript.
+
+## How to run it
+- Open index.html in a browser
+- Or run: python -m http.server 8000
+
+## Project structure
+- index.html (main page)
+- styles/ (CSS files)
+- scripts/ (JavaScript files)
+- images/ (image assets)
+```
+
+Keep it short. Under 200 lines. Just include the stuff that isn't obvious from looking at the code.
+
+## The One Concept That Matters Most: Context
+
+Claude Code has a memory limit per conversation (about 200,000 tokens). Every file it reads, every command it runs, every response it gives fills up that memory. When it fills up, Claude starts forgetting earlier parts of the conversation.
+
+This is why `/clear` exists. Use it often. Finished fixing a bug? Type `/clear` before moving to the next thing. Think of each task as a separate conversation.
+
+If you want to check how much memory you've used, type `/context`. It shows a breakdown of your usage.
+
+## Let Claude Check Its Own Work
+
+Here's a trick that makes a big difference. Don't just ask Claude to write code. Ask it to write code AND test it.
+
+Instead of:
+```
+write a function that adds two numbers
+```
+
+Try:
+```
+write a function that adds two numbers, then run it with a few test cases to make sure it works
+```
+
+When Claude can see the output of what it just wrote, it catches its own mistakes. This turns it from "write and hope" into "write and verify."
+
+## Save Your Work Often
+
+When Claude makes changes, commit them to git frequently. Here's why: if Claude makes a bunch of changes and something goes wrong, you want a recent save point to go back to.
+
+A simple workflow:
+
+1. Ask Claude to do something
+2. Review the changes (you can ask: `what files have I changed?`)
+3. If they look good, ask Claude: `commit my changes with a descriptive message`
+4. Move to the next task
+
+Don't let changes pile up without committing. Small, frequent saves are your safety net.
+
+## Quick Recap
+
+1. Install with one command
+2. `cd` into your project and type `claude`
+3. Talk to it in plain English, be specific
+4. Use `/clear` between tasks
+5. Let Claude test its own work
+6. Commit often
+
+That's genuinely all you need to get started. Everything else you'll pick up as you go.
+
+If you want to go further after you're comfortable with the basics, I wrote a follow-up on [advanced workflows, agents, and power-user features](/blog/post.html?post=claude-code-intermediate).

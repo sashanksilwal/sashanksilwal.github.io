@@ -49,33 +49,149 @@ function restoreMath(html, mathBlocks) {
 }
 
 // === POST LISTING PAGE ===
+let allPosts = [];
+let activeFilters = { category: null, tag: null };
+
+function renderPostList(posts) {
+  const container = document.getElementById('post-list');
+  if (!container) return;
+
+  if (posts.length === 0) {
+    container.innerHTML = '<p class="empty-state">No posts match the selected filters.</p>';
+    return;
+  }
+
+  container.innerHTML = posts.map(post => `
+    <a href="post.html?post=${post.slug}" class="post-card" data-category="${post.category || ''}" data-tags="${(post.tags || []).join(',')}">
+      <h2 class="post-card-title">${post.title}</h2>
+      <div class="post-card-date">${formatDate(post.date)}</div>
+      <p class="post-card-description">${post.description}</p>
+      <div class="post-card-tags">
+        ${post.category ? `<span class="tag tag-category">${post.category}</span>` : ''}
+        ${renderTags(post.tags)}
+      </div>
+    </a>
+  `).join('');
+}
+
+function getFilteredPosts() {
+  return allPosts.filter(post => {
+    if (activeFilters.category && (post.category || '') !== activeFilters.category) return false;
+    if (activeFilters.tag && !(post.tags || []).includes(activeFilters.tag)) return false;
+    return true;
+  });
+}
+
+function applyFilters() {
+  renderPostList(getFilteredPosts());
+  showReadIndicators();
+
+  // Update active states on filter buttons
+  document.querySelectorAll('.filter-btn').forEach(btn => {
+    const type = btn.dataset.filterType;
+    const value = btn.dataset.filterValue;
+    if (type === 'category') {
+      btn.classList.toggle('active', activeFilters.category === value);
+    } else if (type === 'tag') {
+      btn.classList.toggle('active', activeFilters.tag === value);
+    } else if (type === 'all') {
+      btn.classList.toggle('active', !activeFilters.category && !activeFilters.tag);
+    }
+  });
+}
+
+function buildFilterBar(posts) {
+  const bar = document.getElementById('filter-bar');
+  if (!bar) return;
+
+  // Collect unique categories and tags
+  const categories = [...new Set(posts.map(p => p.category).filter(Boolean))];
+  const tags = [...new Set(posts.flatMap(p => p.tags || []))].sort();
+
+  let html = '<button class="filter-btn active" data-filter-type="all">All</button>';
+
+  categories.forEach(cat => {
+    html += `<button class="filter-btn filter-btn-category" data-filter-type="category" data-filter-value="${cat}">${cat}</button>`;
+  });
+
+  tags.forEach(tag => {
+    html += `<button class="filter-btn filter-btn-tag" data-filter-type="tag" data-filter-value="${tag}">${tag}</button>`;
+  });
+
+  bar.innerHTML = html;
+
+  bar.addEventListener('click', (e) => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+
+    const type = btn.dataset.filterType;
+    const value = btn.dataset.filterValue;
+
+    if (type === 'all') {
+      activeFilters.category = null;
+      activeFilters.tag = null;
+    } else if (type === 'category') {
+      activeFilters.category = activeFilters.category === value ? null : value;
+    } else if (type === 'tag') {
+      activeFilters.tag = activeFilters.tag === value ? null : value;
+    }
+
+    applyFilters();
+  });
+}
+
 async function loadPostList() {
   const container = document.getElementById('post-list');
   if (!container) return;
 
   try {
     const res = await fetch('posts.json');
-    const posts = await res.json();
+    allPosts = await res.json();
 
     // Sort newest first
-    posts.sort((a, b) => new Date(b.date) - new Date(a.date));
+    allPosts.sort((a, b) => new Date(b.date) - new Date(a.date));
 
-    if (posts.length === 0) {
+    if (allPosts.length === 0) {
       container.innerHTML = '<p class="empty-state">No posts yet. Check back soon!</p>';
       return;
     }
 
-    container.innerHTML = posts.map(post => `
-      <a href="post.html?post=${post.slug}" class="post-card">
-        <h2 class="post-card-title">${post.title}</h2>
-        <div class="post-card-date">${formatDate(post.date)}</div>
-        <p class="post-card-description">${post.description}</p>
-        <div class="post-card-tags">${renderTags(post.tags)}</div>
-      </a>
-    `).join('');
+    buildFilterBar(allPosts);
+    renderPostList(allPosts);
   } catch (err) {
     container.innerHTML = '<p class="empty-state">Could not load posts.</p>';
   }
+}
+
+// Helper: find or create a meta/link tag and set its value
+function setMeta(attr, key, value) {
+  let el = document.querySelector(`meta[${attr}="${key}"]`);
+  if (!el) {
+    el = document.createElement('meta');
+    el.setAttribute(attr, key);
+    document.head.appendChild(el);
+  }
+  el.setAttribute('content', value);
+}
+
+function setCanonical(url) {
+  let link = document.querySelector('link[rel="canonical"]');
+  if (!link) {
+    link = document.createElement('link');
+    link.setAttribute('rel', 'canonical');
+    document.head.appendChild(link);
+  }
+  link.setAttribute('href', url);
+}
+
+function injectJsonLd(data) {
+  let script = document.querySelector('script[type="application/ld+json"]');
+  if (!script) {
+    script = document.createElement('script');
+    script.setAttribute('type', 'application/ld+json');
+    document.head.appendChild(script);
+  }
+  script.textContent = JSON.stringify(data);
 }
 
 // === SINGLE POST PAGE ===
@@ -102,6 +218,33 @@ async function loadPost() {
       document.getElementById('post-date').textContent = formatDate(meta.date);
       document.getElementById('post-tags').innerHTML = renderTags(meta.tags);
       document.title = `${meta.title} | Sashank Silwal`;
+
+      // Dynamic SEO meta tags
+      const postUrl = 'https://ssilwal.com.np/blog/post.html?post=' + slug;
+
+      setMeta('name', 'description', meta.description);
+      setMeta('property', 'og:title', meta.title);
+      setMeta('property', 'og:description', meta.description);
+      setMeta('property', 'og:url', postUrl);
+      setMeta('property', 'og:type', 'article');
+      setMeta('name', 'twitter:card', 'summary');
+      setMeta('name', 'twitter:title', meta.title);
+      setMeta('name', 'twitter:description', meta.description);
+
+      setCanonical(postUrl);
+
+      injectJsonLd({
+        '@context': 'https://schema.org',
+        '@type': 'BlogPosting',
+        headline: meta.title,
+        description: meta.description,
+        datePublished: meta.date,
+        author: {
+          '@type': 'Person',
+          name: 'Sashank Silwal'
+        },
+        url: postUrl
+      });
     }
 
     // Fetch markdown

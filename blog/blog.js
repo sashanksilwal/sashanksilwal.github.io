@@ -252,8 +252,11 @@ async function loadPost() {
     if (!mdRes.ok) throw new Error('Post not found');
     const mdText = await mdRes.text();
 
+    // Rewrite relative image paths to resolve from posts/ directory
+    const fixedMd = mdText.replace(/!\[([^\]]*)\]\((?!https?:\/\/|\/)(.*?)\)/g, '![$1](posts/$2)');
+
     // Protect math blocks from Marked's parser
-    const { text: safeMd, blocks: mathBlocks } = protectMath(mdText);
+    const { text: safeMd, blocks: mathBlocks } = protectMath(fixedMd);
 
     // Configure marked with highlight.js
     marked.setOptions({

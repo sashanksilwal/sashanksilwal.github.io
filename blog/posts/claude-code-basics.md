@@ -205,4 +205,4 @@ Don't let changes pile up without committing. Small, frequent saves are your saf
 
 That's genuinely all you need to get started. Everything else you'll pick up as you go.
 
-If you want to go further after you're comfortable with the basics, I wrote a follow-up on [advanced workflows, agents, and power-user features](/blog/beginner/claude-code-intermediate).
+If you want to go further after you're comfortable with the basics, I wrote a follow-up on [advanced workflows, agents, and power-user features](/blog/post.html?post=claude-code-intermediate).

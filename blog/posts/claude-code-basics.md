@@ -117,12 +117,16 @@ You don't need to memorize a lot. These five will cover 90% of what you do:
 
 That's it for now. There are more commands, but these are the ones you'll actually use every day.
 
+![The /help command in Claude Code showing available commands and shortcuts](images/claude-code-help.png)
+
 ## Useful Shortcuts
 
 A few keyboard tricks that save time:
 
-- **Shift+Tab**: Switches between "plan mode" and "code mode." Plan mode means Claude will think through the problem and outline a plan without changing any files. Code mode means it can actually edit things. Good habit: start in plan mode, review the plan, then switch to code mode.
-- **Esc Esc** (press Escape twice): Undoes the last thing Claude did. Your safety net.
+- **Shift+Tab**: Toggles plan mode on and off. With plan mode on, Claude will think through the problem and outline a plan without changing any files. Turn it off and Claude can actually edit things. Good habit: start with plan mode on, review the plan, then toggle it off to let Claude make changes.
+
+![Plan mode enabled in Claude Code, showing the status bar indicator](images/claude-code-plan-mode.png)
+- **Esc Esc** (press Escape twice): Interrupts whatever Claude is doing right now. If it's mid-edit or mid-response, this stops it. It won't undo changes already saved to disk, so pair this with git commits for a real safety net.
 - **`@` in your prompt**: Autocompletes file paths. Type `@` and start typing a filename. Way easier than typing full paths.
 - **`!` before a command**: Runs a terminal command without leaving Claude. For example: `! npm test` or `! python main.py`.
 
@@ -157,7 +161,9 @@ Claude Code has a memory limit per conversation (about 200,000 tokens). Every fi
 
 This is why `/clear` exists. Use it often. Finished fixing a bug? Type `/clear` before moving to the next thing. Think of each task as a separate conversation.
 
-If you want to check how much memory you've used, type `/context`. It shows a breakdown of your usage.
+If you want to check how much memory you've used, type `/status` and tab over to the Usage section. It shows a breakdown of your context usage.
+
+![The /status command showing Status, Config, and Usage tabs](images/claude-code-status.png)
 
 ## Let Claude Check Its Own Work
 
@@ -199,4 +205,4 @@ Don't let changes pile up without committing. Small, frequent saves are your saf
 
 That's genuinely all you need to get started. Everything else you'll pick up as you go.
 
-If you want to go further after you're comfortable with the basics, I wrote a follow-up on [advanced workflows, agents, and power-user features](/blog/post.html?post=claude-code-intermediate).
+If you want to go further after you're comfortable with the basics, I wrote a follow-up on [advanced workflows, agents, and power-user features](/blog/beginner/claude-code-intermediate).

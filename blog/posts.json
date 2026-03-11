@@ -5,7 +5,8 @@
     "date": "2026-03-08",
     "description": "A beginner's guide to Claude Code covering CLAUDE.md, context management, key commands, and the feedback loop that makes it actually useful.",
     "tags": ["llm", "developer-tools", "claude-code"],
-    "category": "non-technical"
+    "category": "beginner",
+    "readingTime": "5 min"
   },
   {
     "slug": "claude-code-intermediate",

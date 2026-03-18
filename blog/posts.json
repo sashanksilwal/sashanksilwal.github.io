@@ -1,5 +1,59 @@
 [
   {
+    "slug": "ml-systems-production",
+    "title": "Why Your Model Works in the Notebook but Breaks in Production",
+    "date": "2026-03-18",
+    "description": "Covariate shift, concept drift, retraining strategies, and the monitoring that keeps ML systems alive after deployment.",
+    "tags": ["ml", "mlops", "production"],
+    "category": "technical",
+    "readingTime": "10 min"
+  },
+  {
+    "slug": "recommendation-systems",
+    "title": "Recommendation Systems: From Matrix Factorization to Two-Tower Models",
+    "date": "2026-03-17",
+    "description": "Collaborative filtering, content-based methods, two-tower retrieval, GNN-based recs, and the popularity bias problem that breaks most systems.",
+    "tags": ["ml", "recommendations", "deep-learning"],
+    "category": "technical",
+    "readingTime": "11 min"
+  },
+  {
+    "slug": "airflow-dag-basics",
+    "title": "Airflow and DAGs: The Orchestration Tool Every Data Team Ends Up Using",
+    "date": "2026-03-16",
+    "description": "What Airflow is, how DAGs work, building your first ML pipeline, error handling, and when to use something else instead.",
+    "tags": ["mlops", "data-engineering", "airflow"],
+    "category": "technical",
+    "readingTime": "9 min"
+  },
+  {
+    "slug": "distributed-computing-basics",
+    "title": "Spark, Hadoop, and PySpark: When You Actually Need Distributed Computing",
+    "date": "2026-03-15",
+    "description": "Hadoop's legacy, why Spark replaced it, PySpark for ML feature engineering, and the honest threshold for when single-machine tools stop working.",
+    "tags": ["data-engineering", "spark", "distributed-systems"],
+    "category": "technical",
+    "readingTime": "10 min"
+  },
+  {
+    "slug": "sagemaker-endpoints",
+    "title": "Deploying ML Models with SageMaker: Endpoints, Scaling, and When Not to Bother",
+    "date": "2026-03-14",
+    "description": "Real-time and serverless endpoints, auto-scaling, A/B testing with production variants, cost optimization, and when a FastAPI server is the better choice.",
+    "tags": ["mlops", "aws", "deployment", "inference"],
+    "category": "technical",
+    "readingTime": "11 min"
+  },
+  {
+    "slug": "invariant-equivariant-networks",
+    "title": "1,807 Parameters Beat 454,000: How Symmetry Makes Neural Networks Actually Work",
+    "date": "2026-03-11",
+    "description": "Why CNNs break under rotation, how the Reynolds operator builds symmetry into weight space, and the experiment where a tiny equivariant network crushed a standard CNN on imbalanced data.",
+    "tags": ["ml", "deep-learning", "equivariance", "group-theory"],
+    "category": "technical",
+    "readingTime": "12 min"
+  },
+  {
     "slug": "claude-code-basics",
     "title": "Getting Started with Claude Code: Everything I Wish I Knew on Day One",
     "date": "2026-03-08",

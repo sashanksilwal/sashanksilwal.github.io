@@ -45,15 +45,6 @@
     "readingTime": "11 min"
   },
   {
-    "slug": "invariant-equivariant-networks",
-    "title": "1,807 Parameters Beat 454,000: How Symmetry Makes Neural Networks Actually Work",
-    "date": "2026-03-11",
-    "description": "Why CNNs break under rotation, how the Reynolds operator builds symmetry into weight space, and the experiment where a tiny equivariant network crushed a standard CNN on imbalanced data.",
-    "tags": ["ml", "deep-learning", "equivariance", "group-theory"],
-    "category": "technical",
-    "readingTime": "12 min"
-  },
-  {
     "slug": "claude-code-basics",
     "title": "Getting Started with Claude Code: Everything I Wish I Knew on Day One",
     "date": "2026-03-08",

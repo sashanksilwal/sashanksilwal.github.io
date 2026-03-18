@@ -1,6 +1,6 @@
-Three months ago, a fraud detection model I helped build started approving transactions it should have flagged. Not a lot. Just enough to notice. The model hadn't changed. The code hadn't changed. The world had changed, and the model didn't keep up.
+In college, every ML project ended the same way: train a model in a notebook, check the accuracy, submit the assignment. Then I joined Binance, and within my first month a fraud detection model started approving transactions it should have flagged. Not a lot. Just enough to notice. The model hadn't changed. The code hadn't changed. The world had changed, and the model didn't keep up.
 
-This is the part of ML that nobody warns you about in school. Training a model is maybe 20% of the work. Keeping it working in production is the other 80%.
+That was the first time I realized that training a model is maybe 20% of the work. Keeping it working in production is the other 80%.
 
 ## Why Models Break
 

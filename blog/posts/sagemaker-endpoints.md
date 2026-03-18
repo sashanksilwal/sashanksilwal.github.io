@@ -1,6 +1,6 @@
-Getting a model to work in a Jupyter notebook takes an afternoon. Getting that same model to serve 10,000 requests per second with 99.9% uptime takes weeks. This gap between "it works on my machine" and "it works in production" is where most ML projects stall, and it's where SageMaker earns its money.
+In college, deploying a model meant calling `model.predict()` in a notebook and checking the output. Then I joined Binance and had to get a model serving real production traffic, thousands of requests per second with near-zero downtime. The gap between those two worlds is enormous, and it's where most ML projects stall.
 
-I want to be upfront: SageMaker isn't always the right choice. It's expensive, opinionated, and ties you to AWS. But if you're already on AWS and need to go from trained model to production endpoint without building a serving stack from scratch, it removes a lot of the grunt work.
+SageMaker isn't always the right answer for bridging that gap. It's expensive, opinionated, and ties you to AWS. But if you're already on AWS and need to go from trained model to production endpoint without building a serving stack from scratch, it removes a lot of the grunt work.
 
 ## What SageMaker Actually Gives You
 

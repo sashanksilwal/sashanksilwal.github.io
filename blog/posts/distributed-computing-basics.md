@@ -1,4 +1,4 @@
-Last year I spent two days optimizing a Pandas script that processed 200 million rows. Tried chunking, tried Dask, tried every trick in the "speed up Pandas" playbook. Then a teammate rewrote it in PySpark and it ran in 4 minutes on a small cluster. I felt stupid for about an hour, then I felt enlightened: there's a threshold where single-machine tools stop working, and knowing where that threshold is saves you a lot of time on both sides.
+During my first week at Binance, I learned that the data team was processing petabytes of transaction data daily. Coming from college where the biggest dataset I'd touched was maybe a few gigabytes in a Jupyter notebook, that number didn't even feel real. My onboarding included spinning up PySpark jobs, and suddenly all those "big data" buzzwords I'd heard in class had actual meaning. There's a threshold where single-machine tools stop working, and working at an exchange that handles millions of trades per second puts you way past that threshold on day one.
 
 The honest answer for most people: you don't need distributed computing until you do, and it's later than you think.
 

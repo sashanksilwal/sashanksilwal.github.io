@@ -1,5 +1,32 @@
 [
   {
+    "slug": "domain-adaptation-mmd",
+    "title": "Domain Adaptation: Why Your Model Breaks When the Background Changes",
+    "date": "2026-03-28",
+    "description": "Car classifiers that fail in garages, X-ray models that break across hospitals, and how MMD forces neural networks to learn features that transfer across domains.",
+    "tags": ["ml", "deep-learning", "domain-adaptation"],
+    "category": "technical",
+    "readingTime": "11 min"
+  },
+  {
+    "slug": "sharp-flat-minima",
+    "title": "Sharp vs. Flat Minima: Why Some Models Generalize and Others Just Memorize",
+    "date": "2026-03-27",
+    "description": "Neural networks can memorize random labels. So why do they generalize on real data? The answer is in the geometry of the loss surface.",
+    "tags": ["ml", "deep-learning", "optimization", "generalization"],
+    "category": "technical",
+    "readingTime": "10 min"
+  },
+  {
+    "slug": "disentangled-representations",
+    "title": "Disentangled Representations: Why VAEs Can't Disentangle (and What Actually Works)",
+    "date": "2026-03-23",
+    "description": "Locatello et al. proved unsupervised disentanglement is impossible. Here's why rotational symmetry breaks identifiability, and how sparsity fixes it.",
+    "tags": ["ml", "deep-learning", "representation-learning", "vae"],
+    "category": "technical",
+    "readingTime": "10 min"
+  },
+  {
     "slug": "ml-systems-production",
     "title": "Why Your Model Works in the Notebook but Breaks in Production",
     "date": "2026-03-18",

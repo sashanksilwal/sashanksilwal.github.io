@@ -4,7 +4,7 @@
     "title": "Domain Adaptation: Why Your Model Breaks When the Background Changes",
     "date": "2026-03-28",
     "description": "Car classifiers that fail in garages, X-ray models that break across hospitals, and how MMD forces neural networks to learn features that transfer across domains.",
-    "tags": ["ml", "deep-learning", "domain-adaptation"],
+    "tags": ["ml", "deep-learning"],
     "category": "technical",
     "readingTime": "11 min"
   },
@@ -13,7 +13,7 @@
     "title": "Invariance and Equivariance: Teaching Neural Networks About Symmetry",
     "date": "2026-03-26",
     "description": "Why CNNs break when you rotate the input, how the Reynolds operator builds symmetry into weight space, and a 1,800-parameter network that crushed a 454,000-parameter CNN.",
-    "tags": ["ml", "deep-learning", "equivariance", "group-theory"],
+    "tags": ["ml", "deep-learning"],
     "category": "technical",
     "readingTime": "12 min"
   },
@@ -22,7 +22,7 @@
     "title": "Sharp vs. Flat Minima: Why Some Models Generalize and Others Just Memorize",
     "date": "2026-03-27",
     "description": "Neural networks can memorize random labels. So why do they generalize on real data? The answer is in the geometry of the loss surface.",
-    "tags": ["ml", "deep-learning", "optimization", "generalization"],
+    "tags": ["ml", "deep-learning"],
     "category": "technical",
     "readingTime": "10 min"
   },
@@ -31,7 +31,7 @@
     "title": "Disentangled Representations: Why VAEs Can't Disentangle (and What Actually Works)",
     "date": "2026-03-23",
     "description": "Locatello et al. proved unsupervised disentanglement is impossible. Here's why rotational symmetry breaks identifiability, and how sparsity fixes it.",
-    "tags": ["ml", "deep-learning", "representation-learning", "vae"],
+    "tags": ["ml", "deep-learning"],
     "category": "technical",
     "readingTime": "10 min"
   },
@@ -40,7 +40,7 @@
     "title": "Why Your Model Works in the Notebook but Breaks in Production",
     "date": "2026-03-18",
     "description": "Covariate shift, concept drift, retraining strategies, and the monitoring that keeps ML systems alive after deployment.",
-    "tags": ["ml", "mlops", "production"],
+    "tags": ["ml", "mlops"],
     "category": "technical",
     "readingTime": "10 min"
   },
@@ -49,7 +49,7 @@
     "title": "Recommendation Systems: From Matrix Factorization to Two-Tower Models",
     "date": "2026-03-17",
     "description": "Collaborative filtering, content-based methods, two-tower retrieval, GNN-based recs, and the popularity bias problem that breaks most systems.",
-    "tags": ["ml", "recommendations", "deep-learning"],
+    "tags": ["ml", "recommendations"],
     "category": "technical",
     "readingTime": "11 min"
   },
@@ -58,7 +58,7 @@
     "title": "Airflow and DAGs: The Orchestration Tool Every Data Team Ends Up Using",
     "date": "2026-03-16",
     "description": "What Airflow is, how DAGs work, building your first ML pipeline, error handling, and when to use something else instead.",
-    "tags": ["mlops", "data-engineering", "airflow"],
+    "tags": ["mlops", "data-engineering"],
     "category": "technical",
     "readingTime": "9 min"
   },
@@ -67,7 +67,7 @@
     "title": "Spark, Hadoop, and PySpark: When You Actually Need Distributed Computing",
     "date": "2026-03-15",
     "description": "Hadoop's legacy, why Spark replaced it, PySpark for ML feature engineering, and the honest threshold for when single-machine tools stop working.",
-    "tags": ["data-engineering", "spark", "distributed-systems"],
+    "tags": ["data-engineering"],
     "category": "technical",
     "readingTime": "10 min"
   },
@@ -76,7 +76,7 @@
     "title": "Deploying ML Models with SageMaker: Endpoints, Scaling, and When Not to Bother",
     "date": "2026-03-14",
     "description": "Real-time and serverless endpoints, auto-scaling, A/B testing with production variants, cost optimization, and when a FastAPI server is the better choice.",
-    "tags": ["mlops", "aws", "deployment", "inference"],
+    "tags": ["mlops"],
     "category": "technical",
     "readingTime": "11 min"
   },
@@ -85,7 +85,7 @@
     "title": "Getting Started with Claude Code: Everything I Wish I Knew on Day One",
     "date": "2026-03-08",
     "description": "A beginner's guide to Claude Code covering CLAUDE.md, context management, key commands, and the feedback loop that makes it actually useful.",
-    "tags": ["llm", "developer-tools", "claude-code"],
+    "tags": ["llm", "developer-tools"],
     "category": "beginner",
     "readingTime": "5 min"
   },
@@ -94,7 +94,7 @@
     "title": "Claude Code Beyond the Basics: Agents, Context Engineering, and Production Workflows",
     "date": "2026-03-08",
     "description": "An intermediate guide to Claude Code covering context management, CLAUDE.md patterns, subagents, custom commands, hooks, MCP, skills, and CI integration.",
-    "tags": ["llm", "developer-tools", "claude-code"],
+    "tags": ["llm", "developer-tools"],
     "category": "technical"
   },
   {
@@ -102,7 +102,7 @@
     "title": "Context Poisoning: How Attackers Manipulate LLM Context Windows",
     "date": "2026-03-06",
     "description": "Prompt injection, data poisoning in RAG systems, and adversarial inputs that hijack LLM behavior. Real attack vectors and practical defenses for production systems.",
-    "tags": ["security", "llm", "rag"],
+    "tags": ["llm", "security"],
     "category": "technical"
   },
   {
@@ -110,7 +110,7 @@
     "title": "Building a RAG System from Scratch",
     "date": "2026-03-08",
     "description": "A step-by-step guide to building retrieval-augmented generation with Python. Embeddings, vector search, and generation, no frameworks required.",
-    "tags": ["ml", "rag", "llm", "python"],
+    "tags": ["llm", "rag", "python"],
     "category": "non-technical"
   },
   {
@@ -118,7 +118,7 @@
     "title": "What is Fine-Tuning, and Why Does Every AI Company Do It?",
     "date": "2026-03-04",
     "description": "RLHF, LoRA, full fine-tuning explained without the jargon. How companies take a base model and turn it into something actually useful.",
-    "tags": ["ml", "llm", "fine-tuning"],
+    "tags": ["llm"],
     "category": "non-technical"
   },
   {
@@ -126,7 +126,7 @@
     "title": "Fitting Big Models on Small GPUs",
     "date": "2026-03-03",
     "description": "Quantization techniques (GPTQ, GGUF, AWQ), distillation as a size reduction strategy, and practical tradeoffs for running 70B models on consumer hardware.",
-    "tags": ["ml", "llm", "quantization", "inference"],
+    "tags": ["llm", "gpu"],
     "category": "technical"
   },
   {
@@ -134,7 +134,7 @@
     "title": "Model Distillation: The Technique, The Controversy, and How To Do It",
     "date": "2026-03-02",
     "description": "What model distillation is, how DeepSeek allegedly used it on frontier model outputs, and a practical guide with lessons from our reasoning distillation paper.",
-    "tags": ["ml", "llm", "distillation"],
+    "tags": ["llm"],
     "category": "technical"
   },
   {
@@ -142,7 +142,7 @@
     "title": "Automated Rule Generation for Fraud Detection Using Deep Learning and Explainability",
     "date": "2026-02-25",
     "description": "How to automatically extract interpretable, auditable fraud detection rules from LSTM models using SHAP, Anchors, knowledge distillation, and temporal pattern mining.",
-    "tags": ["ml", "explainability", "fraud"],
+    "tags": ["ml"],
     "category": "technical"
   },
   {
@@ -150,7 +150,7 @@
     "title": "UrbanTherm: GPU-Accelerated Surface Energy Balance for Urban Microclimate Modeling",
     "date": "2026-02-24",
     "description": "How we extended SOLWEIG with a full surface energy balance solver, Newton-Raphson surface temperatures, multi-layer conduction, canopy transpiration, and spatial air temperature, all running on GPU at 1m resolution.",
-    "tags": ["urban climate", "physics", "gpu"],
+    "tags": ["gpu", "physics"],
     "category": "technical"
   },
   {
@@ -158,7 +158,7 @@
     "title": "Industry-Level RAG Practices: A Comprehensive Reference",
     "date": "2026-02-15",
     "description": "A detailed guide covering the full RAG pipeline: chunking, embeddings, vector databases, retrieval strategies, reranking, advanced architectures (CRAG, Self-RAG, Graph RAG, RAPTOR), evaluation, and production deployment.",
-    "tags": ["ml", "rag", "llm"],
+    "tags": ["llm", "rag"],
     "category": "technical"
   }
 ]

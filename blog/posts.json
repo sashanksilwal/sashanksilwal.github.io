@@ -9,6 +9,15 @@
     "readingTime": "11 min"
   },
   {
+    "slug": "invariant-equivariant-networks",
+    "title": "Invariance and Equivariance: Teaching Neural Networks About Symmetry",
+    "date": "2026-03-26",
+    "description": "Why CNNs break when you rotate the input, how the Reynolds operator builds symmetry into weight space, and a 1,800-parameter network that crushed a 454,000-parameter CNN.",
+    "tags": ["ml", "deep-learning", "equivariance", "group-theory"],
+    "category": "technical",
+    "readingTime": "12 min"
+  },
+  {
     "slug": "sharp-flat-minima",
     "title": "Sharp vs. Flat Minima: Why Some Models Generalize and Others Just Memorize",
     "date": "2026-03-27",

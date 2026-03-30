@@ -1,5 +1,14 @@
 [
   {
+    "slug": "claude-code-hidden-features",
+    "title": "15 Claude Code Features Most People Don't Know About",
+    "date": "2026-03-30",
+    "description": "Boris Cherny from Anthropic shared his favorite hidden features: mobile coding, session teleporting, automated loops, parallel worktree agents, voice input, and more.",
+    "tags": ["llm", "developer-tools"],
+    "category": "beginner",
+    "readingTime": "8 min"
+  },
+  {
     "slug": "domain-adaptation-mmd",
     "title": "Domain Adaptation: Why Your Model Breaks When the Background Changes",
     "date": "2026-03-28",

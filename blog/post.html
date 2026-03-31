@@ -7,7 +7,9 @@
     <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="/css/style.css">
     <link rel="stylesheet" href="blog.css">
     <!-- Google tag (gtag.js) -->
@@ -18,7 +20,9 @@
     gtag('js', new Date());
     gtag('config', 'G-TEPTW01GNL');
     </script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
     <!-- Highlight.js -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
@@ -43,6 +47,7 @@
         <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
     </nav>
 
+    <main>
     <article id="post-container">
         <div id="post-header">
             <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
@@ -52,8 +57,9 @@
         </div>
         <div id="post-content" class="post-body"></div>
     </article>
+    </main>
 
-    <div class="footer-content">
+    <footer class="footer-content">
         <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
         <i class="fa-brands fa-github"></i>
         </a>
@@ -63,7 +69,7 @@
         <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
         <i class="fa-brands fa-x-twitter"></i>
         </a>
-    </div>
+    </footer>
     </div>
 
     <script src="/js/script.js"></script>

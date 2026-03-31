@@ -1,4 +1,4 @@
-Boris Cherny, who works on Claude Code at Anthropic, posted a thread on X last week with 15 features that most people don't know about. I've been using Claude Code daily for months now (wrote about the [basics](/blog/post.html?post=claude-code-basics) and [intermediate workflows](/blog/post.html?post=claude-code-intermediate) earlier), and half of these were new to me. Some of them genuinely change how you'd use the tool.
+[Boris Cherny](https://borischerny.com/about/), who is a software engineer at Anthropic, posted a thread on X last week with 15 features that most people don't know about. I've been using Claude Code daily for months now (wrote about the [basics](/blog/post.html?post=claude-code-basics) and [intermediate workflows](/blog/post.html?post=claude-code-intermediate) earlier), and half of these were new to me. Some of them genuinely change how you'd use the tool.
 
 Here's every tip from his thread, with my notes on each.
 

@@ -8,22 +8,27 @@
   <base href="/" />
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+  <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
   <link rel="stylesheet" href="/css/style.css" />
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+  <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
 </head>
 
 <body>
   <div class="main-content">
-    <nav class="site-nav">
-        <div class="nav-links">
-            <a href="/" class="nav-link">Home</a>
-            <a href="/experience/" class="nav-link">Experience</a>
-            <a href="/blog/" class="nav-link">Blog</a>
-        </div>
-        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
-    </nav>
+  <nav class="site-nav">
+      <div class="nav-links">
+          <a href="/" class="nav-link">Home</a>
+          <a href="/experience/" class="nav-link">Experience</a>
+          <a href="/blog/" class="nav-link">Blog</a>
+      </div>
+      <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+  </nav>
 
+  <main>
     <div class="error-container">
       <i class="fa-solid fa-satellite-dish error-icon"></i>
       <h1 class="error-title">404</h1>
@@ -39,6 +44,7 @@
         <a href="/dm/color-me" class="error-alt-btn">Color Me</a>
       </div>
     </div>
+  </main>
   </div>
 
   <script src="js/script.js"></script>

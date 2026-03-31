@@ -2,7 +2,7 @@ Cities are getting hotter. Urban surfaces  - asphalt, concrete, rooftops  - abso
 
 This post describes **UrbanTherm**, an energy balance extension to the SOLWEIG radiation model that computes physics-based surface temperatures, air temperatures, and thermal comfort at **1-meter resolution** using GPU acceleration.
 
-![UrbanTherm Architecture](posts/images/urbantherm-architecture.png)
+![UrbanTherm Architecture](images/urbantherm-architecture.png)
 
 ---
 
@@ -85,7 +85,7 @@ This produces realistic intra-urban air temperature variation of $\pm$0.5-1.0°C
 
 The entire energy balance  - Newton-Raphson solver, Thomas algorithm conduction, Jarvis-Stewart conductance, TARGET air temperature  - is implemented in **PyTorch** and runs on GPU. Every pixel is computed in parallel.
 
-![GPU Pipeline](posts/images/urbantherm-gpu-pipeline.png)
+![GPU Pipeline](images/urbantherm-gpu-pipeline.png)
 
 For a 1 km$^2$ domain at 1 m resolution, that's **1 million pixels per timestep**, all processed simultaneously on an RTX 6000 Ada. The key design decisions:
 

@@ -1,5 +1,23 @@
 [
   {
+    "slug": "gnn-failure-modes",
+    "title": "Why Deep GNNs Don't Work: Oversmoothing, Oversquashing, and Underreaching",
+    "date": "2026-04-16",
+    "description": "Stacking layers works for CNNs and Transformers. Try it on a graph neural network and it breaks in three distinct ways, each with its own mechanism and its own fix.",
+    "tags": ["ml", "deep-learning"],
+    "category": "technical",
+    "readingTime": "10 min"
+  },
+  {
+    "slug": "should-you-use-a-gnn",
+    "title": "Should You Even Use a GNN?",
+    "date": "2026-04-14",
+    "description": "Most graph-shaped problems aren't graph problems. A framework for deciding when a GNN is worth the complexity, and when XGBoost with aggregate features will quietly beat it.",
+    "tags": ["ml", "deep-learning"],
+    "category": "beginner",
+    "readingTime": "7 min"
+  },
+  {
     "slug": "claude-code-hidden-features",
     "title": "15 Claude Code Features Most People Don't Know About",
     "date": "2026-03-30",

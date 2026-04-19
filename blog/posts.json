@@ -1,5 +1,14 @@
 [
   {
+    "slug": "popularity-shift-lightgcn",
+    "title": "When Invariant Learning Helps a GNN Recommender (and When It Collapses)",
+    "date": "2026-04-19",
+    "description": "LightGCN's Recall@20 drops 46% when you swap a random split for a temporal one. Here's how invariant learning partially fixes it, and the failure mode we found when IRM is pushed too hard.",
+    "tags": ["ml", "recommendations", "deep-learning"],
+    "category": "technical",
+    "readingTime": "13 min"
+  },
+  {
     "slug": "gnn-failure-modes",
     "title": "Why Deep GNNs Don't Work: Oversmoothing, Oversquashing, and Underreaching",
     "date": "2026-04-16",

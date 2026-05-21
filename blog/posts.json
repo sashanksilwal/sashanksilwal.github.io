@@ -1,5 +1,23 @@
 [
   {
+    "slug": "claude-code-daily-features",
+    "title": "Claude Code Features I Found by Using It Every Day",
+    "date": "2026-05-20",
+    "description": "I've used Claude Code daily for months. The biggest wins came from features I stumbled onto, not the docs: rewind, queued prompts, /goal, /powerup, and more.",
+    "tags": ["claude", "llm", "developer-tools"],
+    "category": "beginner",
+    "readingTime": "11 min"
+  },
+  {
+    "slug": "docker-basics",
+    "title": "Docker Basics: What a Dead Server Taught Me About Containers",
+    "date": "2026-05-10",
+    "description": "I spent a week setting up a Fortran weather model on a server. Then it died. Here's the Docker intro and tips I wish I'd had before redoing it all by hand.",
+    "tags": ["docker", "developer-tools"],
+    "category": "beginner",
+    "readingTime": "8 min"
+  },
+  {
     "slug": "popularity-shift-lightgcn",
     "title": "When Invariant Learning Helps a GNN Recommender (and When It Collapses)",
     "date": "2026-04-19",
@@ -31,7 +49,7 @@
     "title": "15 Claude Code Features Most People Don't Know About",
     "date": "2026-03-30",
     "description": "Boris Cherny from Anthropic shared his favorite hidden features: mobile coding, session teleporting, automated loops, parallel worktree agents, voice input, and more.",
-    "tags": ["llm", "developer-tools"],
+    "tags": ["claude", "llm", "developer-tools"],
     "category": "beginner",
     "readingTime": "8 min"
   },
@@ -121,7 +139,7 @@
     "title": "Getting Started with Claude Code: Everything I Wish I Knew on Day One",
     "date": "2026-03-08",
     "description": "A beginner's guide to Claude Code covering CLAUDE.md, context management, key commands, and the feedback loop that makes it actually useful.",
-    "tags": ["llm", "developer-tools"],
+    "tags": ["claude", "llm", "developer-tools"],
     "category": "beginner",
     "readingTime": "5 min"
   },
@@ -130,7 +148,7 @@
     "title": "Claude Code Beyond the Basics: Agents, Context Engineering, and Production Workflows",
     "date": "2026-03-08",
     "description": "An intermediate guide to Claude Code covering context management, CLAUDE.md patterns, subagents, custom commands, hooks, MCP, skills, and CI integration.",
-    "tags": ["llm", "developer-tools"],
+    "tags": ["claude", "llm", "developer-tools"],
     "category": "technical"
   },
   {

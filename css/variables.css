@@ -52,6 +52,7 @@
   .dark-theme {
     --primary-color: var(--dark-primary-color);
     --secondary-color: var(--dark-secondary-color);
+    --primary-background-color: var(--dark-background-color);
     --text-muted: var(--dark-text-muted);
     --ahref-color: var(--dark-ahref-color);
     --ahref-hover-color: var(--dark-ahref-hover-color);
@@ -61,5 +62,4 @@
     --code-border: var(--dark-code-border);
     --tag-bg: var(--dark-tag-bg);
     --tag-color: var(--dark-tag-color);
-    background-color: var(--dark-background-color);
   }

@@ -2,7 +2,7 @@
 
 // Sync highlight.js theme with site theme
 function syncHljsTheme() {
-  const isDark = document.body.classList.contains('dark-theme');
+  const isDark = document.documentElement.classList.contains('dark-theme');
   const lightSheet = document.getElementById('hljs-light');
   const darkSheet = document.getElementById('hljs-dark');
   if (lightSheet && darkSheet) {
@@ -293,7 +293,7 @@ async function loadPost() {
 
 // Watch for theme changes to sync hljs
 const observer = new MutationObserver(syncHljsTheme);
-observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
+observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
 
 // === READING PROGRESS ===
 function getReadProgress() {

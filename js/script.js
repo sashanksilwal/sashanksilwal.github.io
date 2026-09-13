@@ -30,7 +30,7 @@ function updateThemeToggle() {
   const themeToggle = document.getElementById('themeToggle');
   if (!themeToggle) return;
   const icon = themeToggle.querySelector('i');
-  const isDarkTheme = document.body.classList.contains('dark-theme');
+  const isDarkTheme = document.documentElement.classList.contains('dark-theme');
 
   // Update icon (moon/sun)
   if (isDarkTheme) {
@@ -44,11 +44,11 @@ function updateThemeToggle() {
 }
 
 function toggleDarkTheme() {
-  const body = document.body;
-  body.classList.toggle('dark-theme');
+  const root = document.documentElement;
+  root.classList.toggle('dark-theme');
 
   // Save preference
-  const isDarkTheme = body.classList.contains('dark-theme');
+  const isDarkTheme = root.classList.contains('dark-theme');
   localStorage.setItem('darkTheme', isDarkTheme);
 
   updateThemeToggle();
@@ -57,14 +57,9 @@ function toggleDarkTheme() {
 function initTheme() {
   const savedTheme = localStorage.getItem('darkTheme');
 
-  if (savedTheme === null) {
-    // No saved preference → follow system setting
-    const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    document.body.classList.toggle('dark-theme', prefersDark);
-  } else {
-    // Apply stored user preference
-    document.body.classList.toggle('dark-theme', savedTheme === 'true');
-  }
+  // Dark is the default. Only go light if the user explicitly chose it before.
+  const isDarkTheme = savedTheme === null ? true : savedTheme === 'true';
+  document.documentElement.classList.toggle('dark-theme', isDarkTheme);
 }
 
 

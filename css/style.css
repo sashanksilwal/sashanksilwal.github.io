@@ -1,5 +1,18 @@
 @import './variables.css';
 
+/* Smooth cross-fade between page navigations (Chromium; other browsers ignore this) */
+@view-transition {
+  navigation: auto;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-group(*),
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 * {
   box-sizing: border-box;
 }

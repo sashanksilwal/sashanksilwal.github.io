@@ -2,6 +2,16 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Experience | Sashank Silwal</title>
     <meta name="description" content="Professional and research experience of Sashank Silwal — Data Scientist, Software Engineer, and ML Researcher.">

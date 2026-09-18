@@ -1,5 +1,16 @@
 [
   {
+    "slug": "astra-nepal-in-3d",
+    "title": "I Asked GPT-6 Astra for a 3D Boudhanath and Got 2,004 Prayer Flags",
+    "date": "2026-09-18",
+    "description": "I've used Claude daily for months. Then GPT-6 Astra landed, so I pointed it at a 3D reconstruction of Boudhanath. Two hours later, I hadn't written a line.",
+    "tags": ["llm", "developer-tools"],
+    "category": "non-technical",
+    "readingTime": "3 min",
+    "image": "images/boudhanath-nepalin3d.webp",
+    "imageAlt": "The Boudhanath stupa rendered in 3D on nepalin3d.com, prayer flags running from the gilded spire to the octagonal wall of prayer wheels"
+  },
+  {
     "slug": "claude-code-daily-features",
     "title": "Claude Code Features I Found by Using It Every Day",
     "date": "2026-05-20",

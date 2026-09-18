@@ -8,6 +8,14 @@
     <atom:link href="https://ssilwal.com.np/feed.xml" rel="self" type="application/rss+xml"/>
 
     <item>
+      <title>I Asked GPT-6 Astra for a 3D Boudhanath and Got 2,004 Prayer Flags</title>
+      <link>https://ssilwal.com.np/blog/post.html?post=astra-nepal-in-3d</link>
+      <guid>https://ssilwal.com.np/blog/post.html?post=astra-nepal-in-3d</guid>
+      <pubDate>Fri, 18 Sep 2026 00:00:00 +0000</pubDate>
+      <description>I&apos;ve used Claude daily for months. Then GPT-6 Astra landed, so I pointed it at a 3D reconstruction of Boudhanath. Two hours later, I hadn&apos;t written a line.</description>
+    </item>
+
+    <item>
       <title>Getting Started with Claude Code: Everything I Wish I Knew on Day One</title>
       <link>https://ssilwal.com.np/blog/post.html?post=claude-code-basics</link>
       <guid>https://ssilwal.com.np/blog/post.html?post=claude-code-basics</guid>

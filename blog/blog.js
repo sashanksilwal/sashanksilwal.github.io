@@ -221,15 +221,24 @@ async function loadPost() {
 
       // Dynamic SEO meta tags
       const postUrl = 'https://ssilwal.com.np/blog/post.html?post=' + slug;
+      const imageUrl = meta.image
+        ? 'https://ssilwal.com.np/blog/posts/' + meta.image
+        : null;
 
       setMeta('name', 'description', meta.description);
       setMeta('property', 'og:title', meta.title);
       setMeta('property', 'og:description', meta.description);
       setMeta('property', 'og:url', postUrl);
       setMeta('property', 'og:type', 'article');
-      setMeta('name', 'twitter:card', 'summary');
+      setMeta('name', 'twitter:card', imageUrl ? 'summary_large_image' : 'summary');
       setMeta('name', 'twitter:title', meta.title);
       setMeta('name', 'twitter:description', meta.description);
+
+      if (imageUrl) {
+        setMeta('property', 'og:image', imageUrl);
+        setMeta('property', 'og:image:alt', meta.imageAlt || meta.title);
+        setMeta('name', 'twitter:image', imageUrl);
+      }
 
       setCanonical(postUrl);
 
@@ -243,7 +252,8 @@ async function loadPost() {
           '@type': 'Person',
           name: 'Sashank Silwal'
         },
-        url: postUrl
+        url: postUrl,
+        ...(imageUrl ? { image: imageUrl } : {})
       });
     }
 
@@ -271,6 +281,12 @@ async function loadPost() {
     // Parse markdown, then restore math delimiters
     const html = restoreMath(marked.parse(safeMd), mathBlocks);
     container.innerHTML = html;
+
+    // Post images sit below the fold, so defer them
+    container.querySelectorAll('img').forEach(img => {
+      img.loading = 'lazy';
+      img.decoding = 'async';
+    });
 
     // Render KaTeX math
     if (typeof renderMathInElement === 'function') {

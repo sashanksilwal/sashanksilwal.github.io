@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Beyond the Basics: Agents, Context Engineering, and Production Workflows | Sashank Silwal</title>
+    <meta name="description" content="An intermediate guide to Claude Code covering context management, CLAUDE.md patterns, subagents, custom commands, hooks, MCP, skills, and CI integration.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/claude-code-intermediate.html">
+    <meta property="og:title" content="Claude Code Beyond the Basics: Agents, Context Engineering, and Production Workflows">
+    <meta property="og:description" content="An intermediate guide to Claude Code covering context management, CLAUDE.md patterns, subagents, custom commands, hooks, MCP, skills, and CI integration.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/claude-code-intermediate.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-03-08">
+    <meta name="twitter:title" content="Claude Code Beyond the Basics: Agents, Context Engineering, and Production Workflows">
+    <meta name="twitter:description" content="An intermediate guide to Claude Code covering context management, CLAUDE.md patterns, subagents, custom commands, hooks, MCP, skills, and CI integration.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Claude Code Beyond the Basics: Agents, Context Engineering, and Production Workflows","description":"An intermediate guide to Claude Code covering context management, CLAUDE.md patterns, subagents, custom commands, hooks, MCP, skills, and CI integration.","datePublished":"2026-03-08","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/claude-code-intermediate.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Claude Code Beyond the Basics: Agents, Context Engineering, and Production Workflows</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-03-08">March 8, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">claude</span><span class="tag">llm</span><span class="tag">developer-tools</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>There&#39;s a particular kind of frustration that comes from watching your Claude Code session slow to a crawl, burning through tokens while you sit there waiting for it to come back with something useful. You paste in a few more files, ask a follow-up, and the response gets worse. Then worse again. Most people hit this wall and blame the model. But the model isn&#39;t the problem. The way you feed it context is.</p>
+<p>This post is for people who already use Claude Code daily and want to get meaningfully better at it. If you&#39;re brand new to Claude Code, start with <a href="/blog/claude-code-basics.html">the basics post</a> first. This isn&#39;t tips-and-tricks stuff. These are the structural changes that compound over weeks.</p>
+<hr>
+<h2>Context Is Infrastructure</h2>
+<p>Anthropic&#39;s engineering blog puts it well: context isn&#39;t just &quot;what Claude knows,&quot; it&#39;s the entire operating environment. System prompts, file contents, conversation history, tool outputs. All of it competes for the same finite window. When that window fills up, performance degrades in ways that are hard to diagnose. Responses get vague. Instructions get forgotten. You start blaming the model when really you&#39;ve just drowned it in tokens.</p>
+<p>The <code>/context</code> command shows your current token usage. Here&#39;s what it looks like mid-session:</p>
+<p><img src="posts/images/context-usage.png" alt="Claude Code /context command showing token usage breakdown at 27%"></p>
+<p>At 27% this session is healthy. But notice how messages alone eat 20%. A few more large file reads and you&#39;re at 60%, then 80%, and suddenly Claude starts forgetting your earlier instructions. The autocompact buffer is your safety net (Claude will summarize old context when it runs low), but you don&#39;t want to rely on it. By the time autocompact kicks in, you&#39;ve already lost nuance.</p>
+<p>Check this often. I check it like I check disk space on a server.</p>
+<p>When context gets heavy, you have two good options:</p>
+<p><strong>The /clear + /catchup pattern.</strong> Just clear the context and let Claude re-orient by reading your codebase fresh. This works surprisingly well for ongoing work in a single repo.</p>
+<p><strong>The &quot;Document &amp; Clear&quot; workflow.</strong> Before clearing, ask Claude to dump its current progress, decisions made, and open questions into a markdown file. Then <code>/clear</code>, and start a new session by pointing Claude at that file. You lose nothing and get a fresh context window. I keep a <code>scratch/</code> folder for these handoff docs.</p>
+<p>Both patterns feel wasteful at first. They&#39;re not. A fresh 20% context window with good instructions will outperform a bloated 90% window every time.</p>
+<hr>
+<h2>CLAUDE.md: Less Is More</h2>
+<p>Your CLAUDE.md file is the highest-priority context Claude reads on every interaction. Most people treat it like a junk drawer. Don&#39;t.</p>
+<p>HumanLayer&#39;s advice here is solid: keep your root CLAUDE.md under 60 lines. If you need more (and you probably do for a real project), use progressive disclosure. Create an <code>agent_docs/</code> folder with separate files:</p>
+<pre><code>CLAUDE.md                    # Core project identity, key conventions
+agent_docs/
+  build.md                   # Build system, dependencies, env setup
+  testing.md                 # Test patterns, how to run tests
+  conventions.md             # Code style, naming, architecture decisions
+  api-patterns.md            # How we structure API endpoints
+</code></pre>
+<p>The key insight: in your root CLAUDE.md, pitch Claude on <em>why</em> to read each file. Don&#39;t just list paths.</p>
+<pre><code class="language-markdown"># Project: Acme API
+
+TypeScript + Express + Prisma. Monorepo with packages/api and packages/web.
+
+## Before making changes:
+- Read agent_docs/conventions.md for our naming and error handling patterns
+  (we do things differently than most Express apps)
+- Read agent_docs/testing.md before writing any test
+  (we use a custom test harness, not raw Jest)
+</code></pre>
+<p><strong>Anti-patterns I see constantly:</strong></p>
+<ul>
+<li>Using CLAUDE.md as a linter. If you want consistent formatting, set up Prettier and a pre-commit hook. Don&#39;t ask Claude to remember &quot;always use single quotes.&quot;</li>
+<li>Auto-generating CLAUDE.md from your codebase. These files are always too long and too generic. Write it by hand.</li>
+<li>Adding task-specific instructions. CLAUDE.md is for project-level context. If you need task-specific guidance, put it in your prompt.</li>
+</ul>
+<hr>
+<h2>Subagents and Parallel Work</h2>
+<p>This is where things get interesting. Instead of one Claude session trying to do everything (and burning through context doing it), you can spawn multiple agents that work in parallel.</p>
+<p>The pattern, as described in the claude-code-ultimate-guide, looks like this: a lead agent coordinates the work, breaks it into subtasks, and assigns each to a subagent. Each subagent gets its own context window, so instead of one agent at 85% context usage, you have three agents each at 35%.</p>
+<p>In practice, I use this for things like: &quot;refactor the auth module&quot; gets broken into (1) update the middleware, (2) update the tests, (3) update the API routes. Each subagent works independently, the lead agent merges the results.</p>
+<p>The mental model is a senior engineer delegating to juniors. You wouldn&#39;t hand one junior the entire codebase and say &quot;fix everything.&quot; You&#39;d scope the work, assign pieces, and review the output.</p>
+<hr>
+<h2>Custom Slash Commands and Hooks</h2>
+<p>If you find yourself typing the same instructions repeatedly, make a slash command. Create files in <code>.claude/commands/</code>:</p>
+<pre><code class="language-markdown"># .claude/commands/review.md
+Review the current git diff for:
+1. Logic errors or edge cases
+2. Missing error handling
+3. Security issues (SQL injection, XSS, auth bypasses)
+4. Performance problems (N+1 queries, unnecessary re-renders)
+
+Be specific. Reference line numbers. Don&#39;t summarize what the code does.
+</code></pre>
+<p>Now <code>/review</code> runs that exact prompt every time. I have commands for <code>/test-plan</code>, <code>/pr-description</code>, and <code>/debug</code> that save me minutes per session.</p>
+<p><strong>Hooks</strong> are even more powerful. These run automatically before or after Claude takes actions. As Shrivu Shankar notes in his breakdown, the right way to think about hooks is as &quot;block-at-submit&quot; validators, not mid-write blockers. You want hooks that catch problems at commit time or after file writes, not hooks that interrupt Claude&#39;s flow while it&#39;s working.</p>
+<p>Practical examples:</p>
+<pre><code class="language-json">{
+  &quot;hooks&quot;: {
+    &quot;PostEditFile&quot;: [
+      { &quot;command&quot;: &quot;prettier --write $FILE&quot; }
+    ],
+    &quot;PreCommit&quot;: [
+      { &quot;command&quot;: &quot;npm run lint&quot; },
+      { &quot;command&quot;: &quot;npm run typecheck&quot; }
+    ]
+  }
+}
+</code></pre>
+<p>Auto-format after every file edit. Lint before every commit. Claude never has to think about formatting, and you never get a commit that breaks CI.</p>
+<hr>
+<h2>MCP: Connecting Claude to Everything</h2>
+<p>Model Context Protocol lets you connect Claude Code to external data sources: Google Drive, Jira, Slack, databases, custom APIs. Think of MCP servers as data gateways that provide high-level tools, not raw API mirrors.</p>
+<p>The distinction matters. A bad MCP server exposes <code>GET /api/issues?status=open&amp;assignee=me&amp;project=ACME</code>. A good one exposes a tool called <code>get_my_open_issues</code> that handles the API details internally. Claude doesn&#39;t need to know your Jira query syntax. It needs to know what questions it can ask.</p>
+<p>MCP is most valuable when your workflow involves cross-referencing information across systems. &quot;Look at the Jira ticket, check the related Slack thread, then implement the feature.&quot; That&#39;s a workflow that used to require you to manually copy context between tabs. With MCP, Claude pulls it directly.</p>
+<hr>
+<h2>Skills: Packaged Expertise</h2>
+<p>Skills are custom onboarding materials you can create and share. Think of them as reusable instruction sets that go beyond what CLAUDE.md covers. You can package up project-specific knowledge, workflow patterns, or domain expertise into a skill that Claude loads on demand.</p>
+<p>As Shrivu Shankar notes, skills might be a bigger deal than MCP in the long run. MCP gives Claude access to data. Skills give Claude access to <em>judgment</em>, how to approach problems in a specific domain, what patterns to follow, what mistakes to avoid.</p>
+<p>Creating a skill is simple enough: you define the instructions, specify when they should activate, and Claude loads them as needed. The key is encoding the &quot;why&quot; alongside the &quot;how.&quot; Don&#39;t just tell Claude what to do. Tell it why your team does it that way.</p>
+<hr>
+<h2>GitHub Actions: Claude in CI</h2>
+<p>Running Claude Code in CI is production-ready now. The <code>/install-github-app</code> command sets up automated PR review. Every pull request gets analyzed for bugs, style violations, and architectural concerns. Full audit logs track what Claude suggested and what got merged.</p>
+<p>The CI integration works best when you pair it with a good CLAUDE.md. Claude reviewing PRs uses the same project context as Claude writing code. If your CLAUDE.md clearly states &quot;we never use ORM magic for database migrations, always write raw SQL,&quot; then PR reviews will flag ORM-based migrations.</p>
+<p>This closes the loop between writing code and reviewing it with the same set of project conventions.</p>
+<hr>
+<h2>Power-User Commands Worth Knowing</h2>
+<p>A few commands that don&#39;t get enough attention:</p>
+<ul>
+<li><strong><code>/diff</code></strong>: Opens an interactive diff viewer showing all uncommitted changes, plus per-turn diffs so you can see exactly what Claude changed at each step. Much better than scrolling through terminal output.</li>
+<li><strong><code>/review</code></strong>: Reviews a pull request for code quality, correctness, and security. You can point it at any PR, not just your own.</li>
+<li><strong><code>/compact [instructions]</code></strong>: Most people use <code>/compact</code> without arguments. But you can pass custom instructions like <code>/compact preserve the full list of modified files and any test commands</code>. This controls what survives compaction.</li>
+<li><strong><code>/fork</code></strong>: Creates a branch of your conversation at the current point. Useful when you want to try two different approaches without losing your current context.</li>
+<li><strong><code>/model</code></strong>: Switch models mid-session. Start with a faster model for exploration, then switch to Opus for the tricky implementation work.</li>
+<li><strong><code>Alt+T</code></strong> (macOS: <code>Option+T</code>): Toggles extended thinking on and off. Turn it on for complex architectural decisions, turn it off for quick edits. The token cost difference is significant.</li>
+<li><strong><code>Ctrl+F</code></strong>: Kills all background agents. Press twice within 3 seconds to confirm. Your emergency brake when you&#39;ve spawned too many parallel agents.</li>
+<li><strong><code>/vim</code></strong>: Enables Vim keybindings in the input editor. Full support for motions, text objects, visual mode. If you&#39;re a Vim user, this makes the editing experience dramatically better.</li>
+</ul>
+<p>For automation and CI, two CLI flags are worth knowing:</p>
+<pre><code class="language-bash"># Cap spending on a single run
+claude -p &quot;refactor the auth module&quot; --max-budget-usd 5.00
+
+# Limit how many agentic turns Claude can take
+claude -p &quot;fix failing tests&quot; --max-turns 20
+
+# Run in an isolated git worktree (no risk to your working tree)
+claude --worktree &quot;implement the caching layer&quot;
+</code></pre>
+<p>The <code>--worktree</code> flag is particularly useful. It creates a temporary copy of your repo so Claude can make changes without touching your working directory. If the result is good, you merge it. If not, you throw it away.</p>
+<hr>
+<h2>The &quot;Shoot and Forget&quot; Philosophy</h2>
+<p>Here&#39;s the mindset shift that changed how I work with Claude Code: stop watching it work.</p>
+<p>Judge by the final PR. Did the code work? Did the tests pass? Was the implementation clean? If yes, it doesn&#39;t matter that Claude took a weird path to get there, or that it refactored a file you didn&#39;t ask it to touch, or that it wrote the tests before the implementation.</p>
+<p>The tools are good enough now that the differentiator isn&#39;t &quot;can Claude write this code.&quot; It can. The differentiator is everything around the code: how you structure your context, how you break down tasks, how you set up your project so Claude can be effective without constant hand-holding.</p>
+<p>Internal workflow optimization is the real game. The developers I see getting the most out of Claude Code aren&#39;t the ones who write better prompts. They&#39;re the ones who build better infrastructure around their prompts: clean CLAUDE.md files, modular agent docs, custom commands, hooks that enforce standards automatically.</p>
+<p>The best prompt is the one you never have to write because your setup already handles it.</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

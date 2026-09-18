@@ -79,7 +79,7 @@ Now the container reads and writes real files on the host, and your image stays 
 
 ## One catch worth knowing early
 
-Docker is the standard on your own machine and on most cloud servers, but it needs root-level access to run, and shared computing clusters usually won't grant that. So on the HPC cluster where I actually run WRF, plain Docker isn't allowed. The fix there is a sibling tool called Singularity (now Apptainer) that runs containers as a normal user with no special privileges. You can build a Docker image and convert it, so the work isn't wasted, but it's worth knowing the cluster world plays by slightly different rules before you get there. If you're wondering when you even need that kind of computing muscle, I wrote about [the honest threshold for going distributed](/blog/post.html?post=distributed-computing-basics).
+Docker is the standard on your own machine and on most cloud servers, but it needs root-level access to run, and shared computing clusters usually won't grant that. So on the HPC cluster where I actually run WRF, plain Docker isn't allowed. The fix there is a sibling tool called Singularity (now Apptainer) that runs containers as a normal user with no special privileges. You can build a Docker image and convert it, so the work isn't wasted, but it's worth knowing the cluster world plays by slightly different rules before you get there. If you're wondering when you even need that kind of computing muscle, I wrote about [the honest threshold for going distributed](/blog/distributed-computing-basics.html).
 
 ## Where this leaves you
 

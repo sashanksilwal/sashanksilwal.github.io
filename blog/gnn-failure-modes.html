@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Deep GNNs Don't Work: Oversmoothing, Oversquashing, and Underreaching | Sashank Silwal</title>
+    <meta name="description" content="Stacking layers works for CNNs and Transformers. Try it on a graph neural network and it breaks in three distinct ways, each with its own mechanism and its own fix.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/gnn-failure-modes.html">
+    <meta property="og:title" content="Why Deep GNNs Don't Work: Oversmoothing, Oversquashing, and Underreaching">
+    <meta property="og:description" content="Stacking layers works for CNNs and Transformers. Try it on a graph neural network and it breaks in three distinct ways, each with its own mechanism and its own fix.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/gnn-failure-modes.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-04-16">
+    <meta name="twitter:title" content="Why Deep GNNs Don't Work: Oversmoothing, Oversquashing, and Underreaching">
+    <meta name="twitter:description" content="Stacking layers works for CNNs and Transformers. Try it on a graph neural network and it breaks in three distinct ways, each with its own mechanism and its own fix.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Why Deep GNNs Don't Work: Oversmoothing, Oversquashing, and Underreaching","description":"Stacking layers works for CNNs and Transformers. Try it on a graph neural network and it breaks in three distinct ways, each with its own mechanism and its own fix.","datePublished":"2026-04-16","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/gnn-failure-modes.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Why Deep GNNs Don't Work: Oversmoothing, Oversquashing, and Underreaching</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-04-16">April 16, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">ml</span><span class="tag">deep-learning</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>&quot;Just stack more layers&quot; is a meme that mostly works in image models. ResNets are 100+ layers deep and still getting better. Transformers stack 96 layers in GPT-3 without visibly breaking. So the natural intuition when you first pick up a graph neural network is to go deep. Stack six, eight, twelve message-passing layers, and watch performance improve.</p>
+<p>It doesn&#39;t. It usually gets worse.</p>
+<p>The interesting thing is that deeper GNNs fail for at least three distinct reasons, each with its own mechanism and its own fix. This isn&#39;t one problem called &quot;depth.&quot; It&#39;s three problems that share a symptom. A lot of GNN papers that claim to &quot;solve depth&quot; address only one of them, which is why depth remains a mess in the field.</p>
+<p>The three failure modes are <strong>oversmoothing</strong>, <strong>oversquashing</strong>, and <strong>underreaching</strong>. They get lumped together and shouldn&#39;t be. (If you&#39;re not sure a GNN is the right tool in the first place, I wrote about that in an <a href="/blog/should-you-use-a-gnn.html">earlier post</a>. This one assumes you&#39;ve decided yes.)</p>
+<h2>Oversmoothing: everything converges to the same vector</h2>
+<p>Take a vanilla GCN. Each layer averages a node&#39;s representation with its neighbors&#39; representations (roughly, with some normalization). Stack two layers and you&#39;re averaging two hops out. Stack four and it&#39;s four hops. Do this enough times and something subtle happens: every node&#39;s representation becomes the same vector, independent of its initial features.</p>
+<p>This isn&#39;t a training bug. It&#39;s baked into the update rule. GCN layers implement a form of graph Laplacian smoothing, and if you iterate a smoothing operator enough times on any connected graph, you converge to the stationary distribution: constant across all nodes in the same connected component.</p>
+<p>More formally, for a symmetric normalized adjacency $\hat{A} = D^{-1/2}(A + I) D^{-1/2}$, iterating $\hat{A}^k X$ drives node representations toward the eigenvector of $\hat{A}$ corresponding to the largest eigenvalue. That eigenvalue is 1, with multiplicity equal to the number of connected components. Li et al. (2018) formalized this and Oono &amp; Suzuki (2020) tightened the bound: representations collapse exponentially in depth under mild conditions.</p>
+<p>What this looks like in practice: train a 2-layer GCN, get reasonable accuracy. Add layers. By layer 4, accuracy starts dropping. By layer 8, every node has roughly the same embedding and the classifier can barely tell them apart.</p>
+<p>Fixes:</p>
+<ul>
+<li><strong>Residual connections.</strong> Skip connections around each GCN layer preserve original features. Works, but only partially.</li>
+<li><strong>PairNorm, GraphNorm.</strong> Normalize representations to keep them from collapsing to a constant vector.</li>
+<li><strong>Initial residuals (GCNII).</strong> Mix in the input features at every layer, not just the previous layer&#39;s output. One of the better-studied fixes.</li>
+</ul>
+<p>Oversmoothing is the most famous failure mode, and the one with the most literature. But it&#39;s not the only thing going wrong.</p>
+<h2>Oversquashing: too much signal through a narrow channel</h2>
+<p>Oversquashing is subtler and, in my opinion, more important. It comes from the graph&#39;s global structure, specifically from bottlenecks.</p>
+<p>Imagine a graph that looks like two dense clusters connected by a single edge. Any information from cluster A that needs to reach cluster B has to pass through that one edge. A message-passing layer updates each node&#39;s representation using a fixed-size vector of neighbor information. But the amount of information that could in principle flow from cluster A to cluster B is huge: $O(n)$ in the size of cluster A. You&#39;re trying to stuff $O(n)$ bits of information through a single message of constant size.</p>
+<p>That&#39;s oversquashing. The information exists, the path exists, but the representational bandwidth along the path is a bottleneck.</p>
+<p>Alon &amp; Yahav (2021) named this effect and showed it explains a lot of failure cases in GNNs on tasks requiring long-range reasoning. The key insight: oversquashing isn&#39;t about depth in the &quot;deeper is worse&quot; sense. It&#39;s about the topology of the graph itself. Some graphs have bottlenecks. Message passing over those graphs will lose information regardless of how carefully you design your layers.</p>
+<p>The math backs this up. Topping et al. (2022) connected oversquashing to the graph&#39;s Ricci curvature: edges with strongly negative curvature (bridges between communities) are the bottleneck points.</p>
+<p>Fixes:</p>
+<ul>
+<li><strong>Graph rewiring.</strong> Modify the graph itself to remove bottlenecks before running message passing. Approaches include adding virtual nodes, random edges, or curvature-based rewiring (SDRF).</li>
+<li><strong>Graph transformers.</strong> Abandon local message passing. Let every node attend to every other node. The downside: $O(n^2)$ attention scales badly, though there are efficient variants.</li>
+<li><strong>Diffusion-based models.</strong> GRAND and similar models treat message passing as continuous diffusion, which can be designed to avoid bottleneck losses.</li>
+</ul>
+<p>An important point: fixes that help oversmoothing (residual connections, normalization) don&#39;t help oversquashing at all. You can have perfectly preserved features at each node and still fail to move information across a bottleneck.</p>
+<h2>Underreaching: you can&#39;t see what&#39;s too far away</h2>
+<p>This one is almost embarrassingly simple once you notice it. A $k$-layer GNN has a receptive field of $k$ hops. Any node more than $k$ hops away from a target node literally cannot influence its prediction. If your task requires information from nodes 10 hops away and your GNN is 4 layers deep, you can&#39;t solve the task. Not &quot;you don&#39;t solve it well.&quot; You can&#39;t solve it, period.</p>
+<p>This is called underreaching. It sounds trivial but it&#39;s not, because the &quot;obvious&quot; fix of adding more layers directly hits oversmoothing and oversquashing. You need depth to reach, but depth makes the other two problems worse. This is the fundamental tension of message-passing GNNs.</p>
+<p>Many papers quietly sidestep this by benchmarking on graphs with small diameter. The Cora citation graph has diameter around 19, but most relevant information is within 2-3 hops, so 2-layer GCNs do fine. Try the same model on a task that genuinely requires 10-hop reasoning, and it doesn&#39;t matter how clever your architecture is if you only have 4 layers.</p>
+<p>Fixes:</p>
+<ul>
+<li><strong>More layers.</strong> Works only if you also fix the other two problems. Otherwise, you trade one failure mode for another.</li>
+<li><strong>Graph transformers.</strong> Because every node can attend to every other node, the receptive field is the whole graph in one layer.</li>
+<li><strong>Multi-scale architectures.</strong> Process the graph at multiple resolutions (coarsened versions) so information can flow globally in fewer steps. Like U-Nets for graphs.</li>
+</ul>
+<h2>Why these are three problems, not one</h2>
+<p>The reason to separate them:</p>
+<ul>
+<li>Oversmoothing is about <strong>what happens at each node as depth increases</strong>: collapse to a common representation.</li>
+<li>Oversquashing is about <strong>how much information can flow across the graph</strong>: bounded by edge bandwidth.</li>
+<li>Underreaching is about <strong>how far information can travel in $k$ layers</strong>: bounded by receptive field.</li>
+</ul>
+<p>You can be healthy on two dimensions and still fail on the third. A network with residual connections but no rewiring will avoid oversmoothing and still choke on oversquashing. A network with rewiring but only 2 layers will still underreach for long-range tasks. A network with 12 layers and no normalization will reach fine but produce identical representations at every node.</p>
+<p>The mistake I see most often is assuming &quot;I fixed oversmoothing, so I can go deeper.&quot; You can, but you&#39;ll hit oversquashing next, and then underreaching, and then you&#39;ll wonder why your model still isn&#39;t learning. The fixes are complementary, not substitutes.</p>
+<h2>Where the field is going</h2>
+<p>The cleanest solution to all three problems is to drop message passing entirely. Graph transformers (Graphormer in particular) sidestep topology by letting every node talk to every other node. The information bottleneck disappears, oversmoothing becomes a non-issue (no repeated neighborhood averaging), and underreaching is impossible when the receptive field is the whole graph.</p>
+<p>The cost is computational. Naive attention is $O(n^2)$, fine for small graphs but catastrophic for large ones. Most recent work tries to retain global context while avoiding full attention: efficient transformers with position encodings tailored to graph structure, hybrid models that combine local message passing with sparse global attention, and diffusion-based models that approximate global information flow.</p>
+<p>The interesting long-term direction is a step further back: rethinking what &quot;graph neural network&quot; should even mean. The current message-passing template is one specific choice, not a fundamental constraint. When CNNs hit the depth wall, the field didn&#39;t keep stacking layers. It redesigned the architecture (ResNets, attention). The GNN equivalent is probably still being worked out, and most of the recent progress is about picking and combining from this menu of fixes rather than settling on one winner.</p>
+<h2>What to actually do</h2>
+<p>If you&#39;re training a GNN and it&#39;s not working past 2-3 layers:</p>
+<ol>
+<li><strong>Check homophily.</strong> Low homophily often looks like oversmoothing but is a different problem. Use a heterophily-aware model (GPRGNN, H2GCN) instead.</li>
+<li><strong>Add residual connections or use GCNII.</strong> Handles oversmoothing, not the others.</li>
+<li><strong>Diagnose whether you&#39;re bottlenecked.</strong> If the task needs long-range reasoning, try a graph transformer or add rewiring.</li>
+<li><strong>Check whether you&#39;re underreaching.</strong> If the graph has large diameter and the task is global, no amount of local patching will help. Consider a different architecture.</li>
+</ol>
+<p>Most &quot;my GNN is bad&quot; stories I&#39;ve heard reduce to two of these three problems happening at once. Treat them separately and the fixes start making sense. Treat them as one big &quot;depth problem&quot; and you&#39;ll cycle through papers trying to find the right trick.</p>
+<p>The deeper lesson is that message passing made a specific design choice: all information flows through local edges, one hop per layer. That choice has consequences, and the three failure modes are the shape of those consequences. Understanding which one you&#39;re actually hitting is most of the battle.</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

@@ -1,0 +1,905 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industry-Level RAG Practices: A Comprehensive Reference | Sashank Silwal</title>
+    <meta name="description" content="A detailed guide covering the full RAG pipeline: chunking, embeddings, vector databases, retrieval strategies, reranking, advanced architectures (CRAG, Self-RAG, Graph RAG, RAPTOR), evaluation, and production deployment.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/rag-guide.html">
+    <meta property="og:title" content="Industry-Level RAG Practices: A Comprehensive Reference">
+    <meta property="og:description" content="A detailed guide covering the full RAG pipeline: chunking, embeddings, vector databases, retrieval strategies, reranking, advanced architectures (CRAG, Self-RAG, Graph RAG, RAPTOR), evaluation, and production deployment.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/rag-guide.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-02-15">
+    <meta name="twitter:title" content="Industry-Level RAG Practices: A Comprehensive Reference">
+    <meta name="twitter:description" content="A detailed guide covering the full RAG pipeline: chunking, embeddings, vector databases, retrieval strategies, reranking, advanced architectures (CRAG, Self-RAG, Graph RAG, RAPTOR), evaluation, and production deployment.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Industry-Level RAG Practices: A Comprehensive Reference","description":"A detailed guide covering the full RAG pipeline: chunking, embeddings, vector databases, retrieval strategies, reranking, advanced architectures (CRAG, Self-RAG, Graph RAG, RAPTOR), evaluation, and production deployment.","datePublished":"2026-02-15","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/rag-guide.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Industry-Level RAG Practices: A Comprehensive Reference</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-02-15">February 15, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">llm</span><span class="tag">rag</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>Retrieval-Augmented Generation (RAG) has become the dominant paradigm for grounding large language models (LLMs) in external knowledge. This post provides a comprehensive reference of industry-level RAG practices, covering the full pipeline from document ingestion to production deployment. For each component, we explain <em>what</em> the technique is, <em>why</em> it is the preferred design choice, <em>how</em> it works mechanistically, and what <em>trade-offs</em> it entails.</p>
+<p>Topics include chunking strategies, embedding models, vector databases, retrieval strategies, reranking, query processing, advanced architectures (CRAG, Self-RAG, Graph RAG, Agentic RAG, RAPTOR), evaluation frameworks, and production considerations including caching, guardrails, monitoring, and multimodal RAG.</p>
+<hr>
+<h2>1. Introduction</h2>
+<p>Large Language Models suffer from three fundamental limitations: a fixed knowledge cutoff, the tendency to hallucinate, and the inability to access private or domain-specific data. Retrieval-Augmented Generation (RAG), introduced by Lewis et al., addresses these limitations by retrieving relevant documents from an external corpus and injecting them into the LLM&#39;s context at inference time.</p>
+<p>The RAG pipeline, at its simplest, consists of three stages:</p>
+<ol>
+<li><strong>Indexing</strong> (offline): Documents are chunked, embedded into vector representations, and stored in a vector database.</li>
+<li><strong>Retrieval</strong> (online): The user query is embedded, and a similarity search retrieves the top-$K$ most relevant chunks.</li>
+<li><strong>Generation</strong> (online): The retrieved chunks are injected into the LLM prompt as context, and the model generates a grounded answer.</li>
+</ol>
+<p>While conceptually simple, building a <em>production-grade</em> RAG system requires careful design decisions at every stage.</p>
+<hr>
+<h2>2. Document Processing and Chunking Strategies</h2>
+<p>Chunking  - the process of splitting documents into smaller, embeddable units  - is the first and arguably most impactful decision in a RAG pipeline. The quality of chunks directly determines the quality of embeddings, which in turn determines retrieval precision.</p>
+<h3>2.1 Fixed-Size Chunking</h3>
+<p>The simplest approach splits documents into chunks of a predetermined token or character count, with optional overlap between adjacent chunks.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Fixed-size chunking is computationally cheap, deterministic, and requires no NLP models during the splitting phase. It is the default starting point for most RAG pipelines and is sufficient for homogeneous corpora (e.g., news articles of similar length and structure).</p>
+</blockquote>
+<p><strong>Configuration.</strong> Typical production defaults are 400-512 tokens per chunk with 10-20% overlap (40-100 tokens). The overlap ensures that sentences straddling a boundary are not lost entirely. LangChain&#39;s <code>CharacterTextSplitter</code> is the canonical implementation.</p>
+<blockquote>
+<p><strong>Trade-off:</strong> Fixed-size chunks are semantically naive  - they split mid-sentence or mid-paragraph. A chunk may contain the end of one idea and the beginning of another, producing a semantically incoherent embedding. This reduces retrieval precision for heterogeneous corpora.</p>
+</blockquote>
+<h3>2.2 Recursive Character Splitting</h3>
+<p>A hierarchical splitting strategy that attempts to split text using an ordered list of separators  - first by sections (double newlines), then paragraphs (single newlines), then sentences (periods), and finally by individual tokens.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Recursive splitting preserves logical document boundaries while enforcing a maximum chunk size constraint. It is the recommended starting point in most RAG guides because it balances structural awareness with implementation simplicity.</p>
+</blockquote>
+<p><strong>Mechanism.</strong> The algorithm recursively searches for the largest meaningful boundary that fits within the target chunk size. LangChain&#39;s <code>RecursiveCharacterTextSplitter</code> accepts a list of separators such as <code>[&quot;\n\n&quot;, &quot;\n&quot;, &quot;. &quot;, &quot; &quot;, &quot;&quot;]</code>.</p>
+<blockquote>
+<p><strong>Trade-off:</strong> More structure-aware than fixed-size but still fundamentally rule-based. Two topically unrelated paragraphs that are adjacent and fit within the size limit will remain in one chunk.</p>
+</blockquote>
+<h3>2.3 Semantic Chunking</h3>
+<p>Uses embedding similarity to determine split points. Instead of fixed rules, each sentence is embedded and the text is split where the cosine similarity between consecutive sentence embeddings drops below a threshold.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Ensures each chunk contains a semantically coherent idea, producing higher-quality embeddings and improving retrieval precision. Studies report up to 70% improvement in retrieval accuracy over fixed-size approaches for knowledge-base and technical document use cases.</p>
+</blockquote>
+<p><strong>Mechanism:</strong></p>
+<ol>
+<li>Split the document into sentences.</li>
+<li>Compute embeddings for each sentence.</li>
+<li>Calculate cosine similarity between consecutive sentence embeddings.</li>
+<li>Identify breakpoints where similarity drops sharply (below a percentile threshold, e.g., the 25th percentile of all pairwise similarities).</li>
+<li>Group sentences between breakpoints into chunks.</li>
+</ol>
+<p>Implementations include LlamaIndex&#39;s <code>SemanticSplitterNodeParser</code> and LangChain&#39;s <code>SemanticChunker</code>.</p>
+<blockquote>
+<p><strong>Trade-off:</strong> Significantly more expensive than rule-based methods because every sentence must be embedded during the chunking phase. Chunk sizes are variable and unpredictable, complicating downstream batching. Best suited for heterogeneous corpora where topic shifts are frequent.</p>
+</blockquote>
+<h3>2.4 Document-Structure-Aware Chunking</h3>
+<p>Leverages the inherent structure of document formats  - Markdown headers, HTML tags, LaTeX sections, code function boundaries, PDF layout elements.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Structured documents contain explicit semantic boundaries (e.g., a section heading indicates a topic change). Exploiting these boundaries produces chunks that respect the document&#39;s intended organization, yielding more coherent embeddings.</p>
+</blockquote>
+<p><strong>Mechanism.</strong> For Markdown, split on <code>#</code>, <code>##</code>, <code>###</code> headers. For HTML, split on <code>&lt;h1&gt;</code>, <code>&lt;section&gt;</code>, <code>&lt;article&gt;</code> tags. For code, split on function/class definitions. For PDFs, use layout detection models (e.g., LayoutLMv3, Unstructured.io) to identify structural elements.</p>
+<h3>2.5 Chunk Size and Overlap: The Fundamental Trade-off</h3>
+<p>The choice of chunk size is the single most impactful hyperparameter:</p>
+<table>
+<thead>
+<tr>
+<th>Chunk Size</th>
+<th>Advantages</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Small (128-256 tokens)</td>
+<td>Precise embeddings, narrow focus</td>
+<td>Fact-lookup, QA</td>
+</tr>
+<tr>
+<td>Medium (400-512 tokens)</td>
+<td>Balanced precision and context</td>
+<td>General-purpose (default)</td>
+</tr>
+<tr>
+<td>Large (512-1024 tokens)</td>
+<td>Rich context, idea relationships</td>
+<td>Summarization, reasoning</td>
+</tr>
+</tbody></table>
+<p><strong>Overlap</strong> (10-20% of chunk size) mitigates boundary effects. Too much overlap wastes storage; too little risks losing information at boundaries.</p>
+<blockquote>
+<p><strong>Key Insight:</strong> The recommended starting configuration is <strong>400-512 tokens with 50-100 token overlap</strong>, tuned empirically based on evaluation metrics. There is no universally optimal chunk size  - it depends on the corpus and query distribution.</p>
+</blockquote>
+<h3>2.6 Metadata Extraction and Enrichment</h3>
+<p>Attaching structured metadata to each chunk  - source document title, section heading, page number, author, date, document type, summary, domain-specific tags.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Metadata enables <strong>pre-filtering</strong> during retrieval. A query like &quot;What was Q3 2024 revenue?&quot; can first filter to documents tagged with <code>{type: financial_report, quarter: Q3, year: 2024}</code>, dramatically reducing the search space and improving precision.</p>
+</blockquote>
+<p><strong>Extraction methods:</strong></p>
+<ol>
+<li><strong>Document parsers:</strong> PDF metadata, HTML meta tags.</li>
+<li><strong>Regex / rule-based:</strong> Dates, emails, identifiers.</li>
+<li><strong>LLM-based:</strong> Using an LLM to extract entities, topics, or summaries from each chunk.</li>
+<li><strong>Anthropic&#39;s contextual retrieval:</strong> An LLM prepends chunk-specific context, reducing retrieval failures by 49% (67% with reranking).</li>
+</ol>
+<hr>
+<h2>3. Embedding Models and Strategies</h2>
+<p>The embedding model converts text into dense vector representations that capture semantic meaning. The choice of embedding model directly determines retrieval quality.</p>
+<h3>3.1 Dense Embeddings</h3>
+<p>Dense embedding models map text to fixed-dimensional real-valued vectors where every dimension is non-zero. Texts with similar meanings have high cosine similarity in the embedding space.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Dense embeddings enable <strong>semantic search</strong>  - retrieving documents that are conceptually similar to a query even when they share no lexical overlap. This is the foundation of modern RAG retrieval.</p>
+</blockquote>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Dims</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>OpenAI <code>text-embedding-3-large</code></td>
+<td>3072</td>
+<td>Proprietary</td>
+<td>Matryoshka support, strong general-purpose</td>
+</tr>
+<tr>
+<td>Cohere <code>embed-v3</code></td>
+<td>1024</td>
+<td>Proprietary</td>
+<td>Input-type-aware (query vs. document)</td>
+</tr>
+<tr>
+<td><code>all-MiniLM-L6-v2</code></td>
+<td>384</td>
+<td>Open-source</td>
+<td>Extremely fast, good for prototyping</td>
+</tr>
+<tr>
+<td><code>all-mpnet-base-v2</code></td>
+<td>768</td>
+<td>Open-source</td>
+<td>Higher quality than MiniLM</td>
+</tr>
+<tr>
+<td>BGE-M3</td>
+<td>1024</td>
+<td>Open-source</td>
+<td>100+ languages, dense + sparse + ColBERT</td>
+</tr>
+<tr>
+<td>Nvidia NV-Embed-v2</td>
+<td>4096</td>
+<td>Open-source</td>
+<td>Top MTEB scores</td>
+</tr>
+</tbody></table>
+<p><strong>Mechanism.</strong> Text is tokenized and fed through a transformer encoder. The output (typically the <code>[CLS]</code> token or mean-pooled token embeddings) is projected to the embedding dimension. Training uses contrastive learning objectives (e.g., InfoNCE loss) on positive and negative pairs.</p>
+<h3>3.2 Sparse Embeddings: BM25 and SPLADE</h3>
+<p>Sparse representations where each dimension corresponds to a vocabulary term. Most dimensions are zero; only terms present in (or related to) the text have non-zero weights.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Sparse methods excel at <strong>exact lexical matching</strong>  - finding documents containing specific keywords, product names, acronyms, or domain jargon that dense models may miss. They are complementary to dense embeddings, not replacements.</p>
+</blockquote>
+<p><strong>BM25</strong> (Best Matching 25) is a probabilistic ranking function based on term frequency (TF), inverse document frequency (IDF), and document length normalization:</p>
+<p>$$\text{BM25}(q, d) = \sum_{t \in q} \text{IDF}(t) \cdot \frac{f(t,d) \cdot (k_1 + 1)}{f(t,d) + k_1 \cdot \left(1 - b + b \cdot \frac{|d|}{\text{avgdl}}\right)}$$</p>
+<p>where $f(t,d)$ is the term frequency, $k_1 \approx 1.5$, and $b \approx 0.75$. BM25 requires no training and is the standard baseline in information retrieval.</p>
+<p><strong>SPLADE</strong> (Sparse Lexical and Expansion Model) is a neural sparse model that uses BERT&#39;s MLM head to learn term weights. Critically, SPLADE performs <strong>term expansion</strong>: a document about &quot;automobiles&quot; can receive a non-zero weight for &quot;car.&quot; A log-saturation activation and FLOPS-based sparsity regularization produce a sparse output vector.</p>
+<blockquote>
+<p><strong>Trade-off:</strong> BM25 is fast and requires no training but cannot handle synonyms (&quot;automobile&quot; and &quot;car&quot; are unrelated). SPLADE bridges this gap with learned term expansion but requires a trained model and is more computationally expensive.</p>
+</blockquote>
+<h3>3.3 Hybrid Search: Dense + Sparse</h3>
+<p>Combining dense (semantic) and sparse (lexical) retrieval in a single pipeline, merging their results using a fusion algorithm.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Dense retrieval captures semantic similarity but may miss exact keyword matches; sparse retrieval captures exact matches but misses semantic equivalence. Hybrid search combines the strengths of both, consistently outperforming either alone. Anthropic&#39;s contextual retrieval work showed that combining contextual embeddings with contextual BM25 reduced retrieval failures by 49%.</p>
+</blockquote>
+<p><strong>Mechanism.</strong> Two parallel retrieval paths are run:</p>
+<ol>
+<li><strong>Dense path:</strong> Encode query with embedding model, ANN search.</li>
+<li><strong>Sparse path:</strong> BM25 or SPLADE inverted index search.</li>
+<li><strong>Fusion:</strong> Merge ranked lists using <strong>Reciprocal Rank Fusion (RRF)</strong>:</li>
+</ol>
+<p>$$\text{RRF}(d) = \sum_{r \in \mathcal{R}} \frac{1}{k + \text{rank}_r(d)}$$</p>
+<p>where $k = 60$ is a constant that prevents high-ranked documents from dominating. RRF is preferred because it is rank-based, avoiding score calibration issues across different retrieval systems.</p>
+<h3>3.4 Fine-Tuning Embeddings for Domain-Specific Data</h3>
+<p>Adapting a pre-trained embedding model to a specific domain (e.g., legal, medical, financial) using domain-specific training data.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Off-the-shelf embedding models are trained on general web text and may not capture domain-specific terminology, abbreviations, or conceptual relationships. Fine-tuning can improve retrieval performance by ~7% or more with as few as 6,300 training samples.</p>
+</blockquote>
+<p><strong>Procedure:</strong></p>
+<ol>
+<li><strong>Generate training data:</strong> Use an LLM to generate synthetic queries from domain documents. For each chunk, generate 1-3 questions the chunk would answer.</li>
+<li><strong>Create contrastive pairs:</strong> Each (query, positive document) pair is a positive example. Hard negatives (similar but irrelevant documents) improve performance.</li>
+<li><strong>Train with contrastive loss:</strong> InfoNCE loss pulls positive pairs closer, pushes negatives apart.</li>
+<li><strong>Model fusion (optional):</strong> Combine fine-tuned and pre-trained models to preserve general capabilities.</li>
+</ol>
+<h3>3.5 Late Interaction Models: ColBERT</h3>
+<p>ColBERT (Contextualized Late Interaction over BERT) preserves per-token embeddings for both queries and documents, rather than compressing them into a single vector.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Single-vector embeddings compress all information into one representation, losing fine-grained token-level matching. ColBERT&#39;s <strong>MaxSim</strong> late interaction captures complex query-document interactions while being over $100\times$ more efficient than cross-encoders at comparable quality.</p>
+</blockquote>
+<p><strong>Mechanism:</strong></p>
+<ol>
+<li>Query and document are independently encoded by BERT, producing token embedding sequences (multi-vector representations).</li>
+<li>The MaxSim operator computes:</li>
+</ol>
+<p>$$\text{score}(q, d) = \sum_{i=1}^{|q|} \max_{j=1}^{|d|} \mathbf{q}_i^\top \mathbf{d}_j$$</p>
+<ol start="3">
+<li>ColBERT v2 adds cross-encoder distillation and embedding quantization (1-2 bits/dim) to reduce storage.</li>
+</ol>
+<blockquote>
+<p><strong>Trade-off:</strong> ColBERT requires storing per-token embeddings for every document, significantly increasing storage. However, quantization substantially reduces this cost. ColBERT is commonly used as a reranker rather than the primary retriever.</p>
+</blockquote>
+<h3>3.6 Matryoshka Embeddings and Dimensionality Reduction</h3>
+<p>Matryoshka Representation Learning (MRL) trains embedding models such that the first $d$ dimensions form a useful representation for any $d$, like nested Russian dolls.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Provides a flexible accuracy-vs-cost trade-off without retraining. Full 3072-dimensional embeddings for high-precision search; truncated 256-dimensional embeddings for fast, memory-efficient coarse search. A common production pattern is <strong>funnel search</strong>: retrieve a large candidate set with truncated embeddings, then re-score with full embeddings  - achieving up to $14\times$ speedups with negligible accuracy loss.</p>
+</blockquote>
+<p><strong>Mechanism.</strong> During training, the loss function is applied at multiple truncation points (e.g., dimensions 32, 64, 128, 256, 512, 1024), forcing the model to pack the most important semantic information into the earliest dimensions. OpenAI&#39;s <code>text-embedding-3-*</code> models natively support MRL.</p>
+<hr>
+<h2>4. Vector Databases and Indexing</h2>
+<p>The vector database stores embeddings and performs approximate nearest neighbor (ANN) search. The choice of database and index algorithm determines retrieval latency, recall, memory usage, and operational complexity.</p>
+<h3>4.1 Vector Database Comparison</h3>
+<table>
+<thead>
+<tr>
+<th>Database</th>
+<th>Type</th>
+<th>Key Strengths</th>
+<th>Best For</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>FAISS</td>
+<td>Library (Meta)</td>
+<td>Algorithm flexibility, GPU acceleration, raw speed</td>
+<td>Research, high-performance offline batch</td>
+</tr>
+<tr>
+<td>Pinecone</td>
+<td>Managed SaaS</td>
+<td>Zero ops, enterprise-grade at billions of vectors, built-in metadata filtering</td>
+<td>Teams wanting zero ops overhead</td>
+</tr>
+<tr>
+<td>Weaviate</td>
+<td>Open-source</td>
+<td>Knowledge graph capabilities, GraphQL API, built-in hybrid search</td>
+<td>Complex data relationships</td>
+</tr>
+<tr>
+<td>Chroma</td>
+<td>Open-source</td>
+<td>Simplest API, in-process, Python-native</td>
+<td>Prototyping, small applications</td>
+</tr>
+<tr>
+<td>Qdrant</td>
+<td>Open-source (Rust)</td>
+<td>Powerful metadata filtering, ACID transactions, distributed</td>
+<td>Complex filtering, production workloads</td>
+</tr>
+<tr>
+<td>Milvus</td>
+<td>Open-source</td>
+<td>Extreme scale (billions), GPU acceleration, distributed</td>
+<td>Large-scale enterprise</td>
+</tr>
+<tr>
+<td>pgvector</td>
+<td>PostgreSQL ext.</td>
+<td>Reuses existing Postgres, SQL joins, ACID compliance</td>
+<td>Teams already on PostgreSQL</td>
+</tr>
+</tbody></table>
+<h3>4.2 ANN Algorithms</h3>
+<h4>HNSW (Hierarchical Navigable Small World)</h4>
+<p>A graph-based index building a multi-layer navigable graph. Higher layers contain long-range connections (coarse navigation); lower layers contain short-range connections (fine-grained search).</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> The most widely used ANN algorithm in production. Offers excellent recall (95%+) with sub-millisecond query times. Complexity grows logarithmically with dataset size. It is the default index in Qdrant, Weaviate, and pgvector.</p>
+</blockquote>
+<p><strong>Parameters:</strong> $M$ (connections per node, typically 16-64) and $\text{efConstruction}$ (build-time quality, typically 128-512). Higher values improve recall at the cost of build time and memory.</p>
+<blockquote>
+<p><strong>Trade-off:</strong> High memory usage (stores the full graph in RAM). Build time is slower than IVF. Not ideal for datasets that require frequent updates, as inserting new nodes requires graph modifications.</p>
+</blockquote>
+<h4>IVF (Inverted File Index)</h4>
+<p>Partitions the vector space into $n_\text{list}$ clusters using $k$-means. At query time, only the $n_\text{probe}$ nearest clusters are searched.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> More memory-efficient than HNSW. The $n_\text{probe}$ parameter provides a direct speed-accuracy knob. Suitable for very large datasets where memory is the primary constraint.</p>
+</blockquote>
+<h4>Product Quantization (PQ)</h4>
+<p>Compresses vectors by decomposing each into subvectors and quantizing each independently using a small codebook. A 1024-dim float32 vector (4 KB) can be compressed to ~64 bytes.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Enables <strong>billion-scale indexing on commodity hardware</strong> through 50-100x compression. Often combined with IVF (IVF-PQ) or HNSW for a balance of speed, memory, and accuracy.</p>
+</blockquote>
+<h3>4.3 Index Selection Guidelines</h3>
+<table>
+<thead>
+<tr>
+<th>Scale</th>
+<th>Recommended Index</th>
+<th>Rationale</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>&lt;100K vectors</td>
+<td>Flat (brute-force)</td>
+<td>Fast enough, perfect recall</td>
+</tr>
+<tr>
+<td>100K-10M</td>
+<td>HNSW</td>
+<td>Excellent recall, low latency</td>
+</tr>
+<tr>
+<td>10M-1B+</td>
+<td>IVF-PQ or HNSW + SQ</td>
+<td>Memory is primary constraint</td>
+</tr>
+<tr>
+<td>GPU available</td>
+<td>FAISS GPU IVF-Flat</td>
+<td>Orders-of-magnitude batch speedup</td>
+</tr>
+</tbody></table>
+<h3>4.4 Metadata Filtering</h3>
+<p>Pre-filtering or post-filtering search results based on structured metadata (date ranges, document types, categories, access permissions).</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> In production, queries carry implicit constraints. A question about &quot;Q3 2024 earnings&quot; should only search financial documents from that quarter. Without metadata filtering, vector search returns semantically similar but factually irrelevant documents from different periods.</p>
+</blockquote>
+<hr>
+<h2>5. Retrieval Strategies</h2>
+<p>The choice of retrieval strategy determines whether the system finds the right information for a given query.</p>
+<h3>5.1 Naive Retrieval</h3>
+<p>Embed the user query, perform a single vector similarity search, retrieve top-$K$ chunks, pass them to the LLM.</p>
+<blockquote>
+<p><strong>Trade-off:</strong> Assumes the query is well-formed and directly matches the document embedding space. Fails when the query is ambiguous, requires multi-document synthesis, has vocabulary mismatch, or when retrieved chunks are irrelevant. Serves as a baseline but is insufficient for production.</p>
+</blockquote>
+<h3>5.2 Multi-Query Retrieval and Query Expansion</h3>
+<p>An LLM generates multiple reformulations of the original query, retrieval is run for each, and results are merged.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> A single query may not capture all facets of the user&#39;s information need. Generating 3-5 variations covers different phrasings and perspectives, improving recall. RAG-Fusion (multi-query + RRF) shows 8-10% accuracy improvement and 30-40% comprehensiveness improvement over vanilla RAG.</p>
+</blockquote>
+<p><strong>Mechanism:</strong> (1) LLM generates $N$ query variations. (2) Each variation retrieves top-$K$ documents. (3) Results are merged via RRF or union-based deduplication.</p>
+<h3>5.3 HyDE: Hypothetical Document Embedding</h3>
+<p>Instead of embedding the query directly, an LLM generates a hypothetical answer, and <em>that document</em> is embedded for retrieval.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Bridges the vocabulary and semantic gap between questions and answers. A question (&quot;How does photosynthesis work?&quot;) is semantically different from a passage explaining photosynthesis. HyDE transforms the query into something that lives in the same semantic space as the answer documents.</p>
+</blockquote>
+<blockquote>
+<p><strong>Trade-off:</strong> Adds one LLM call of latency. The hypothetical document may contain hallucinations, but since it is only used for retrieval (not answer generation), this is acceptable. Works best when the LLM has enough parametric knowledge to generate a plausible answer.</p>
+</blockquote>
+<h3>5.4 Parent-Child / Hierarchical Retrieval</h3>
+<p>A two-level indexing strategy: small &quot;child&quot; chunks for precise retrieval, larger &quot;parent&quot; chunks for context-rich generation.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Small chunks (128 tokens) produce precise embeddings that match narrow queries, but they lack context for the LLM. Hierarchical retrieval decouples the <em>retrieval unit</em> (small, precise) from the <em>generation unit</em> (large, contextual).</p>
+</blockquote>
+<p><strong>Mechanism:</strong></p>
+<ol>
+<li>Split documents into large parent chunks (512-1024 tokens).</li>
+<li>Split each parent into smaller child chunks (128-256 tokens).</li>
+<li>Embed and index only the child chunks.</li>
+<li>At query time, retrieve top-$K$ child chunks.</li>
+<li>Look up each child&#39;s parent; deduplicate parents.</li>
+<li>Pass parent chunks (not children) to the LLM.</li>
+</ol>
+<h3>5.5 Sentence Window Retrieval</h3>
+<p>Each sentence is individually embedded and indexed. At retrieval time, the surrounding window of $W$ sentences is expanded and returned.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Sentences produce the most precise embeddings (each represents one atomic idea), maximizing retrieval precision. Window expansion provides sufficient context for generation, reducing hallucination.</p>
+</blockquote>
+<h3>5.6 Contextual Retrieval (Anthropic)</h3>
+<p>A chunk augmentation technique that uses an LLM to prepend document-level context to each chunk before embedding.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Chunks lose the context of where they sit within the whole document. A chunk stating &quot;Revenue grew 15%&quot; is ambiguous without knowing which company and which time period. Contextual retrieval restores this context.</p>
+</blockquote>
+<p><strong>Mechanism:</strong> For each chunk, send the full document and the chunk to an LLM: &quot;Give a short succinct context to situate this chunk within the overall document.&quot; Prepend the generated context. Results:</p>
+<ul>
+<li>Contextual embeddings alone: −35% retrieval failures.</li>
+<li>+ Contextual BM25: −49% retrieval failures.</li>
+<li>+ Reranking: −67% retrieval failures.</li>
+</ul>
+<blockquote>
+<p><strong>Trade-off:</strong> Requires one LLM call per chunk during indexing (expensive for large corpora). Use prompt caching: the document prefix is the same for all chunks from the same document, so the cached prefix amortizes cost.</p>
+</blockquote>
+<h3>5.7 Self-Query Retrieval</h3>
+<p>An LLM parses the natural language query to extract structured metadata filters, which are applied alongside vector search.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Users embed filter criteria in natural language: &quot;Show me papers about transformers published after 2023&quot; contains both a semantic query and a metadata filter (<code>year &gt; 2023</code>). Self-query retrieval automates this extraction.</p>
+</blockquote>
+<h3>5.8 Ensemble Retrieval and Reciprocal Rank Fusion</h3>
+<p>Running multiple retrieval strategies in parallel and fusing their ranked results.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> No single retrieval method dominates across all query types. Ensemble retrieval hedges against the weaknesses of individual methods. RRF is the standard fusion algorithm because it operates on ranks (not scores), avoiding calibration issues.</p>
+</blockquote>
+<hr>
+<h2>6. Reranking</h2>
+<p>Reranking is the second stage in a two-stage retrieval pipeline. It applies a more expensive but more accurate model to re-score a small candidate set returned by the first-stage retriever.</p>
+<h3>6.1 Why Two-Stage Retrieval</h3>
+<blockquote>
+<p><strong>Design Rationale:</strong> The first stage prioritizes <strong>recall</strong> (finding all potentially relevant documents) using fast, scalable methods (ANN search). The second stage prioritizes <strong>precision</strong> (selecting only the truly relevant documents) using slow, accurate methods (cross-encoders). A typical pipeline retrieves 50-100 candidates in the first stage and reranks them down to 5-10.</p>
+</blockquote>
+<h3>6.2 Cross-Encoder Rerankers</h3>
+<p>A cross-encoder takes a (query, document) pair as input and outputs a relevance score. Unlike bi-encoders, cross-encoders process both jointly, enabling full attention between all query and document tokens.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Type</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Cohere Rerank v3.5</td>
+<td>Proprietary API</td>
+<td>Multilingual, up to 1000 docs</td>
+</tr>
+<tr>
+<td>BGE Reranker v2-m3</td>
+<td>Open-source</td>
+<td>Multilingual, multiple sizes</td>
+</tr>
+<tr>
+<td>ColBERT (MaxSim)</td>
+<td>Open-source</td>
+<td>Late interaction, faster than cross-encoders</td>
+</tr>
+<tr>
+<td><code>cross-encoder/ms-marco-MiniLM-L-6-v2</code></td>
+<td>Open-source</td>
+<td>Lightweight, fast</td>
+</tr>
+</tbody></table>
+<h3>6.3 LLM-Based Reranking</h3>
+<p>Using a capable LLM to score or rank retrieved documents.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> LLMs can understand nuanced relevance criteria that specialized rerankers may miss, especially for complex queries requiring reasoning. However, they are the slowest and most expensive option.</p>
+</blockquote>
+<p><strong>Approaches:</strong></p>
+<ol>
+<li><strong>Pointwise:</strong> Score each document independently (1-10 scale).</li>
+<li><strong>Listwise:</strong> Give all candidates to the LLM and ask it to rank them.</li>
+<li><strong>Pairwise:</strong> Compare documents in pairs, tournament-style.</li>
+</ol>
+<h3>6.4 The Lost-in-the-Middle Problem</h3>
+<p>LLMs disproportionately attend to information at the <strong>beginning and end</strong> of the context window, while information in the middle is often ignored. This is driven by positional encoding biases (e.g., RoPE decay).</p>
+<p><strong>Mitigation strategies:</strong></p>
+<ol>
+<li><strong>Strategic ordering:</strong> Place the most relevant documents at the beginning and end.</li>
+<li><strong>Context reduction via reranking:</strong> Use a reranker to select only the top 3-5 truly relevant chunks.</li>
+<li><strong>Smaller, more precise chunks:</strong> Fewer chunks needed to answer the question.</li>
+</ol>
+<blockquote>
+<p><strong>Key Insight:</strong> Reranking is one of the highest-impact, lowest-effort improvements to a RAG pipeline. Adding a cross-encoder reranker consistently improves answer quality with minimal implementation complexity.</p>
+</blockquote>
+<hr>
+<h2>7. Query Processing</h2>
+<p>Query processing transforms the raw user query into a form optimized for retrieval. This stage operates <em>before</em> retrieval and is critical for handling ambiguous, complex, or conversational queries.</p>
+<h3>7.1 Query Routing</h3>
+<p>A classification step that analyzes the incoming query and routes it to the most appropriate retrieval strategy or data source.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Not all queries are equal. A simple factual question may not need retrieval at all (the LLM knows it). A complex multi-hop question needs iterative retrieval. Routing matches query complexity to retrieval effort. Adaptive-RAG uses a trained classifier routing to: (1) LLM-only, (2) single-step retrieval, or (3) multi-step retrieval, achieving 9.4% accuracy improvement on HotpotQA.</p>
+</blockquote>
+<h3>7.2 Query Decomposition</h3>
+<p>Breaking a complex, multi-faceted query into simpler sub-queries, each answerable independently.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Complex queries like &quot;Compare the economic policies of the US and China in 2024&quot; cannot be answered by a single retrieval. Decomposition allows the system to retrieve focused information for each facet, then synthesize.</p>
+</blockquote>
+<p><strong>Example:</strong></p>
+<ul>
+<li>Original: &quot;Compare US and China economic policies in 2024 and their impact on global trade&quot;</li>
+<li>Sub-queries: &quot;US economic policies 2024&quot;, &quot;China economic policies 2024&quot;, &quot;Impact of US policies on global trade&quot;, &quot;Impact of China policies on global trade&quot;</li>
+</ul>
+<h3>7.3 Query Transformation and Rewriting</h3>
+<p>Using an LLM to rewrite the user&#39;s query into a form better suited for retrieval.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> User queries are often conversational, vague, or contain pronouns referencing prior conversation turns. Rewriting transforms them into self-contained, specific queries optimized for embedding and retrieval.</p>
+</blockquote>
+<p><strong>Examples:</strong></p>
+<ul>
+<li><strong>Coreference resolution:</strong> &quot;What about their Q3 earnings?&quot; → &quot;What were Apple&#39;s Q3 2024 earnings?&quot;</li>
+<li><strong>Specification:</strong> &quot;Tell me about RAG&quot; → &quot;Explain the architecture and components of Retrieval-Augmented Generation systems for LLMs.&quot;</li>
+<li><strong>Keyword emphasis:</strong> Rewrite to emphasize technical terms for better BM25 matching.</li>
+</ul>
+<h3>7.4 Step-Back Prompting</h3>
+<p>Generating a more general or abstract version of the query to retrieve broader context.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Specific questions sometimes require background knowledge that direct retrieval misses. Step-back prompting generates a higher-level question, retrieves context for both the original and step-back questions, and combines them. This differs from decomposition: step-back goes to a <em>higher level of abstraction</em> rather than breaking into component parts.</p>
+</blockquote>
+<hr>
+<h2>8. Advanced RAG Architectures</h2>
+<p>Beyond the standard retrieve-then-generate pipeline, several advanced architectures address specific failure modes.</p>
+<h3>8.1 Taxonomy: Naive, Advanced, and Modular RAG</h3>
+<ul>
+<li><strong>Naive RAG:</strong> Basic three-step pipeline (index, retrieve, generate). Simple but prone to retrieval failures and hallucination.</li>
+<li><strong>Advanced RAG:</strong> Adds pre-retrieval (query rewriting, routing), post-retrieval (reranking, compression), and improved indexing (hybrid search, metadata). Pipeline is still linear but each stage is enhanced.</li>
+<li><strong>Modular RAG:</strong> Decomposes the pipeline into interchangeable modules (routing, retrieval, reranking, generation, critique) composable in arbitrary workflows  - including loops and branching. Foundation for agentic RAG.</li>
+</ul>
+<h3>8.2 Corrective RAG (CRAG)</h3>
+<p>Critically evaluates retrieved documents before generation and takes corrective action if retrieval quality is insufficient.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Standard RAG blindly passes retrieved documents to the LLM, even if irrelevant. CRAG adds a self-correction loop that detects retrieval failures and attempts to fix them  - a crucial safety net for production systems.</p>
+</blockquote>
+<p><strong>Mechanism:</strong></p>
+<ol>
+<li>Retrieve documents normally.</li>
+<li>A lightweight evaluator grades each document as <strong>Correct</strong>, <strong>Incorrect</strong>, or <strong>Ambiguous</strong>.</li>
+<li>If Correct → proceed to generation.</li>
+<li>If Incorrect → trigger web search as fallback.</li>
+<li>If Ambiguous → combine original retrieval with web search.</li>
+<li>A decompose-then-recompose algorithm filters irrelevant information.</li>
+</ol>
+<h3>8.3 Self-RAG</h3>
+<p>Trains a single LM to adaptively retrieve, generate, and critique its own outputs using special <strong>reflection tokens</strong>.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Unlike standard RAG which always retrieves, Self-RAG decides <em>when</em> retrieval is needed and <em>whether</em> the generated output is supported by evidence.</p>
+</blockquote>
+<p><strong>Reflection tokens:</strong></p>
+<ol>
+<li><code>[Retrieve]</code>: Should I retrieve? (yes/no)</li>
+<li><code>[IsRel]</code>: Is the retrieved passage relevant?</li>
+<li><code>[IsSup]</code>: Is the response supported? (fully/partially/no)</li>
+<li><code>[IsUse]</code>: Is the response useful?</li>
+</ol>
+<p>A separate Critic model annotates training data offline. At inference, segment-level beam search uses reflection token probabilities to select the best generation path.</p>
+<h3>8.4 Adaptive RAG</h3>
+<p>Dynamically selects the retrieval strategy based on query complexity.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Simple questions don&#39;t need multi-step retrieval (wasteful), and complex questions cannot be answered with single-step retrieval (insufficient). Adaptive RAG matches retrieval effort to query difficulty, improving accuracy by 9.4% and F1 by 16.14% on HotpotQA.</p>
+</blockquote>
+<p><strong>Classification:</strong></p>
+<ul>
+<li><strong>Simple</strong> → LLM-only (no retrieval).</li>
+<li><strong>Moderate</strong> → single-step retrieval.</li>
+<li><strong>Complex</strong> → multi-step iterative retrieval.</li>
+</ul>
+<h3>8.5 Graph RAG (Microsoft)</h3>
+<p>Builds a hierarchical knowledge graph from source documents and uses graph structure and community summaries for retrieval.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Traditional RAG struggles with <strong>global sensemaking</strong> questions that require synthesizing information across an entire corpus (e.g., &quot;What are the main themes in this dataset?&quot;). Graph RAG leverages graph structure to connect disparate information that vector similarity alone would miss.</p>
+</blockquote>
+<p><strong>Mechanism:</strong></p>
+<ol>
+<li><strong>Entity/relationship extraction:</strong> LLM extracts entities and relationships from source documents.</li>
+<li><strong>Graph construction:</strong> Entities become nodes, relationships become edges.</li>
+<li><strong>Community detection:</strong> The Leiden algorithm partitions the graph into hierarchical communities.</li>
+<li><strong>Community summarization:</strong> LLM generates a summary for each community at each hierarchy level.</li>
+<li><strong>Query processing:</strong> Each community summary generates a partial response; all partial responses are aggregated into the final answer.</li>
+</ol>
+<h3>8.6 Agentic RAG</h3>
+<p>RAG systems where an autonomous LLM agent manages the retrieval process, making dynamic decisions about when, what, and how to retrieve.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Pre-defined retrieval pipelines cannot handle the diversity of real-world queries. An agentic approach allows adaptive planning, tool use, reflection, and iteration until a satisfactory answer is produced. The agent is equipped with tools (vector search, web search, SQL, calculator) and uses agentic patterns: planning, tool use, reflection, and multi-agent collaboration.</p>
+</blockquote>
+<h3>8.7 RAPTOR: Recursive Abstractive Processing for Tree-Organized Retrieval</h3>
+<p>Builds a hierarchical tree of summaries through recursive clustering and summarization.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> Standard RAG retrieves only short, contiguous chunks, which limits understanding of long documents requiring multi-hop reasoning across distant sections. RAPTOR creates a multi-resolution index where leaf nodes contain original chunks and higher nodes contain increasingly abstract summaries.</p>
+</blockquote>
+<p><strong>Mechanism:</strong></p>
+<ol>
+<li><strong>Leaf level:</strong> Embed all document chunks.</li>
+<li><strong>Clustering:</strong> Cluster embeddings using Gaussian Mixture Models (soft clustering).</li>
+<li><strong>Summarization:</strong> Summarize each cluster with an LLM.</li>
+<li><strong>Recursion:</strong> Embed summaries, cluster again, summarize again  - building a tree.</li>
+<li><strong>Retrieval:</strong> Traverse the tree: leaf nodes for specific questions, higher nodes for broader questions, multiple levels for multi-hop.</li>
+</ol>
+<p>RAPTOR with GPT-4 improved accuracy on the QuALITY benchmark by 20% absolute over standard retrieval.</p>
+<hr>
+<h2>9. Context Management and Prompt Engineering</h2>
+<p>How retrieved context is presented to the LLM significantly impacts answer quality.</p>
+<h3>9.1 Context Window Management</h3>
+<p>The effective usable context is approximately 70-80% of the model&#39;s nominal window. Models lose factual precision near their maximum token boundary.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> <strong>Budget allocation:</strong> Reserve ~20% for system prompt and instructions, ~60% for retrieved context, ~20% for the user query and expected output.</p>
+</blockquote>
+<p><strong>Strategies:</strong></p>
+<ul>
+<li><strong>Chunk compression:</strong> Extractive or abstractive summarization to reduce retrieved text to essentials.</li>
+<li><strong>Progressive disclosure:</strong> Start with summaries; retrieve full text only for the most relevant documents.</li>
+<li><strong>Context pruning:</strong> Remove redundant or low-relevance chunks after reranking.</li>
+</ul>
+<h3>9.2 Prompt Templates for RAG</h3>
+<p>A well-designed RAG prompt has four components:</p>
+<ol>
+<li><strong>System instructions:</strong> Role, behavior constraints, output format.</li>
+<li><strong>Retrieved context:</strong> Clearly delimited (e.g., <code>&lt;context&gt;...&lt;/context&gt;</code> tags), with source identifiers.</li>
+<li><strong>User query:</strong> Clearly separated from context.</li>
+<li><strong>Output instructions:</strong> Citation requirements, format specifications, uncertainty handling.</li>
+</ol>
+<pre><code class="language-text">You are a helpful assistant that answers questions
+based on the provided context.
+
+Rules:
+- Only use information from the provided context
+- If the context doesn&#39;t contain the answer,
+  say &quot;I don&#39;t have enough information&quot;
+- Cite sources using [Source: document_name]
+
+Context:
+[Source: report_q3_2024.pdf] Revenue was $4.2B...
+[Source: earnings_call.txt] CEO stated growth was...
+
+Question: {user_query}
+</code></pre>
+<h3>9.3 Citation and Attribution</h3>
+<blockquote>
+<p><strong>Design Rationale:</strong> Attribution is essential for trust, verifiability, and regulatory compliance (healthcare, legal, financial domains). RAG naturally facilitates attribution because the source documents are explicit.</p>
+</blockquote>
+<p><strong>Approaches:</strong></p>
+<ul>
+<li><strong>Inline citations:</strong> LLM cites sources inline (e.g., &quot;Revenue grew 15% [Source: Q3 Report, p.12]&quot;).</li>
+<li><strong>Post-hoc attribution:</strong> Verify each claim against retrieved context using NLI models.</li>
+<li><strong>Chunk-level provenance:</strong> Metadata (document name, page, section) carried through to the answer.</li>
+</ul>
+<h3>9.4 Handling Conflicting Information</h3>
+<p>Retrieved documents may contain contradictory information. Research shows fragmented or contradictory contexts cause a 39% drop in LLM performance.</p>
+<p><strong>Mitigation strategies:</strong></p>
+<ol>
+<li><strong>Recency-based prioritization:</strong> Higher weight to newer documents.</li>
+<li><strong>Explicit conflict detection:</strong> Instruct the LLM to flag contradictions.</li>
+<li><strong>Source authority ranking:</strong> Weight official documents higher.</li>
+<li><strong>Pre-retrieval deduplication:</strong> Remove near-duplicate chunks during indexing.</li>
+</ol>
+<hr>
+<h2>10. Evaluation</h2>
+<p>Without rigorous evaluation, RAG development is guesswork.</p>
+<h3>10.1 RAGAS Framework</h3>
+<p>RAGAS (Retrieval-Augmented Generation Assessment) is an open-source evaluation framework providing reference-free metrics computed using LLM judges.</p>
+<table>
+<thead>
+<tr>
+<th>Metric</th>
+<th>Measures</th>
+<th>Computation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Faithfulness (0-1)</td>
+<td>Response grounded in context?</td>
+<td>Decompose response into claims; check each against context via LLM</td>
+</tr>
+<tr>
+<td>Answer Relevancy (0-1)</td>
+<td>Response addresses the question?</td>
+<td>Generate hypothetical questions from response; measure similarity to original</td>
+</tr>
+<tr>
+<td>Context Precision (0-1)</td>
+<td>Relevant items ranked higher?</td>
+<td>Signal-to-noise ratio of retrieved context</td>
+</tr>
+<tr>
+<td>Context Recall (0-1)</td>
+<td>Ground truth attributable to context?</td>
+<td>Fraction of ground-truth claims found in context (requires ground truth)</td>
+</tr>
+</tbody></table>
+<h3>10.2 LLM-as-Judge</h3>
+<p>Using a capable LLM to evaluate generated response quality.</p>
+<p><strong>Best practices:</strong></p>
+<ul>
+<li>Use binary (Pass/Fail) or 3-point scales for consistency. Avoid 10-point scales.</li>
+<li>Provide clear rubrics with examples of each score level.</li>
+<li>Run at low temperature (0-0.1) for reproducibility.</li>
+<li>Validate against human judgments on a calibration set.</li>
+<li>Beware biases: LLM judges prefer longer, verbose responses.</li>
+</ul>
+<h3>10.3 Retrieval Metrics</h3>
+<ul>
+<li><strong>MRR (Mean Reciprocal Rank):</strong> Average of $1/\text{rank}$ of the first relevant document across all queries.</li>
+<li><strong>NDCG@K (Normalized Discounted Cumulative Gain):</strong> Evaluates graded relevance with position discounting:</li>
+</ul>
+<p>$$\text{DCG@}K = \sum_{i=1}^{K} \frac{2^{\text{rel}_i} - 1}{\log_2(i+1)}, \quad \text{NDCG@}K = \frac{\text{DCG@}K}{\text{IDCG@}K}$$</p>
+<ul>
+<li><strong>Hit Rate / Recall@K:</strong> Fraction of queries where at least one relevant document appears in top-$K$.</li>
+<li><strong>Precision@K:</strong> Fraction of top-$K$ results that are relevant.</li>
+</ul>
+<h3>10.4 End-to-End Evaluation</h3>
+<p>Evaluate the entire RAG pipeline as a unit (retrieval + generation), not just components in isolation.</p>
+<p><strong>Approach:</strong> Create a test set of (question, ground_truth_answer, source_documents) triples. Run the full pipeline, then evaluate using:</p>
+<ol>
+<li>RAGAS metrics (faithfulness, relevancy, precision, recall).</li>
+<li>LLM-as-judge on answer quality.</li>
+<li>Retrieval metrics (MRR, NDCG) on retrieved context.</li>
+<li>Latency and cost measurements.</li>
+</ol>
+<hr>
+<h2>11. Production Considerations</h2>
+<p>Moving from prototype to production introduces challenges around caching, safety, monitoring, cost, latency, and data freshness.</p>
+<h3>11.1 Semantic Caching</h3>
+<p>Caching not just exact query matches but semantically similar queries.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> LLM inference is slow (1-10s) and expensive. Semantic caching cuts LLM costs by up to 68.8% and delivers sub-100ms responses ($65\times$ faster than live LLM calls).</p>
+</blockquote>
+<p><strong>Mechanism:</strong></p>
+<ol>
+<li>Embed the incoming query.</li>
+<li>Search the cache for embeddings within a similarity threshold (e.g., cosine similarity &gt; 0.95).</li>
+<li>If hit: return cached response.</li>
+<li>If miss: run the full pipeline, cache the result.</li>
+</ol>
+<blockquote>
+<p><strong>Trade-off:</strong> The similarity threshold is critical. Too low → false positives (returning wrong cached answers). Too high → cache misses. Banking applications require thresholds &gt; 0.98 due to the cost of errors.</p>
+</blockquote>
+<h3>11.2 Guardrails and Safety</h3>
+<ul>
+<li><strong>Input guardrails:</strong> Validate queries for toxicity, PII, prompt injection attempts, and off-topic requests.</li>
+<li><strong>Output guardrails:</strong> Check generated responses for hallucination (NLI against retrieved context), harmful content, PII leakage, and compliance.</li>
+<li><strong>Tools:</strong> Guardrails AI, NeMo Guardrails (NVIDIA), custom classifiers.</li>
+</ul>
+<h3>11.3 Monitoring and Observability</h3>
+<p><strong>Key metrics to monitor:</strong></p>
+<ul>
+<li><strong>Retrieval quality:</strong> Average similarity scores, % of queries with no relevant results, context precision trends.</li>
+<li><strong>Generation quality:</strong> Faithfulness scores, user feedback (thumbs up/down), citation accuracy.</li>
+<li><strong>Performance:</strong> P50/P95 latency, queries per second, cache hit rate.</li>
+<li><strong>Cost:</strong> Tokens consumed per query, cost per query, cost per user.</li>
+<li><strong>Alerting:</strong> Semantic-aware alerts when similarity scores drop, latency P95 exceeds SLA, error rate spikes.</li>
+</ul>
+<p><strong>Tools:</strong> Langfuse, LangSmith, Phoenix (Arize), Weights &amp; Biases.</p>
+<h3>11.4 Scalability Patterns</h3>
+<ul>
+<li><strong>Separate offline/online pipelines:</strong> Offline handles ingestion, chunking, embedding, indexing. Online handles query processing, retrieval, reranking, generation.</li>
+<li><strong>Horizontal scaling:</strong> Distributed vector databases (Milvus, Qdrant, Weaviate) for index sharding.</li>
+<li><strong>Target latency:</strong> Enterprise RAG targets &lt; 3-5 seconds end-to-end for interactive applications.</li>
+</ul>
+<h3>11.5 Cost Optimization</h3>
+<ul>
+<li><strong>Embedding model selection:</strong> Open-source (BGE, sentence-transformers) for self-hosting vs. API-based (OpenAI, Cohere).</li>
+<li><strong>Self-hosting threshold:</strong> Consider self-hosting when processing &gt; 10 billion tokens/month or when managed costs exceed $10,000/month. Achieves 70-95% cost reduction at scale.</li>
+<li><strong>Matryoshka embeddings:</strong> Truncated for coarse retrieval, full for reranking.</li>
+<li><strong>Tiered LLM usage:</strong> Smaller LLMs for classification and rewriting; capable LLMs only for generation.</li>
+</ul>
+<h3>11.6 Latency Optimization</h3>
+<ul>
+<li><strong>Parallel retrieval:</strong> Run dense and sparse search in parallel.</li>
+<li><strong>Streaming generation:</strong> Stream LLM output tokens to reduce time-to-first-token.</li>
+<li><strong>Caching:</strong> Semantic caching for common queries; embedding caching for repeated documents.</li>
+<li><strong>Quantization:</strong> Quantized vector indices (PQ, scalar quantization) for faster search.</li>
+<li><strong>Lightweight rerankers:</strong> MiniLM-based cross-encoders when latency is critical.</li>
+</ul>
+<h3>11.7 Data Freshness and Incremental Indexing</h3>
+<p>60% of enterprise RAG projects fail because they cannot maintain data freshness at scale.</p>
+<p><strong>Incremental indexing:</strong> Track document versions and timestamps. When a document changes, re-embed and update only modified chunks.</p>
+<p><strong>Freshness-aware retrieval:</strong> Add a recency factor:</p>
+<p>$$\text{score} = \alpha \cdot \text{semantic\_similarity} + (1 - \alpha) \cdot \text{freshness\_boost}$$</p>
+<p>where $\alpha \approx 0.7$, ensuring newer documents are preferred when relevance is comparable.</p>
+<hr>
+<h2>12. Multimodal RAG</h2>
+<p>Real-world documents contain text, images, tables, charts, and complex layouts. Text-only RAG loses critical information from visual elements.</p>
+<h3>12.1 Architectural Approaches</h3>
+<ol>
+<li><strong>Unified embedding space:</strong> Use models like CLIP or ALIGN to embed all modalities into the same vector space, enabling cross-modal retrieval.</li>
+<li><strong>Modality grounding:</strong> Convert all modalities to text (OCR for images, table serialization) and use standard text RAG.</li>
+<li><strong>Separate stores with multimodal reranking:</strong> Maintain separate indices per modality; use a multimodal reranker to combine.</li>
+</ol>
+<h3>12.2 PDF Processing Pipeline</h3>
+<ol>
+<li><strong>Layout detection:</strong> Identify structural elements using LayoutLMv3 or Doctr.</li>
+<li><strong>Modality-specific processing:</strong> OCR for scanned text, table extraction for tables, image captioning for figures.</li>
+<li><strong>Chunking:</strong> Respect detected layout  - never split across table boundaries.</li>
+</ol>
+<h3>12.3 Vision-Language Models for Document Retrieval</h3>
+<p><strong>ColPali</strong> (2024) treats each PDF page as an image, producing per-patch embeddings using a Vision Language Model (PaliGemma-3B) with ColBERT-style late interaction scoring.</p>
+<blockquote>
+<p><strong>Design Rationale:</strong> ColPali eliminates the need for OCR pipelines entirely and outperforms all evaluated systems on the ViDoRe benchmark. It handles complex layouts, charts, and embedded graphics that traditional OCR distorts or misses.</p>
+</blockquote>
+<blockquote>
+<p><strong>Key Insight:</strong> The industry is shifting toward VLM-based approaches (ColPali, Qwen-VL) that process document pages as images, bypassing traditional OCR entirely.</p>
+</blockquote>
+<hr>
+<h2>13. Summary of Key Design Principles</h2>
+<ol>
+<li><strong>Start simple, iterate.</strong> Begin with recursive character splitting, a single dense embedding model, and naive retrieval. Add complexity only when evaluation metrics demonstrate the need.</li>
+<li><strong>Evaluate continuously.</strong> Use RAGAS and retrieval metrics (MRR, NDCG) to guide every design decision. Without evaluation, you are guessing.</li>
+<li><strong>Hybrid search is almost always better.</strong> Dense + sparse retrieval with RRF fusion consistently outperforms either alone.</li>
+<li><strong>Reranking is high-value, low-effort.</strong> Adding a cross-encoder reranker is one of the highest-impact improvements.</li>
+<li><strong>Context quality over context quantity.</strong> Fewer, highly relevant chunks outperform many loosely relevant ones. The lost-in-the-middle problem makes this critical.</li>
+<li><strong>Production is different from prototyping.</strong> Caching, monitoring, incremental indexing, and cost management are not optional.</li>
+</ol>
+<hr>
+<h2>References</h2>
+<ol>
+<li>P. Lewis et al., &quot;Retrieval-augmented generation for knowledge-intensive NLP tasks,&quot; NeurIPS, 2020.</li>
+<li>Anthropic, &quot;Introducing contextual retrieval,&quot; Anthropic Blog, September 2024.</li>
+<li>A. Kusupati et al., &quot;Matryoshka representation learning,&quot; NeurIPS, 2022.</li>
+<li>S.-Q. Yan et al., &quot;Corrective retrieval augmented generation,&quot; arXiv:2401.15884, 2024.</li>
+<li>A. Asai et al., &quot;Self-RAG: Learning to retrieve, generate, and critique through self-reflection,&quot; ICLR, 2024.</li>
+<li>D. Edge et al., &quot;From local to global: A graph RAG approach to query-focused summarization,&quot; arXiv:2404.16130, 2024.</li>
+<li>P. Sarthi et al., &quot;RAPTOR: Recursive abstractive processing for tree-organized retrieval,&quot; ICLR, 2024.</li>
+<li>Y. Gao et al., &quot;Retrieval-augmented generation for large language models: A survey,&quot; arXiv:2312.10997, 2024.</li>
+<li>N. F. Liu et al., &quot;Lost in the middle: How language models use long contexts,&quot; TACL, 2024.</li>
+<li>S. Es et al., &quot;RAGAS: Automated evaluation of retrieval augmented generation,&quot; EACL, 2024.</li>
+<li>L. Gao et al., &quot;Precise zero-shot dense retrieval without relevance labels,&quot; ACL, 2023.</li>
+<li>G. V. Cormack et al., &quot;Reciprocal rank fusion outperforms Condorcet and individual rank learning methods,&quot; SIGIR, 2009.</li>
+<li>O. Khattab and M. Zaharia, &quot;ColBERT: Efficient and effective passage search via contextualized late interaction over BERT,&quot; SIGIR, 2020.</li>
+<li>T. Formal et al., &quot;SPLADE: Sparse lexical and expansion model for first stage ranking,&quot; SIGIR, 2021.</li>
+<li>M. Faysse et al., &quot;ColPali: Efficient document retrieval with vision language models,&quot; arXiv:2407.01449, 2024.</li>
+<li>S. Robertson and H. Zaragoza, &quot;The probabilistic relevance framework: BM25 and beyond,&quot; Foundations and Trends in Information Retrieval, 2009.</li>
+</ol>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

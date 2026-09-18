@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>UrbanTherm: GPU-Accelerated Surface Energy Balance for Urban Microclimate Modeling | Sashank Silwal</title>
+    <meta name="description" content="How we extended SOLWEIG with a full surface energy balance solver, Newton-Raphson surface temperatures, multi-layer conduction, canopy transpiration, and spatial air temperature, all running on GPU at 1m resolution.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/urbantherm.html">
+    <meta property="og:title" content="UrbanTherm: GPU-Accelerated Surface Energy Balance for Urban Microclimate Modeling">
+    <meta property="og:description" content="How we extended SOLWEIG with a full surface energy balance solver, Newton-Raphson surface temperatures, multi-layer conduction, canopy transpiration, and spatial air temperature, all running on GPU at 1m resolution.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/urbantherm.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-02-24">
+    <meta name="twitter:title" content="UrbanTherm: GPU-Accelerated Surface Energy Balance for Urban Microclimate Modeling">
+    <meta name="twitter:description" content="How we extended SOLWEIG with a full surface energy balance solver, Newton-Raphson surface temperatures, multi-layer conduction, canopy transpiration, and spatial air temperature, all running on GPU at 1m resolution.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"UrbanTherm: GPU-Accelerated Surface Energy Balance for Urban Microclimate Modeling","description":"How we extended SOLWEIG with a full surface energy balance solver, Newton-Raphson surface temperatures, multi-layer conduction, canopy transpiration, and spatial air temperature, all running on GPU at 1m resolution.","datePublished":"2026-02-24","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/urbantherm.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">UrbanTherm: GPU-Accelerated Surface Energy Balance for Urban Microclimate Modeling</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-02-24">February 24, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">gpu</span><span class="tag">physics</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>Cities are getting hotter. Urban surfaces  - asphalt, concrete, rooftops  - absorb solar radiation and re-emit it as heat, creating the urban heat island (UHI) effect. Understanding <em>where</em> and <em>how much</em> hotter at fine spatial resolution is critical for urban planning, public health, and climate adaptation. But existing tools either lack the physics or can&#39;t scale.</p>
+<p>This post describes <strong>UrbanTherm</strong>, an energy balance extension to the SOLWEIG radiation model that computes physics-based surface temperatures, air temperatures, and thermal comfort at <strong>1-meter resolution</strong> using GPU acceleration.</p>
+<p><img src="posts/images/urbantherm-architecture.png" alt="UrbanTherm Architecture"></p>
+<hr>
+<h2>The Problem with Parametric Surface Temperatures</h2>
+<p>SOLWEIG (Solar and Longwave Environmental Irradiance Geometry) is a well-established model for computing Mean Radiant Temperature ($T_\mathrm{mrt}$) in urban environments. It uses digital surface models (DSMs) to compute shadow patterns, sky view factors, and shortwave/longwave radiation fluxes at each pixel.</p>
+<p>However, standard SOLWEIG estimates ground surface temperature using a <strong>parametric sinusoidal fit</strong>:</p>
+<p>$$T_g = T_{gK} \cdot h_\mathrm{max} \cdot \sin\!\left(\frac{t - t_\mathrm{sunrise}}{t_\mathrm{LST,max} - t_\mathrm{sunrise}} \cdot \frac{\pi}{2}\right) \cdot CI$$</p>
+<p>where $T_{gK}$ is a fitted coefficient, $h_\mathrm{max}$ is maximum solar altitude, and $CI$ is a clearness index. This is fast but physically naive  - it can&#39;t distinguish asphalt from grass, doesn&#39;t account for subsurface heat storage, and ignores evapotranspiration.</p>
+<h2>Our Approach: Full Surface Energy Balance</h2>
+<p>UrbanTherm replaces the parametric model with a <strong>full surface energy balance</strong> solved at every pixel:</p>
+<p>$$R_\mathrm{net} = Q_H + Q_G + Q_E$$</p>
+<p>Expanding each term:</p>
+<p>$$(1-\alpha)K_\downarrow + \varepsilon L_\downarrow - \varepsilon\sigma T_\mathrm{sfc}^4 = h_c(T_\mathrm{sfc} - T_a) + \frac{\lambda}{d}(T_\mathrm{sfc} - T_{\mathrm{layer},1}) + \frac{\rho c_p (e_s(T_\mathrm{sfc}) - e_a)}{\gamma(r_a + r_s)}$$</p>
+<p>where:</p>
+<ul>
+<li>$R_\mathrm{net}$ = net radiation (shortwave absorbed + longwave in − longwave out)</li>
+<li>$Q_H$ = sensible heat flux (surface heating the air via convection)</li>
+<li>$Q_G$ = ground heat flux (heat conducted into the subsurface)</li>
+<li>$Q_E$ = latent heat flux (evapotranspiration from pervious surfaces)</li>
+</ul>
+<p>This is nonlinear  - radiative emission scales as $T^4$, and latent heat depends on the exponential saturation vapor pressure curve. We solve for $T_\mathrm{sfc}$ using <strong>Newton-Raphson iteration</strong> with the Jacobian:</p>
+<p>$$F'(T) = 4\varepsilon\sigma T^3 + h_c + \lambda/d + \frac{\rho c_p}{\gamma(r_a + r_s)} \cdot \frac{de_s}{dT}$$</p>
+<p>Convergence is typically reached in 3-4 iterations to within 0.001 K.</p>
+<hr>
+<h2>Three Energy Balance Domains</h2>
+<p>UrbanTherm solves separate energy balances for three surface types:</p>
+<h3>Ground Surfaces</h3>
+<p>Each pixel is assigned a material based on a landcover grid  - asphalt, concrete, grass, soil, or water  - each with distinct thermal conductivity, heat capacity, albedo, emissivity, and stomatal conductance. Subsurface heat conduction is solved using a <strong>4-layer implicit scheme</strong> (Thomas algorithm) with layer thicknesses of 0.02, 0.05, 0.10, and 0.20 m.</p>
+<p>For pervious surfaces (grass, soil), evapotranspiration is modeled using a <strong>Jarvis-Stewart stomatal conductance</strong> model:</p>
+<p>$$g_s = g_\mathrm{max} \cdot f_\mathrm{rad}(K_\downarrow) \cdot f_\mathrm{vpd}(\mathrm{VPD}) \cdot f_\mathrm{temp}(T_a)$$</p>
+<p>where stress functions reduce conductance under low light, high vapor pressure deficit, and non-optimal temperatures.</p>
+<h3>Rooftops</h3>
+<p>Standard SOLWEIG treats buildings as opaque  - no surface temperature at building pixels. We added a <strong>roof energy balance</strong> with multi-layer conduction through realistic roof assemblies (membrane → concrete → XPS insulation → gypsum). Green roofs get their own assembly with a soil substrate and drainage layer, plus active evapotranspiration.</p>
+<h3>Tree Canopies</h3>
+<p>A <strong>big-leaf Penman-Monteith model</strong> computes leaf temperature and transpiration for vegetated pixels. Since leaves have negligible thermal mass, $Q_G = 0$ and the balance simplifies to:</p>
+<p>$$R_\mathrm{net} = Q_H + Q_E$$</p>
+<p>Radiation interception uses Beer&#39;s Law ($\tau = e^{-k \cdot \mathrm{LAI}}$), and stomatal conductance uses canopy-specific Jarvis-Stewart parameters for deciduous vs. evergreen trees.</p>
+<hr>
+<h2>Spatial Air Temperature</h2>
+<p>Standard SOLWEIG assumes uniform air temperature across the domain. In reality, a sunlit asphalt parking lot heats the air above it more than an adjacent park. We implemented spatially varying air temperature using the <strong>TARGET resistance network model</strong>, which computes a local air temperature perturbation based on the sensible heat flux from surrounding surfaces:</p>
+<ul>
+<li>Canyon geometry (height-to-width ratio from SVF)</li>
+<li>Wind attenuation within street canyons</li>
+<li>Stability-corrected turbulent exchange</li>
+<li>Gaussian smoothing ($\sigma \approx 10$ m) to represent horizontal mixing</li>
+</ul>
+<p>This produces realistic intra-urban air temperature variation of $\pm$0.5-1.0°C at 1-meter resolution.</p>
+<hr>
+<h2>GPU Acceleration with PyTorch</h2>
+<p>The entire energy balance  - Newton-Raphson solver, Thomas algorithm conduction, Jarvis-Stewart conductance, TARGET air temperature  - is implemented in <strong>PyTorch</strong> and runs on GPU. Every pixel is computed in parallel.</p>
+<p><img src="posts/images/urbantherm-gpu-pipeline.png" alt="GPU Pipeline"></p>
+<p>For a 1 km$^2$ domain at 1 m resolution, that&#39;s <strong>1 million pixels per timestep</strong>, all processed simultaneously on an RTX 6000 Ada. The key design decisions:</p>
+<ul>
+<li><strong>Fixed 5 Newton-Raphson iterations</strong> (no branching/early exit, better for GPU)</li>
+<li><strong>Tensor-based Thomas algorithm</strong> solving the tridiagonal system across all pixels at once</li>
+<li><strong>Material property lookup</strong> via integer index arrays  - no per-pixel branching</li>
+<li><strong>Conduction sub-stepping</strong> when the Fourier number exceeds 0.5 (thin roof layers at hourly timesteps)</li>
+</ul>
+<h3>Operator-Splitting Stability</h3>
+<p>One subtle issue: the Newton-Raphson solver and conduction solver are operator-split. For thin surface layers where the thermal coupling time constant $\tau \ll \Delta t$, the layer fully equilibrates within one timestep, causing the NR solver to overshoot. We introduced a <strong>ground heat flux coupling factor</strong>:</p>
+<p>$$\beta = \frac{\tau}{\Delta t}\left(1 - e^{-\Delta t/\tau}\right)$$</p>
+<p>This reduced hour-to-hour $Q_H$ oscillations on roof pixels by 69% in our Chicago test case.</p>
+<hr>
+<h2>Material Properties</h2>
+<p>Each surface type is characterized by thermal and radiative properties:</p>
+<table>
+<thead>
+<tr>
+<th>Material</th>
+<th>Albedo</th>
+<th>Emissivity</th>
+<th>$\lambda$ (W/m/K)</th>
+<th>$C$ (MJ/m$^3$/K)</th>
+<th>Evaporation</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Asphalt</td>
+<td>0.12</td>
+<td>0.95</td>
+<td>0.75</td>
+<td>1.9</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Concrete</td>
+<td>0.25</td>
+<td>0.92</td>
+<td>1.4</td>
+<td>2.0</td>
+<td>No</td>
+</tr>
+<tr>
+<td>Grass</td>
+<td>0.25</td>
+<td>0.95</td>
+<td>0.25</td>
+<td>1.0</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Soil (dry)</td>
+<td>0.25</td>
+<td>0.94</td>
+<td>0.35</td>
+<td>1.3</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td>Water</td>
+<td>0.08</td>
+<td>0.98</td>
+<td>0.6</td>
+<td>4.18</td>
+<td>Free</td>
+</tr>
+</tbody></table>
+<p>Roofs use a 4-layer assembly: waterproofing membrane (0.01 m), concrete slab (0.05 m), XPS insulation (0.10 m), and gypsum ceiling (0.016 m). Green roofs add a soil substrate and drainage layer with active evapotranspiration  - notably, we explicitly model the drainage layer, which standard green roof energy balance models (EnergyPlus EcoRoof, WUFI) omit.</p>
+<hr>
+<h2>What UrbanTherm Produces</h2>
+<p>For each timestep and each 1 m pixel:</p>
+<ul>
+<li><strong>Surface temperature</strong> ($T_\mathrm{sfc}$)  - ground, roof, and canopy</li>
+<li><strong>Spatially varying air temperature</strong> ($T_\mathrm{air}$)</li>
+<li><strong>Mean radiant temperature</strong> ($T_\mathrm{mrt}$)</li>
+<li><strong>UTCI</strong> (Universal Thermal Climate Index)  - a thermal comfort metric</li>
+<li>Component fluxes: $Q_H$, $Q_E$, $Q_G$, $R_\mathrm{net}$</li>
+</ul>
+<p>This enables questions like: <em>How much cooler would this street be with trees? What if we replaced this parking lot with a park? How effective are green roofs at reducing surface temperatures?</em></p>
+<hr>
+<h2>References</h2>
+<ul>
+<li>Lindberg et al. (2008), &quot;SOLWEIG 1.0  - Modelling spatial variations of 3D radiant fluxes and mean radiant temperature in complex urban settings&quot;</li>
+<li>Nice et al. (2018), &quot;Development of the VTUF-3D v1.0 urban micro-climate model&quot;</li>
+<li>Broadbent et al. (2019), &quot;The Air-temperature Response to Green/blue-infrastructure (TARGET) framework&quot;</li>
+<li>Mascart et al. (1995), &quot;A modified parameterization of flux-profile relationships in the surface layer&quot;</li>
+<li>Jarvis (1976), &quot;The interpretation of the variations in leaf water potential and stomatal conductance&quot;</li>
+<li>Sailor (2008), &quot;A green roof model for building energy simulation programs&quot;</li>
+</ul>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

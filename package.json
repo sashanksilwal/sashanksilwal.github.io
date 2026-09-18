@@ -1,0 +1,11 @@
+{
+  "name": "sashanksilwal-site",
+  "private": true,
+  "description": "Build tooling for the blog. The site itself is static.",
+  "scripts": {
+    "build:blog": "node scripts/build-blog.js"
+  },
+  "devDependencies": {
+    "marked": "12.0.1"
+  }
+}

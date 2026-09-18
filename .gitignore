@@ -5,3 +5,6 @@
 # Local-only authoring notes, not for publication
 CLAUDE.md
 blog/IDEAS.md
+
+# Node build tooling
+node_modules/

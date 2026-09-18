@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invariance and Equivariance: Teaching Neural Networks About Symmetry | Sashank Silwal</title>
+    <meta name="description" content="Why CNNs break when you rotate the input, how the Reynolds operator builds symmetry into weight space, and a 1,800-parameter network that crushed a 454,000-parameter CNN.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/invariant-equivariant-networks.html">
+    <meta property="og:title" content="Invariance and Equivariance: Teaching Neural Networks About Symmetry">
+    <meta property="og:description" content="Why CNNs break when you rotate the input, how the Reynolds operator builds symmetry into weight space, and a 1,800-parameter network that crushed a 454,000-parameter CNN.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/invariant-equivariant-networks.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-03-26">
+    <meta name="twitter:title" content="Invariance and Equivariance: Teaching Neural Networks About Symmetry">
+    <meta name="twitter:description" content="Why CNNs break when you rotate the input, how the Reynolds operator builds symmetry into weight space, and a 1,800-parameter network that crushed a 454,000-parameter CNN.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Invariance and Equivariance: Teaching Neural Networks About Symmetry","description":"Why CNNs break when you rotate the input, how the Reynolds operator builds symmetry into weight space, and a 1,800-parameter network that crushed a 454,000-parameter CNN.","datePublished":"2026-03-26","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/invariant-equivariant-networks.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Invariance and Equivariance: Teaching Neural Networks About Symmetry</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-03-26">March 26, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">ml</span><span class="tag">deep-learning</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>Rotate a photo of a &quot;7&quot; by 90 degrees and show it to a person. They&#39;ll still say it&#39;s a seven. Show it to a standard CNN and there&#39;s a decent chance it&#39;ll say something completely different. This feels like a bug, but it&#39;s actually a design limitation. CNNs were built to recognize patterns at specific orientations, and rotating the input produces entirely different activations.</p>
+<p>This matters beyond handwritten digits. Satellite images can be taken from any angle. Molecules don&#39;t have a &quot;right side up.&quot; Medical scans get rotated depending on how the patient was positioned. Any time your data doesn&#39;t have a fixed orientation, a standard model is learning something fragile.</p>
+<p>There&#39;s a family of architectures that solve this problem by building symmetry directly into the network&#39;s structure, not through data augmentation or clever training tricks, but through the math of the weights themselves. After reading Cohen &amp; Welling&#39;s work on group equivariant CNNs and implementing these ideas across two assignments in my <a href="/experience/">deep learning course at Purdue</a>, I think this is one of the most elegant ideas in modern deep learning.</p>
+<h2>The Problem: Convolution Doesn&#39;t Commute With Rotation</h2>
+<p>The standard convolution of a kernel $K$ with an image $X$ is:</p>
+<p>$$(K * X)[i,j] = \sum_{m,n} K[m,n] \cdot X[i-m, j-n]$$</p>
+<p>For this to play nicely with rotation, you&#39;d need $K * R_{90}(X) = R_{90}(K * X)$. Work through the index math and you&#39;ll find this only holds when $K = R_{90}(K)$, meaning the kernel itself must be rotationally symmetric. But learned kernels pick up oriented features: edges in specific directions, corners at specific angles. They&#39;re almost never symmetric.</p>
+<p>So rotating the input produces a completely different feature map, not a rotated version of the original. Stack a few conv layers with max-pooling and the problem compounds at every layer.</p>
+<p>Data augmentation (training on rotated copies) helps but doesn&#39;t guarantee anything. The model sees more orientations, but nothing in the architecture prevents it from learning orientation-specific features. You&#39;re hoping the model learns rotation invariance from examples rather than enforcing it structurally.</p>
+<h2>Invariance vs. Equivariance: Two Different Goals</h2>
+<p>These terms get used interchangeably but they mean different things, and the distinction matters for architecture design.</p>
+<p><strong>Invariance</strong> means the output doesn&#39;t change when you transform the input: $f(g \cdot x) = f(x)$. A &quot;7&quot; rotated 90 degrees should still be classified as a &quot;7.&quot; This is what you want at the output layer of a classifier.</p>
+<p><strong>Equivariance</strong> means the output transforms the same way the input does: $f(g \cdot x) = g \cdot f(x)$. If you rotate the input image, the feature map should rotate in exactly the same way. This is what you want in the intermediate layers.</p>
+<p>Here&#39;s why the distinction matters. If you make the intermediate layers invariant (output doesn&#39;t change under rotation), you throw away spatial information that downstream layers need. The network can&#39;t tell where features are relative to each other. But if you make them equivariant (output rotates with the input), you preserve all the spatial information while guaranteeing that the representation behaves predictably under rotation.</p>
+<p>The typical design: equivariant layers in the middle (features track transformations), invariant pooling at the end (final prediction is stable).</p>
+<h2>The Reynolds Operator: An Elegant Projection</h2>
+<p>The mathematical tool that makes this work is the Reynolds operator. For a finite group of transformations $G$ (say, the four 90-degree rotations $C_4 = \{0°, 90°, 180°, 270°\}$), it&#39;s defined as:</p>
+<p>$$\bar{T} = \frac{1}{|G|} \sum_{g \in G} \rho_{\text{out}}(g) \otimes \rho_{\text{in}}(g^{-1})^T$$</p>
+<p>where $\rho_{\text{in}}$ and $\rho_{\text{out}}$ are the matrix representations of how the group acts on inputs and outputs.</p>
+<p>What this does is elegant: it projects any linear map into the subspace of maps that respect the symmetry. Compute the eigendecomposition of $\bar{T}$, keep the eigenvectors with eigenvalue 1, and you have a complete basis for all equivariant linear maps. Any weight matrix built from linear combinations of these eigenvectors will automatically satisfy the equivariance constraint.</p>
+<p>Instead of learning $n \times m$ free parameters, you learn $k$ coefficients (one per basis vector), where $k$ is usually much smaller. The symmetry constraint dramatically reduces the parameter count.</p>
+<p>There&#39;s a clean theoretical result here too: if the Reynolds operator has rank 0, the only invariant neuron is a constant. The invariant subspace is trivial. The network literally can&#39;t learn anything orientation-dependent if you demand full invariance at the neuron level. This is why equivariance (not invariance) is the right constraint for intermediate layers.</p>
+<h2>Building Equivariant Layers in Practice</h2>
+<p>For the convolutional version, you need to think about patch-to-patch maps. A standard CNN maps each input patch to a scalar. An equivariant CNN maps each input patch to an output patch, so rotation can act on both sides.</p>
+<p>The implementation uses <code>unfold</code> to extract patches, applies the equivariant linear map, then <code>fold</code>s the results back:</p>
+<pre><code class="language-python">def get_equivariant_basis(in_channels, k_in, k_out):
+    &quot;&quot;&quot;Compute equivariant basis via Reynolds operator eigendecomposition.&quot;&quot;&quot;
+    reynolds = torch.zeros(k_out**2 * in_channels * k_in**2,
+                           k_out**2 * in_channels * k_in**2)
+
+    for degree in [0, 90, 180, 270]:
+        rho_in = rotation_matrix(in_channels * k_in, degree)
+        rho_out = rotation_matrix(k_out, degree)
+        inv_degree = (360 - degree) % 360
+        rho_in_inv = rotation_matrix(in_channels * k_in, inv_degree)
+        reynolds += torch.kron(rho_out, rho_in_inv.T)
+
+    reynolds /= 4  # average over group
+
+    # Eigenvectors with eigenvalue ≈ 1 form the equivariant basis
+    eigenvalues, eigenvectors = torch.linalg.eig(reynolds)
+    mask = (eigenvalues.real - 1.0).abs() &lt; 1e-6
+    basis = eigenvectors[:, mask].real
+    return basis
+</code></pre>
+<p>The sanity check: before any training, feed in an image and its 90-degree rotation. The outputs should be related by exactly a 90-degree rotation: <code>||f(rot90(x)) - rot90(f(x))|| &lt; 1e-5</code>. If that holds, your equivariance is exact.</p>
+<h2>Attention Pooling: Learning What to Focus On</h2>
+<p>Once you have equivariant features, you need to create invariant outputs for the final prediction. The simplest way is to average over all group transformations (that&#39;s literally what the Reynolds operator does). But averaging treats all orientations equally, which throws away information.</p>
+<p>A smarter approach: learned attention pooling over the group orbit. Given equivariant features $\mathbf{h}$, compute all transformed versions $\{\rho(g_i)\mathbf{h}\}$ and take a learned weighted average:</p>
+<p>$$\mathbf{g} = \sum_{i} \alpha_i \cdot \rho(g_i)\mathbf{h}, \quad \alpha_i = \text{softmax}(\mathbf{q}^T \rho(g_i)\mathbf{h})$$</p>
+<p>This is provably $G$-invariant (the proof uses the rearrangement property of groups), but unlike flat averaging, the model can learn which orientations are more informative per input. For the digit &quot;7,&quot; the model concentrated weight on 180° and 270° rotations. For &quot;0&quot; (nearly rotationally symmetric), weights were distributed evenly. The model learned that orientation matters more for asymmetric digits.</p>
+<h2>The Experiment That Made It Click</h2>
+<p>Here&#39;s where the theory produces real numbers. Take MNIST digits, create four copies rotated by 0°, 90°, 180°, 270°. The task: predict which rotation was applied. The twist: the training set is deliberately imbalanced. 2,000 examples each for 0°, 90°, and 270°, but only 20 examples for 180°.</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>Parameters</th>
+<th>Overall</th>
+<th>0°</th>
+<th>90°</th>
+<th>180°</th>
+<th>270°</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Standard CNN</td>
+<td>454,148</td>
+<td>90.2%</td>
+<td>99.4%</td>
+<td>99.4%</td>
+<td>62.6%</td>
+<td>99.4%</td>
+</tr>
+<tr>
+<td>G-Equivariant CNN</td>
+<td>1,807</td>
+<td>97.8%</td>
+<td>97.8%</td>
+<td>97.8%</td>
+<td>97.8%</td>
+<td>97.8%</td>
+</tr>
+</tbody></table>
+<p>The standard CNN does exactly what you&#39;d expect with 100x less data for one class: it collapses on 180° (62.6%). It has 250x more parameters and still loses badly overall.</p>
+<p>The equivariant CNN hits 97.8% uniformly across all four orientations. What the network learns for 0° automatically transfers to 90°, 180°, and 270° because the equivariance constraint forces weight sharing across rotations. Those 20 training examples for 180° effectively become 2,000. All four orientations get identical accuracy, which is a direct consequence of exact equivariance.</p>
+<p>I also tested this on autoencoders (trained on upright MNIST, tested on rotated):</p>
+<table>
+<thead>
+<tr>
+<th>Model</th>
+<th>In-Distribution Loss</th>
+<th>Rotated (OOD) Loss</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Standard AE</td>
+<td>0.000071</td>
+<td>0.000175</td>
+</tr>
+<tr>
+<td>G-Equivariant AE</td>
+<td>0.000102</td>
+<td>0.000102</td>
+</tr>
+</tbody></table>
+<p>The standard AE&#39;s loss jumps 2.5x on rotated inputs. The equivariant AE has identical performance on both. Equivariance is free insurance for out-of-distribution robustness.</p>
+<h2>Where This Applies Beyond MNIST</h2>
+<p>The $C_4$ rotation group is the simplest case, but the framework extends to any symmetry group.</p>
+<p><strong>Molecular property prediction.</strong> Molecules don&#39;t have a canonical orientation. Models like SchNet and DimeNet use SE(3)-equivariance (3D rotations and translations) so predictions don&#39;t depend on how you happen to orient the molecule in 3D space.</p>
+<p><strong>Particle physics.</strong> The laws of physics are Lorentz-invariant. Networks like LorentzNet build this symmetry in so they don&#39;t waste capacity learning something that&#39;s guaranteed by physics.</p>
+<p><strong>Satellite imagery.</strong> There&#39;s no &quot;up&quot; in aerial photos. Rotation-equivariant models avoid the need for aggressive data augmentation across all angles.</p>
+<p><strong>Medical imaging.</strong> Cell microscopy images, histopathology slides, and certain radiology views have no preferred orientation. Equivariant architectures handle this naturally.</p>
+<h2>The Honest Limitation</h2>
+<p>You need to know your symmetry group in advance. $C_4$ rotations are clean and finite. 3D rotations (SO(3)) are well-studied. But real-world transformations like lighting changes, perspective distortion, or non-rigid deformation don&#39;t form neat groups. There&#39;s active research on approximate equivariance and learning the symmetry group from data, but that&#39;s still early.</p>
+<h2>What Stuck With Me</h2>
+<p>Three things from implementing all of this.</p>
+<p>First, the parameter efficiency is striking. Not just as an academic metric, but practically. When you bake the right structure into the model, every parameter does useful work. The 1,807-parameter equivariant network isn&#39;t just &quot;smaller.&quot; It&#39;s more sample-efficient, more robust to distribution shift, and easier to train.</p>
+<p>Second, equivariance is strictly better than data augmentation for known symmetries. Augmentation adds transformed copies of your data and hopes the model picks up on it. Equivariance enforces the symmetry in the weight space itself, so it holds exactly for all inputs, including ones the model has never seen.</p>
+<p>Third, this connects to a broader principle I keep seeing across ML: the best way to improve a model isn&#39;t more data or more parameters. It&#39;s encoding the right structure. Convolutions encode translation equivariance. Attention encodes permutation equivariance. Group-equivariant layers encode whatever symmetry your problem has. In each case, the structural constraint is what makes the model work, not the raw capacity.</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

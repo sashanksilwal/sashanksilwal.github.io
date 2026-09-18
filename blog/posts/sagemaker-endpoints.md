@@ -12,7 +12,7 @@ SageMaker is a collection of services, not a single tool. The main pieces:
 
 **Batch Transform**: offline inference on large datasets.
 
-**Model Monitor**: drift detection and data quality checks (relevant if you've read my post on [ML systems in production](/blog/post.html?post=ml-systems-production)).
+**Model Monitor**: drift detection and data quality checks (relevant if you've read my post on [ML systems in production](/blog/ml-systems-production.html)).
 
 I'm going to focus on hosting and endpoints since that's where the deployment complexity lives.
 
@@ -204,10 +204,10 @@ SageMaker solves real problems, but it's not always the right tool.
 
 **For non-AWS environments**: if you're on GCP, use Vertex AI. If you're multi-cloud, consider Seldon, BentoML, or Ray Serve. SageMaker locks you into AWS.
 
-**For LLM serving**: vLLM, TGI (Text Generation Inference), or a managed service like Bedrock or Replicate are usually better choices than raw SageMaker endpoints for serving large language models. I wrote about running [large models on small hardware](/blog/post.html?post=fitting-big-models-small-gpus) separately, and most of those approaches work better outside SageMaker's container constraints.
+**For LLM serving**: vLLM, TGI (Text Generation Inference), or a managed service like Bedrock or Replicate are usually better choices than raw SageMaker endpoints for serving large language models. I wrote about running [large models on small hardware](/blog/fitting-big-models-small-gpus.html) separately, and most of those approaches work better outside SageMaker's container constraints.
 
 ## The Bottom Line
 
 Model deployment is its own discipline. You can learn it piece by piece (Docker, load balancers, auto-scaling, monitoring) or you can use a managed service that bundles it all together. SageMaker is the most complete bundle on AWS. It's not the cheapest option, and it's not the most flexible. But it gets you from "model in S3" to "model serving production traffic" faster than building everything yourself.
 
-The teams I've seen use SageMaker most successfully are the ones who use it for what it's good at (endpoint management, auto-scaling, A/B testing) and build their own solutions for everything else (feature engineering with [Spark](/blog/post.html?post=distributed-computing-basics), pipeline orchestration with [Airflow](/blog/post.html?post=airflow-dag-basics), monitoring with custom dashboards). Don't try to do everything inside SageMaker. Use it for the serving layer, and keep everything else flexible.
+The teams I've seen use SageMaker most successfully are the ones who use it for what it's good at (endpoint management, auto-scaling, A/B testing) and build their own solutions for everything else (feature engineering with [Spark](/blog/distributed-computing-basics.html), pipeline orchestration with [Airflow](/blog/airflow-dag-basics.html), monitoring with custom dashboards). Don't try to do everything inside SageMaker. Use it for the serving layer, and keep everything else flexible.

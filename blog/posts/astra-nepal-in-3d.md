@@ -1,4 +1,4 @@
-For months my default has been Claude, to the point of muscle memory. So much so that I wrote a [post about the Claude Code features I only found by using it every day](/blog/post.html?post=claude-code-daily-features). When your tool already works, switching is usually a bad trade.
+For months my default has been Claude, to the point of muscle memory. So much so that I wrote a [post about the Claude Code features I only found by using it every day](/blog/claude-code-daily-features.html). When your tool already works, switching is usually a bad trade.
 
 Then OpenAI shipped GPT-6 Astra on September 3rd, with claims about it being their strongest software engineering model yet and running for hours at a stretch on long tasks. The noise got loud enough that ignoring it started to feel like a decision rather than an oversight.
 

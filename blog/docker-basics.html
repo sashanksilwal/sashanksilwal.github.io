@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Docker Basics: What a Dead Server Taught Me About Containers | Sashank Silwal</title>
+    <meta name="description" content="I spent a week setting up a Fortran weather model on a server. Then it died. Here's the Docker intro and tips I wish I'd had before redoing it all by hand.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/docker-basics.html">
+    <meta property="og:title" content="Docker Basics: What a Dead Server Taught Me About Containers">
+    <meta property="og:description" content="I spent a week setting up a Fortran weather model on a server. Then it died. Here's the Docker intro and tips I wish I'd had before redoing it all by hand.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/docker-basics.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-05-10">
+    <meta name="twitter:title" content="Docker Basics: What a Dead Server Taught Me About Containers">
+    <meta name="twitter:description" content="I spent a week setting up a Fortran weather model on a server. Then it died. Here's the Docker intro and tips I wish I'd had before redoing it all by hand.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Docker Basics: What a Dead Server Taught Me About Containers","description":"I spent a week setting up a Fortran weather model on a server. Then it died. Here's the Docker intro and tips I wish I'd had before redoing it all by hand.","datePublished":"2026-05-10","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/docker-basics.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Docker Basics: What a Dead Server Taught Me About Containers</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-05-10">May 10, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">docker</span><span class="tag">developer-tools</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>I spent the better part of a week getting WRF to run on a lab server. WRF is a weather model written in Fortran, the kind of mature scientific software that&#39;s been around for decades and comes with a long chain of dependencies that all have to agree with each other. The right compiler, the right MPI library for running across multiple cores, NetCDF for the data files, HDF5 underneath that, and a few more. Get one version slightly wrong and you find out 25 minutes into a compile, or worse, when the model crashes at runtime. I needed it to generate output I could use as training data for a model I was building at <a href="/experience/">Purdue</a>. Eventually I got it running. I was proud of it.</p>
+<p>Then the server broke down. Hardware failure, not coming back. I had to move everything to a different server, which meant redoing the entire setup from scratch on a fresh machine: every dependency, every version, every environment variable I&#39;d forgotten I set. A full day, minimum, to get back to where I already was.</p>
+<p>That was the moment Docker stopped being a buzzword I nodded along to and became the thing I should have used from day one. If I&#39;d containerized WRF, moving servers would have been a few commands and a download, not a lost day. So I learned Docker properly. This post is the intro I wish I&#39;d had, plus the tips that actually mattered once I started using it for real.</p>
+<h2>What Docker actually is</h2>
+<p>The clearest way I can put it: Docker lets you package a piece of software together with everything it needs to run, so it behaves the same way on any machine.</p>
+<p>&quot;Everything it needs&quot; is the important part. Not just your code, but the operating system libraries, the specific compiler version, the dependencies, the environment variables, all of it. The whole environment gets frozen into one bundle. You move that bundle to a new machine and it runs identically, because it&#39;s carrying its world with it. The phrase you&#39;ll hear is &quot;it solves the works-on-my-machine problem,&quot; and that&#39;s exactly the problem I&#39;d just lived through.</p>
+<p>A useful analogy: a virtual machine is like shipping an entire house, foundation and plumbing and all, every time you want to move a room. It works, but it&#39;s heavy and slow. Docker is more like a shipping container. Standardized box, your stuff packed inside, and it slots onto any truck or ship without anyone repacking it. Containers share the host machine&#39;s operating system kernel instead of each booting a full OS, so they start in seconds and barely add overhead. That&#39;s why people moved to them.</p>
+<h2>The three words you need</h2>
+<p>Most of Docker clicks once you separate three ideas that beginners (me included) tend to blur together.</p>
+<p>A <strong>Dockerfile</strong> is a plain text recipe. It&#39;s a list of steps: start from this base, install these packages, copy in this code, run this command. You write it once.</p>
+<p>An <strong>image</strong> is what you get when you run that recipe. It&#39;s a frozen snapshot of the whole environment, built and ready. Images are what you share and store.</p>
+<p>A <strong>container</strong> is a running instance of an image. The image is the recipe&#39;s finished cake sitting in the fridge; the container is the slice you&#39;re actually eating. You can start many containers from one image, and they don&#39;t interfere with each other.</p>
+<p>So the flow is: write a Dockerfile, build it into an image, run the image as a container. A tiny example:</p>
+<pre><code class="language-dockerfile">FROM python:3.11-slim
+WORKDIR /app
+COPY requirements.txt .
+RUN pip install -r requirements.txt
+COPY . .
+CMD [&quot;python&quot;, &quot;main.py&quot;]
+</code></pre>
+<pre><code class="language-bash">docker build -t myapp .      # Dockerfile -&gt; image named &quot;myapp&quot;
+docker run myapp             # image -&gt; running container
+</code></pre>
+<p>That <code>FROM python:3.11-slim</code> line is doing a lot of quiet work. You&#39;re starting from an image someone else already built, with Python installed, so you don&#39;t reinstall the world. Most Dockerfiles begin by standing on an existing image from a registry like Docker Hub.</p>
+<h2>The tips that actually mattered</h2>
+<p>The basics get you a container that runs. These are the things I learned afterward that separated &quot;it works&quot; from &quot;it works well.&quot;</p>
+<p><strong>Order your Dockerfile from least to most likely to change.</strong> Docker builds in layers and caches each one. If a step hasn&#39;t changed, it reuses the cached result instead of redoing it. So put slow, stable steps (installing system packages, heavy dependencies) near the top, and the things you edit constantly (your own code) near the bottom. In my Python example, copying <code>requirements.txt</code> and installing before copying the rest of the code is deliberate. Change your code and the dependency install stays cached. Get the order backwards and you reinstall everything on every tiny edit. For something like WRF, where the build takes half an hour, this is the difference between a coffee break and a lunch break on every rebuild.</p>
+<p><strong>Pin your versions. Never trust <code>latest</code>.</strong> Writing <code>FROM python:3.11-slim</code> instead of <code>FROM python:latest</code> means you get the same Python every time you build, this year and next. The <code>latest</code> tag quietly moves, and a build that worked in March can break in June for reasons that have nothing to do with your code. The entire point of Docker is reproducibility. A floating version tag throws that away. The dependency chaos I hit with WRF was version mismatches; pinning is how you stop reliving that.</p>
+<p><strong>Use a <code>.dockerignore</code> file.</strong> When you build, Docker copies your project folder into the build. Without a <code>.dockerignore</code>, that sweeps up your <code>.git</code> history, local virtual environments, log files, and giant datasets you never meant to include. It bloats the image and slows the build. A <code>.dockerignore</code> works like <code>.gitignore</code>: list what to leave out.</p>
+<p><strong>Shrink images with multi-stage builds.</strong> This one felt like a magic trick the first time. You can have one stage that does the heavy building (compilers, source code, the works) and a second, clean stage that copies in only the finished result. Everything you needed to build but not to run gets left behind:</p>
+<pre><code class="language-dockerfile">FROM golang:1.22 AS builder
+WORKDIR /src
+COPY . .
+RUN go build -o app .
+
+FROM debian:12-slim
+COPY --from=builder /src/app /app
+CMD [&quot;/app&quot;]
+</code></pre>
+<p>The final image carries the compiled program and nothing else, no Go toolchain, no source. For compiled software the size difference is enormous, often gigabytes down to tens of megabytes.</p>
+<p><strong>Keep data out of the image.</strong> An image should hold your software, not your data. If you bake a 10 GB dataset into the image, every rebuild and every copy drags it around. Use a volume instead, which mounts a folder from the host machine into the container at runtime:</p>
+<pre><code class="language-bash">docker run -v /path/on/host/data:/data myapp
+</code></pre>
+<p>Now the container reads and writes real files on the host, and your image stays lean. This also means your results survive after the container stops, which matters more than beginners expect, because by default anything written inside a container disappears when it&#39;s gone.</p>
+<p><strong>Don&#39;t bake secrets into the image.</strong> API keys, passwords, tokens. They do not belong in the Dockerfile. Anyone with the image can dig them out of the layers, even if a later step deletes them. Pass secrets in at runtime through environment variables or a secrets manager instead.</p>
+<p><strong>Reach for Docker Compose when you have more than one piece.</strong> The moment your app needs a database alongside it, or a cache, or any second service, running separate <code>docker run</code> commands by hand gets old fast. A <code>docker-compose.yml</code> file describes all the pieces and how they connect, and <code>docker compose up</code> starts the whole thing at once.</p>
+<h2>One catch worth knowing early</h2>
+<p>Docker is the standard on your own machine and on most cloud servers, but it needs root-level access to run, and shared computing clusters usually won&#39;t grant that. So on the HPC cluster where I actually run WRF, plain Docker isn&#39;t allowed. The fix there is a sibling tool called Singularity (now Apptainer) that runs containers as a normal user with no special privileges. You can build a Docker image and convert it, so the work isn&#39;t wasted, but it&#39;s worth knowing the cluster world plays by slightly different rules before you get there. If you&#39;re wondering when you even need that kind of computing muscle, I wrote about <a href="/blog/distributed-computing-basics.html">the honest threshold for going distributed</a>.</p>
+<h2>Where this leaves you</h2>
+<p>Docker didn&#39;t make WRF run any faster or fix a single bug in the model. What it changed is that the environment is now written down, in a file, and reproducible. If a server dies tomorrow, moving is a <code>docker build</code> and a download, not a day of archaeology trying to remember what I installed eight months ago.</p>
+<p>That&#39;s the real pitch, and it&#39;s why I&#39;d tell anyone working with finicky dependencies to learn this earlier than I did. You don&#39;t containerize because it&#39;s trendy. You do it so that the next time the machine under you disappears, your work doesn&#39;t go with it. Start with a Dockerfile for one small project, get the layer caching and version pinning right, and the rest builds from there.</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

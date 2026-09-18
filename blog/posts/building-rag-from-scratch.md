@@ -243,6 +243,6 @@ Most RAG systems fail because of bad chunking. If your chunks split a paragraph 
 
 The second biggest failure mode is not evaluating. Build a set of 20-30 question/answer pairs from your documents. Run your pipeline on those questions. Check if the right chunks are being retrieved. Check if the answers are correct. Do this before tweaking anything else.
 
-If you're building RAG for production, you should also think about what happens when someone poisons your documents. I wrote about that in my post on [context poisoning](/blog/post.html?post=context-poisoning). And if you want a more comprehensive reference covering evaluation, reranking, and other production concerns, I have a [longer guide on production RAG](/blog/post.html?post=rag-guide) as well.
+If you're building RAG for production, you should also think about what happens when someone poisons your documents. I wrote about that in my post on [context poisoning](/blog/context-poisoning.html). And if you want a more comprehensive reference covering evaluation, reranking, and other production concerns, I have a [longer guide on production RAG](/blog/rag-guide.html) as well.
 
 The best RAG system is the one where you actually understand every piece. That's why I'd encourage you to build it from scratch at least once before reaching for a framework. Once you know what each component does, the frameworks make a lot more sense, and you'll know exactly where to look when something goes wrong.

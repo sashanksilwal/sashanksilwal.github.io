@@ -18,7 +18,7 @@ If I train on 2017 Yelp interactions and test on 2018 interactions, some items t
 
 In distribution-shift language: the labelling mechanism (what users actually like) is stable, but the conditioning graph the model uses has changed. Item degrees shift. Neighborhood structure changes. The GNN sees a different world at test time than the one it trained on.
 
-This isn't a surprise in general (covariate shift is a classic problem, [I wrote about it for production ML systems](/blog/post.html?post=ml-systems-production)), but GNN recommenders get hit harder because the shift propagates through message passing. A degree shift on item $i$ changes the messages every neighbor of $i$ sends in the next layer. One perturbation ripples outward.
+This isn't a surprise in general (covariate shift is a classic problem, [I wrote about it for production ML systems](/blog/ml-systems-production.html)), but GNN recommenders get hit harder because the shift propagates through message passing. A degree shift on item $i$ changes the messages every neighbor of $i$ sends in the next layer. One perturbation ripples outward.
 
 The shift is easiest to see as a scatter plot of train rank vs. test rank for items that appear in both windows:
 
@@ -34,7 +34,7 @@ Before getting to invariant learning, the honest question: why not just use a di
 
 We kept LightGCN intentionally. The point of the experiment was to isolate whether a loss-level intervention could mitigate a structural shift. If you also swap the architecture, you can't tell which change did the work. The backbone stays fixed. Everything we do is in the loss.
 
-If you're wondering whether a GNN is even the right tool here, I've written separately about [when to reach for a GNN at all](/blog/post.html?post=should-you-use-a-gnn). Recommendation on bipartite interaction graphs is one of the cases where they genuinely earn their keep: the structure is dense, homophilous, and the task is fundamentally relational.
+If you're wondering whether a GNN is even the right tool here, I've written separately about [when to reach for a GNN at all](/blog/should-you-use-a-gnn.html). Recommendation on bipartite interaction graphs is one of the cases where they genuinely earn their keep: the structure is dense, homophilous, and the task is fundamentally relational.
 
 ## The framing: items as environments
 
@@ -175,7 +175,7 @@ A few smaller findings that I didn't expect:
 
 **Vanilla BPR beats environment-balanced BPR as a foundation.** We tried two aggregation strategies: sum losses across environments equally, or compute one mean over all triplets (vanilla). Balanced sounds principled (each bucket contributes equally), but it actively reduced the gain from the invariant penalty. On Yelp, the invariant Falling gain shrank from 77% with vanilla BPR to 10% with balanced. The read: vanilla BPR builds a stable, accurate ranking dominated by the large Stable environment, and the invariant penalty surgically corrects popularity-shift bias on top. Pre-balancing competes with the penalty by already disturbing the gradient weight on the noisier subgroups.
 
-**Depth partially substitutes for invariance.** Sweeping GNN depth $L \in \{1, 2, 3, 4\}$, Falling recall on Yelp climbed 38% from $L=1$ to $L=3$ with no invariant penalty at all. Thicker neighborhoods stabilize drifting items by aggregating more context. You get some of what invariant learning gives you just by stacking layers. You eventually hit [the failure modes of deep GNNs](/blog/post.html?post=gnn-failure-modes), but for LightGCN on these datasets the safe zone goes up to 3-4 layers and the invariance benefits stack with depth.
+**Depth partially substitutes for invariance.** Sweeping GNN depth $L \in \{1, 2, 3, 4\}$, Falling recall on Yelp climbed 38% from $L=1$ to $L=3$ with no invariant penalty at all. Thicker neighborhoods stabilize drifting items by aggregating more context. You get some of what invariant learning gives you just by stacking layers. You eventually hit [the failure modes of deep GNNs](/blog/gnn-failure-modes.html), but for LightGCN on these datasets the safe zone goes up to 3-4 layers and the invariance benefits stack with depth.
 
 **More environments only helps on Amazon.** $E = 5$ instead of $E = 3$ gave a small overall improvement on Amazon (Baseline 0.0273 → 0.0308) but did nothing for Yelp. Amazon's popularity ranks are more shuffled between train and test (Spearman $\rho = 0.39$ vs. Yelp's 0.52), so finer environment slicing captures real structure in the shift. On Yelp it just adds noise to the variance penalty.
 

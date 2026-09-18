@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Spark, Hadoop, and PySpark: When You Actually Need Distributed Computing | Sashank Silwal</title>
+    <meta name="description" content="Hadoop's legacy, why Spark replaced it, PySpark for ML feature engineering, and the honest threshold for when single-machine tools stop working.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/distributed-computing-basics.html">
+    <meta property="og:title" content="Spark, Hadoop, and PySpark: When You Actually Need Distributed Computing">
+    <meta property="og:description" content="Hadoop's legacy, why Spark replaced it, PySpark for ML feature engineering, and the honest threshold for when single-machine tools stop working.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/distributed-computing-basics.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-03-15">
+    <meta name="twitter:title" content="Spark, Hadoop, and PySpark: When You Actually Need Distributed Computing">
+    <meta name="twitter:description" content="Hadoop's legacy, why Spark replaced it, PySpark for ML feature engineering, and the honest threshold for when single-machine tools stop working.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Spark, Hadoop, and PySpark: When You Actually Need Distributed Computing","description":"Hadoop's legacy, why Spark replaced it, PySpark for ML feature engineering, and the honest threshold for when single-machine tools stop working.","datePublished":"2026-03-15","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/distributed-computing-basics.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Spark, Hadoop, and PySpark: When You Actually Need Distributed Computing</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-03-15">March 15, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">data-engineering</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>During my first week at Binance, I learned that the data team was processing petabytes of transaction data daily. Coming from college where the biggest dataset I&#39;d touched was maybe a few gigabytes in a Jupyter notebook, that number didn&#39;t even feel real. My onboarding included spinning up PySpark jobs, and suddenly all those &quot;big data&quot; buzzwords I&#39;d heard in class had actual meaning. There&#39;s a threshold where single-machine tools stop working, and working at an exchange that handles millions of trades per second puts you way past that threshold on day one.</p>
+<p>The honest answer for most people: you don&#39;t need distributed computing until you do, and it&#39;s later than you think.</p>
+<h2>When You Actually Need It</h2>
+<p>Pandas can comfortably handle 1-10GB of data on a modern laptop. With some care (proper dtypes, chunked reading), you can push it to 30-50GB. Polars, which is Pandas but faster and written in Rust, pushes that ceiling higher. DuckDB lets you run SQL on files larger than memory.</p>
+<p>If your data fits on one machine, use single-machine tools. They&#39;re faster to develop with, easier to debug, and have zero infrastructure overhead. The overhead of setting up and maintaining a Spark cluster only pays off when your data genuinely won&#39;t fit in memory on a single machine, or when your processing time is so long that parallelizing across machines makes a meaningful difference.</p>
+<p>My rough threshold: if your data is under 50GB and your processing is simple aggregations and joins, try Polars or DuckDB first. If you&#39;re over 100GB, or your pipeline involves complex multi-stage transformations, Spark starts making sense.</p>
+<h2>Hadoop: Where It All Started</h2>
+<p>Hadoop was the original answer to &quot;I have more data than fits on one computer.&quot; The core idea had two parts:</p>
+<p><strong>HDFS</strong> (Hadoop Distributed File System) splits large files into blocks and stores copies across multiple machines. Your 1TB file becomes thousands of 128MB blocks spread across a cluster.</p>
+<p><strong>MapReduce</strong> processes data where it lives. Instead of pulling all data to one machine, you send your code to each machine. Each machine processes its local blocks (the &quot;map&quot; step), then results are shuffled and combined (the &quot;reduce&quot; step).</p>
+<p>This was revolutionary in 2006. It&#39;s also painful to use. Writing MapReduce jobs means thinking in map and reduce functions, which is awkward for most data transformations. Something as simple as a join requires multiple MapReduce stages. And every intermediate result gets written to disk, which makes iterative algorithms (like anything in ML) brutally slow.</p>
+<p>You&#39;ll still see HDFS in production at many large companies. But MapReduce as a programming model is effectively dead. Spark replaced it.</p>
+<h2>Spark: What Hadoop Should Have Been</h2>
+<p>Spark fixed Hadoop&#39;s two biggest problems: it keeps data in memory between operations, and it provides an API that doesn&#39;t make you want to quit engineering.</p>
+<p>The architecture is simple in concept:</p>
+<p><strong>Driver</strong>: your main program. It defines what transformations to apply and sends work to executors.</p>
+<p><strong>Executors</strong>: worker processes on cluster machines. They do the actual computation.</p>
+<p><strong>Partitions</strong>: your data split into chunks. Each executor processes some partitions in parallel.</p>
+<p><strong>Lazy evaluation</strong>: Spark doesn&#39;t actually do anything when you write a transformation. It builds a plan (a DAG of operations). Only when you trigger an &quot;action&quot; (like <code>.count()</code> or <code>.write()</code>) does it optimize the plan and execute it. This means Spark can look at your entire pipeline and optimize things like combining multiple filters, reordering joins, and pushing filters down to the data source.</p>
+<h2>PySpark: The Practical Part</h2>
+<p>PySpark is the Python API for Spark. If you know Pandas, the concepts are similar but the syntax is different.</p>
+<pre><code class="language-python">from pyspark.sql import SparkSession
+from pyspark.sql import functions as F
+
+spark = SparkSession.builder \
+    .appName(&quot;feature_engineering&quot;) \
+    .config(&quot;spark.sql.shuffle.partitions&quot;, &quot;200&quot;) \
+    .getOrCreate()
+
+# Read data (lazy, doesn&#39;t load into memory yet)
+transactions = spark.read.parquet(&quot;s3://bucket/transactions/&quot;)
+users = spark.read.parquet(&quot;s3://bucket/users/&quot;)
+
+# Transformations (lazy, nothing executes yet)
+features = (
+    transactions
+    .filter(F.col(&quot;date&quot;) &gt;= &quot;2025-01-01&quot;)
+    .groupBy(&quot;user_id&quot;)
+    .agg(
+        F.count(&quot;*&quot;).alias(&quot;transaction_count&quot;),
+        F.sum(&quot;amount&quot;).alias(&quot;total_spend&quot;),
+        F.avg(&quot;amount&quot;).alias(&quot;avg_spend&quot;),
+        F.max(&quot;amount&quot;).alias(&quot;max_spend&quot;),
+        F.countDistinct(&quot;merchant&quot;).alias(&quot;unique_merchants&quot;),
+    )
+)
+
+# Join with user features
+enriched = features.join(users, on=&quot;user_id&quot;, how=&quot;left&quot;)
+
+# THIS triggers execution
+enriched.write.parquet(&quot;s3://bucket/features/output/&quot;)
+</code></pre>
+<p>Key difference from Pandas: everything is lazy until you call an action. <code>filter</code>, <code>groupBy</code>, <code>join</code> don&#39;t execute immediately. <code>write</code>, <code>count</code>, <code>show</code>, <code>collect</code> trigger execution. This matters because it means Spark can optimize the entire pipeline before running it.</p>
+<h2>Common PySpark Patterns for ML</h2>
+<p><strong>Window functions</strong> are incredibly useful for time-series features:</p>
+<pre><code class="language-python">from pyspark.sql.window import Window
+
+# Rolling 7-day spend per user
+window_7d = Window.partitionBy(&quot;user_id&quot;).orderBy(&quot;date&quot;).rangeBetween(-7, 0)
+
+transactions = transactions.withColumn(
+    &quot;spend_7d&quot;,
+    F.sum(&quot;amount&quot;).over(window_7d)
+)
+</code></pre>
+<p><strong>Handling skewed joins</strong> (when one key has millions of rows):</p>
+<pre><code class="language-python"># Salting: add random prefix to break up hot keys
+skewed_df = skewed_df.withColumn(
+    &quot;salted_key&quot;,
+    F.concat(F.col(&quot;join_key&quot;), F.lit(&quot;_&quot;), (F.rand() * 10).cast(&quot;int&quot;))
+)
+</code></pre>
+<p><strong>Caching</strong> when you reuse a DataFrame:</p>
+<pre><code class="language-python"># If you&#39;ll use this DataFrame multiple times, cache it
+features = features.cache()
+features.count()  # Triggers caching
+
+# Now subsequent operations on &#39;features&#39; read from memory
+train_features = features.filter(F.col(&quot;date&quot;) &lt; &quot;2026-01-01&quot;)
+test_features = features.filter(F.col(&quot;date&quot;) &gt;= &quot;2026-01-01&quot;)
+</code></pre>
+<h2>Performance Tips That Actually Matter</h2>
+<p>Most PySpark performance problems come from three things:</p>
+<p><strong>1. Too many shuffles.</strong> A shuffle happens when data needs to move between machines (joins, groupBy, distinct). Shuffles are expensive because they involve network transfer and disk I/O. Minimize them by filtering early, using broadcast joins for small tables, and avoiding unnecessary <code>repartition()</code> calls.</p>
+<pre><code class="language-python">from pyspark.sql.functions import broadcast
+
+# If one table is small (&lt; 100MB), broadcast it to avoid shuffle
+result = big_table.join(broadcast(small_lookup_table), on=&quot;key&quot;)
+</code></pre>
+<p><strong>2. Wrong partition count.</strong> Too few partitions means some executors sit idle while others are overloaded. Too many means excessive overhead from scheduling tiny tasks. Rule of thumb: 2-4 partitions per CPU core in your cluster.</p>
+<p><strong>3. Reading too much data.</strong> Parquet is columnar, so Spark only reads the columns you actually use. But only if you select them early in your pipeline. Don&#39;t <code>select(&quot;*&quot;)</code> at the beginning and filter columns later.</p>
+<h2>Spark on Cloud</h2>
+<p>You don&#39;t need to manage your own cluster anymore. Every major cloud has a managed Spark service.</p>
+<p><strong>AWS EMR</strong> (Elastic MapReduce) is the oldest option. It works, it&#39;s flexible, and it integrates with S3 and the rest of AWS. The downside is that you&#39;re still managing cluster configurations, instance types, and autoscaling policies.</p>
+<p><strong>Databricks</strong> is Spark-as-a-service from the people who created Spark. It adds notebooks, job scheduling, Delta Lake (a storage layer that adds ACID transactions to your data lake), and Unity Catalog for governance. It&#39;s the most polished experience but also the most expensive.</p>
+<p><strong>Google Dataproc</strong> is GCP&#39;s equivalent of EMR. If you&#39;re already on GCP, it&#39;s the obvious choice.</p>
+<p>My take: if you&#39;re doing one-off analysis, use Databricks (or even just Colab with a small Spark setup). If you&#39;re building production pipelines, EMR or Dataproc with infrastructure-as-code gives you more control.</p>
+<h2>The Honest Take</h2>
+<p>Distributed computing is a tool. Like any tool, using it when you don&#39;t need it makes things worse, not better. The debugging experience in Spark is significantly harder than Pandas. Error messages are verbose and often unhelpful. Local development requires a JVM installation that somehow breaks every other update.</p>
+<p>But when you hit the data size where single-machine tools fall over, Spark is the standard for good reason. It scales linearly, the API is reasonable, and the ecosystem (Delta Lake, MLflow, Structured Streaming) covers most of what you need.</p>
+<p>Start with the simplest tool that handles your data size. Move to Spark when you have to, not when it seems cool. And when you do move to Spark, invest time in understanding partitions and shuffles. Those two concepts explain 90% of Spark performance behavior. If you&#39;re building production pipelines on top of Spark, you&#39;ll want an orchestration layer like <a href="/blog/airflow-dag-basics.html">Airflow</a> to manage scheduling, retries, and dependencies between your Spark jobs.</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

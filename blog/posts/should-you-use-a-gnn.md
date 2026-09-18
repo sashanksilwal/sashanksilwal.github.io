@@ -10,7 +10,7 @@ Here's the framework I wish I'd had back in undergrad.
 
 This sounds obvious but people get it wrong constantly. A graph is a set of entities connected by meaningful relationships. That word "meaningful" does a lot of work.
 
-Take a typical recommendation dataset: users, items, and a history of user-item interactions. People call this a bipartite graph all the time. Technically correct. But matrix factorization, two-tower models, and plain old collaborative filtering all handle this structure fine without any graph machinery. I covered these approaches in my [post on recommendation systems](/blog/post.html?post=recommendation-systems). The "graph" framing doesn't buy you anything concrete unless structural patterns (triangles, community structure, multi-hop paths) actually affect predictions.
+Take a typical recommendation dataset: users, items, and a history of user-item interactions. People call this a bipartite graph all the time. Technically correct. But matrix factorization, two-tower models, and plain old collaborative filtering all handle this structure fine without any graph machinery. I covered these approaches in my [post on recommendation systems](/blog/recommendation-systems.html). The "graph" framing doesn't buy you anything concrete unless structural patterns (triangles, community structure, multi-hop paths) actually affect predictions.
 
 Real graph problems look like:
 
@@ -67,7 +67,7 @@ A few scenarios where I'd reach for a GNN first without apology:
 
 **Molecules.** Atoms, bonds, bond types, stereochemistry. The whole point of the model is to learn how molecular substructures combine into properties. GNNs dominate this space for good reason.
 
-**Physics simulations.** Particles interact through local rules and you want to learn those rules from data. My [UrbanTherm project](/blog/post.html?post=urbantherm) isn't a GNN, but it shares the same local-to-global philosophy: local physics, global effects. GNNs are a natural fit when you want that same inductive bias but with learned rather than hand-coded interactions.
+**Physics simulations.** Particles interact through local rules and you want to learn those rules from data. My [UrbanTherm project](/blog/urbantherm.html) isn't a GNN, but it shares the same local-to-global philosophy: local physics, global effects. GNNs are a natural fit when you want that same inductive bias but with learned rather than hand-coded interactions.
 
 **Knowledge graph embeddings.** You're explicitly trying to learn representations that respect relational structure between entities. TransE, ComplEx, and their neural extensions are graph-aware by design.
 
@@ -89,7 +89,7 @@ Even if a GNN is the right model, there's a real engineering cost worth factorin
 
 Training batches on graphs are weird. You can't just grab 32 rows from a DataFrame. You need neighbor sampling, mini-batch construction, and careful memory management. PyTorch Geometric and DGL handle a lot of this, but the mental model is more complex than "call `model(X, y).loss.backward()`."
 
-Inference at scale is also more annoying. Serving a GNN in production means either precomputing embeddings for every node (fast but stale) or running the full neighborhood at request time (accurate but slow). Neither is as clean as "feed features, get prediction." This ties into the broader [ML systems problems I've written about before](/blog/post.html?post=ml-systems-production): model complexity has infrastructure consequences.
+Inference at scale is also more annoying. Serving a GNN in production means either precomputing embeddings for every node (fast but stale) or running the full neighborhood at request time (accurate but slow). Neither is as clean as "feed features, get prediction." This ties into the broader [ML systems problems I've written about before](/blog/ml-systems-production.html): model complexity has infrastructure consequences.
 
 ## A short decision tree
 
@@ -103,4 +103,4 @@ This isn't a contrarian take. It's that GNN tutorials skip steps 1 and 2, so peo
 
 GNNs are a real tool for a specific class of problems. If your data is genuinely relational and the structure carries signal, they earn their keep. If you're shoehorning a graph into your problem because it felt like the right framing, you're usually going to lose to a good baseline.
 
-The question to ask first isn't "how do I implement a GNN for this?" It's "do I have a graph problem at all?" And if the answer is yes and you actually build one, the next surprise waiting is that stacking more layers doesn't make it better. I'll get into that in my next post on [the three failure modes of deep GNNs](/blog/post.html?post=gnn-failure-modes).
+The question to ask first isn't "how do I implement a GNN for this?" It's "do I have a graph problem at all?" And if the answer is yes and you actually build one, the next surprise waiting is that stacking more layers doesn't make it better. I'll get into that in my next post on [the three failure modes of deep GNNs](/blog/gnn-failure-modes.html).

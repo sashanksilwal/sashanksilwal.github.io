@@ -4,7 +4,7 @@ It doesn't. It usually gets worse.
 
 The interesting thing is that deeper GNNs fail for at least three distinct reasons, each with its own mechanism and its own fix. This isn't one problem called "depth." It's three problems that share a symptom. A lot of GNN papers that claim to "solve depth" address only one of them, which is why depth remains a mess in the field.
 
-The three failure modes are **oversmoothing**, **oversquashing**, and **underreaching**. They get lumped together and shouldn't be. (If you're not sure a GNN is the right tool in the first place, I wrote about that in an [earlier post](/blog/post.html?post=should-you-use-a-gnn). This one assumes you've decided yes.)
+The three failure modes are **oversmoothing**, **oversquashing**, and **underreaching**. They get lumped together and shouldn't be. (If you're not sure a GNN is the right tool in the first place, I wrote about that in an [earlier post](/blog/should-you-use-a-gnn.html). This one assumes you've decided yes.)
 
 ## Oversmoothing: everything converges to the same vector
 

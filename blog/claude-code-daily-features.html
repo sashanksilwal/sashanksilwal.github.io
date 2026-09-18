@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Claude Code Features I Found by Using It Every Day | Sashank Silwal</title>
+    <meta name="description" content="I've used Claude Code daily for months. The biggest wins came from features I stumbled onto, not the docs: rewind, queued prompts, /goal, /powerup, and more.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/claude-code-daily-features.html">
+    <meta property="og:title" content="Claude Code Features I Found by Using It Every Day">
+    <meta property="og:description" content="I've used Claude Code daily for months. The biggest wins came from features I stumbled onto, not the docs: rewind, queued prompts, /goal, /powerup, and more.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/claude-code-daily-features.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-05-20">
+    <meta name="twitter:title" content="Claude Code Features I Found by Using It Every Day">
+    <meta name="twitter:description" content="I've used Claude Code daily for months. The biggest wins came from features I stumbled onto, not the docs: rewind, queued prompts, /goal, /powerup, and more.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Claude Code Features I Found by Using It Every Day","description":"I've used Claude Code daily for months. The biggest wins came from features I stumbled onto, not the docs: rewind, queued prompts, /goal, /powerup, and more.","datePublished":"2026-05-20","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/claude-code-daily-features.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Claude Code Features I Found by Using It Every Day</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-05-20">May 20, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">claude</span><span class="tag">llm</span><span class="tag">developer-tools</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>This is the fourth time I&#39;ve written about Claude Code, which probably tells you something. I started with <a href="/blog/claude-code-basics.html">the basics</a>, then wrote up <a href="/blog/claude-code-intermediate.html">the workflows that actually compound</a>, then went through <a href="/blog/claude-code-hidden-features.html">the 15 hidden features from Boris Cherny&#39;s thread</a>. Those last ones I learned from someone else. The ones in this post I found the slow way, by using the tool every day and bumping into things.</p>
+<p>That&#39;s the pattern I&#39;ve settled into: I&#39;m in Claude Code for hours a day, and every couple of weeks I trip over a feature that quietly removes some annoyance I&#39;d stopped noticing. None of these are secret. Most are one keystroke or one command. But each one made a real dent in how fast I move, and I wish I&#39;d found them sooner. So here they are.</p>
+<h2>Rewind, not just interrupt</h2>
+<p>I knew about pressing Escape twice to stop Claude mid-task. What I didn&#39;t know for an embarrassingly long time is that double-tapping Escape also lets you <em>rewind</em>. It opens a list of earlier points in the conversation, and you can jump back to one, restoring both the conversation and the files Claude changed since then.</p>
+<p>This changed how I experiment. Before, if Claude went down a bad path and edited six files, I&#39;d either untangle it by hand or reach for git. Now I rewind to the checkpoint right before the bad idea and try a different prompt, as if the detour never happened. You can also run <code>/rewind</code> directly. Think of it as undo for the whole session, code included, not just the last message.</p>
+<h2>Stop waiting. Queue your next instruction</h2>
+<p>For months I&#39;d watch Claude work, wait for it to finish, then type my next message. Turns out you don&#39;t have to wait. While Claude is editing or running a command, you can type your next instruction and hit enter. It queues, and Claude picks it up the moment it&#39;s done with the current step.</p>
+<p>This sounds minor. It isn&#39;t. My session is now a steady stream of &quot;do this, then update the tests, then run the linter&quot; where I type each part as it occurs to me instead of holding it in my head until Claude comes up for air. The waiting-around feeling mostly disappeared.</p>
+<h2>Paste a screenshot instead of describing the bug</h2>
+<p>When something looks wrong in the browser, or a stack trace is buried in a screenshot a teammate sent me, I used to retype or describe it. Now I just paste the image straight into the prompt (or drag it in). Claude reads it.</p>
+<p>For frontend work this is the one I reach for most. &quot;Here&#39;s what it looks like, the spacing on the card is off, fix it&quot; with a screenshot attached gets me a better result than any paragraph of description. Same for error dialogs, design mockups, and diagrams. If I can see it, I can hand it over instead of transcribing it.</p>
+<h2>Press <code>#</code> to remember something on the spot</h2>
+<p>I covered CLAUDE.md in the earlier posts, but I&#39;d always edit it as a separate chore. Then I learned you can start a message with <code>#</code> and whatever you type gets saved as a memory. Claude asks where to put it (the project file, your personal one) and files it away.</p>
+<p>So now, the moment I notice myself explaining the same thing twice (&quot;we never edit the generated files in <code>dist/</code>&quot;), I type <code># we never edit files in dist/, they&#39;re generated</code> and move on. The project&#39;s memory grows out of real moments instead of one big upfront writing session that I never get around to.</p>
+<h2>If you don&#39;t have a CLAUDE.md yet, fix that first</h2>
+<p>Half the features here lean on Claude already knowing your project. If you&#39;ve never set that up, two commands get you most of the way. <code>/init</code> scans your codebase and writes a starter CLAUDE.md, a short brief on what the project is and how to run it. It won&#39;t be perfect, but it beats a blank file. From there, <code>/memory</code> opens your memory files for editing, and the <code>#</code> shortcut from above grows them as you work.</p>
+<p>I treated this as optional for far too long. It isn&#39;t. A session where Claude already knows your conventions is a completely different experience from one where you re-explain them every time. If you do only one setup step, do this one. I got into what belongs in a CLAUDE.md, and what doesn&#39;t, in <a href="/blog/claude-code-basics.html">the basics</a> and <a href="/blog/claude-code-intermediate.html">intermediate</a> posts.</p>
+<h2>Shift+Tab has a mode past plan mode</h2>
+<p>The basics post mentions Shift+Tab toggles plan mode. What I missed is that Shift+Tab actually cycles through three states, not two: normal, auto-accept edits, and plan mode. Auto-accept is the one I&#39;d overlooked, and it&#39;s the one I now use most.</p>
+<p>In auto-accept mode, Claude applies its file edits without stopping to ask for each one. That sounds reckless, and it would be if I used it blindly. But for a well-scoped task on a branch I can throw away, paired with a clean git history, letting it run without confirming every edit is a different pace entirely. I plan first (plan mode), confirm the approach, then Shift+Tab over to auto-accept and let it execute. Read-only safety when I&#39;m thinking, full speed when I&#39;ve decided.</p>
+<h2>Run the slow thing in the background</h2>
+<p>I used to start my dev server in another terminal tab, then describe to Claude what I saw. Now I have Claude run it in the background with Ctrl+B (or I just ask it to run the command in the background). The command keeps running, Claude keeps working, and it can read the server&#39;s logs whenever it needs to.</p>
+<p>This is perfect for anything long-lived or slow: a dev server, a test watcher, a build. Claude starts it, moves on to writing code, and checks the output when it matters, instead of the whole session blocking on one command that never exits.</p>
+<h2><code>claude --continue</code> picks up exactly where you left off</h2>
+<p>I close my laptop mid-task more than I&#39;d like to admit. For a while, the next morning meant re-explaining what I&#39;d been doing. Then I found <code>claude --continue</code> (or <code>claude -c</code>), which drops you back into your most recent session in that folder with the full context intact. No re-explaining.</p>
+<p>If it wasn&#39;t the most recent session, <code>claude --resume</code> (or <code>/resume</code> from inside Claude) gives you a picker of past sessions to jump back into. Between the two, &quot;where was I&quot; stopped being a question I had to answer manually.</p>
+<h2>Ship it without leaving the conversation: the Vercel CLI</h2>
+<p>A lot of my loop used to have a context switch baked into it. Write the code in Claude Code, then jump to a separate terminal to deploy and check that it&#39;s live. For anything I host on Vercel, that switch is gone, because Claude Code can drive the Vercel CLI directly. I ask it to deploy and tail the logs, and it runs <code>vercel</code>, reads the build output, and tells me if something broke, all in the same session where I just made the change.</p>
+<p>There&#39;s also a Vercel plugin that adds slash commands on top of this. The ones I reach for:</p>
+<ul>
+<li><code>/vercel:deploy</code> ships the current project. It&#39;s a preview deploy by default; pass <code>prod</code> to push to production.</li>
+<li><code>/vercel:status</code> shows recent deployments, the linked project, and the environment setup at a glance.</li>
+<li><code>/vercel:env</code> manages environment variables: list, pull, add, remove, diff.</li>
+</ul>
+<p>The point isn&#39;t that typing <code>vercel</code> is hard. It&#39;s that the gap between &quot;the code is written&quot; and &quot;it&#39;s live and the build passed&quot; used to span two windows and a few minutes of split attention. Now it&#39;s one continuous back-and-forth.</p>
+<h2>A status line that watches your context for you</h2>
+<p>The default status line is fine. <code>/statusline</code> lets you replace it with something that actually earns its space, and it&#39;ll generate the script for you if you describe what you want. Mine packs in the model I&#39;m on (Opus 4.7, with the 1M-token context window), how much of that context I&#39;ve used, how close I am to my usage limits over the last 5 hours and 7 days, and the current git branch:</p>
+<p><img src="posts/images/claude-code-statusline.png" alt="My Claude Code status line showing the git branch, model, context percentage used, and 5-hour and 7-day usage limits"></p>
+<p>That context number is the one that changed my habits. The sneakiest performance killer in Claude Code is letting the context window fill up, which I got into at length in the <a href="/blog/claude-code-intermediate.html">intermediate post</a>. I used to find out I was running low only when I went looking for it with a command. Now it sits in front of me the whole time, so I clear or compact <em>before</em> the responses start getting vague, not after. It turned context management from something I had to remember into something I just see.</p>
+<h2>Hand off instead of compacting, and set a <code>/goal</code></h2>
+<p>When a session gets long and context runs low, the obvious move is <code>/compact</code>, which summarizes everything so far and keeps going. I&#39;ve mostly stopped reaching for it first. A compacted session is still the same tired session, now running on a lossy summary of itself. More often I&#39;d rather hand the work to a fresh context: write a two-line note of what&#39;s done and what&#39;s left, start clean, and point the new session at it. Subagents are the built-in version of this idea: you delegate a scoped chunk to an agent with its own context window, so the main session stays clean. I got into that in <a href="/blog/claude-code-intermediate.html">the intermediate post</a>.</p>
+<p>The newer piece that makes this click is <code>/goal</code>. You hand the session a success condition, like <code>/goal all tests pass</code>, and Claude keeps working toward it instead of stopping after one turn. The goal even survives a resume, so if you come back tomorrow with <code>claude --continue</code>, it picks the target back up. <code>/goal clear</code> ends it early (and it only runs in a trusted workspace, so accept the trust prompt first). Paired with a clean handoff, I get to define what &quot;done&quot; looks like once and let the session drive toward it, instead of nudging it forward turn by turn.</p>
+<h2>The newest one: <code>/fast</code></h2>
+<p>This is the most recent thing I&#39;ve turned on. <code>/fast</code> toggles fast mode, which runs Claude Opus with noticeably quicker output. It&#39;s not a smaller, dumber model trading quality for speed. It&#39;s the same Opus, just faster, available on the recent Opus versions.</p>
+<p>For the back-and-forth parts of my day, small edits, quick questions, iterating on a function, the lower latency adds up to a meaningfully snappier session. I leave it on for most things and only think about it when I&#39;m doing something that genuinely needs maximum deliberation.</p>
+<h2>A few smaller ones</h2>
+<p>Not everything deserves its own section. A handful I&#39;ve started using that are worth a single line:</p>
+<ul>
+<li><code>/output-style</code> changes how Claude responds. I flip to the explanatory style when I want it to teach me as it works, not just hand me code.</li>
+<li><code>/doctor</code> diagnoses a broken or sluggish setup. The first thing I run when something feels off before I start blaming the model.</li>
+</ul>
+<h2>The one that maps the whole tool: <code>/powerup</code></h2>
+<p>I&#39;ll end on the feature that, in a way, contains all the others. <code>/powerup</code> opens a checklist of Claude Code&#39;s ten core capabilities and tracks which ones you&#39;ve actually used, with a short lesson behind each row. Here&#39;s mine, fully unlocked:</p>
+<p><img src="posts/images/claude-code-powerup.png" alt="Claude Code&#39;s /powerup screen reading &quot;All powered up, 10/10 unlocked,&quot; listing ten capabilities and the commands behind each"></p>
+<p>What I like is that it&#39;s organized by what you&#39;re trying to do, not by command name:</p>
+<ul>
+<li><strong>Talk to your codebase</strong> with <code>@</code> files and line refs</li>
+<li><strong>Steer with modes</strong> using shift+tab, plan, and auto</li>
+<li><strong>Undo anything</strong> with <code>/rewind</code> and Esc-Esc</li>
+<li><strong>Run in the background</strong> with tasks and <code>/tasks</code></li>
+<li><strong>Teach Claude your rules</strong> through CLAUDE.md and <code>/memory</code></li>
+<li><strong>Extend with tools</strong> via MCP and <code>/mcp</code></li>
+<li><strong>Automate your workflow</strong> with skills and hooks</li>
+<li><strong>Multiply yourself</strong> with subagents and <code>/agents</code></li>
+<li><strong>Code from anywhere</strong> with <code>/remote-control</code> and <code>/teleport</code></li>
+<li><strong>Dial the model</strong> with <code>/model</code> and <code>/effort</code></li>
+</ul>
+<p>Arrow keys to move, Enter to open a row and learn it. If you&#39;re new to Claude Code, running <code>/powerup</code> early is a faster map of the tool than reading the docs end to end. And if you&#39;ve followed these four posts, you&#39;ll notice it&#39;s basically their table of contents on a single screen.</p>
+<p>Most of these aren&#39;t headline features. There&#39;s no autonomous agent fleet here running while I sleep, the heavier automation lives in <a href="/blog/claude-code-intermediate.html">the intermediate post</a> and the <a href="/blog/claude-code-hidden-features.html">hidden features</a> writeup. They&#39;re the small, daily frictions I&#39;d quietly accepted until I found the thing that removed each one. That&#39;s the real lesson across four posts now: the tool keeps getting better, but a lot of the gain was already sitting there, one keystroke away, waiting for me to notice. I&#39;ll keep using it daily, and I&#39;ll keep finding more. When I do, there&#39;ll be a fifth post.</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

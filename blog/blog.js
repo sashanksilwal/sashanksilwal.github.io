@@ -62,7 +62,7 @@ function renderPostList(posts) {
   }
 
   container.innerHTML = posts.map(post => `
-    <a href="post.html?post=${post.slug}" class="post-card" data-category="${post.category || ''}" data-tags="${(post.tags || []).join(',')}">
+    <a href="${post.slug}.html" class="post-card" data-category="${post.category || ''}" data-tags="${(post.tags || []).join(',')}">
       <h2 class="post-card-title">${post.title}</h2>
       <div class="post-card-date">${formatDate(post.date)}</div>
       <p class="post-card-description">${post.description}</p>
@@ -194,10 +194,43 @@ function injectJsonLd(data) {
   script.textContent = JSON.stringify(data);
 }
 
+// Lazy images, syntax highlighting and math, for both the pre-rendered
+// pages and the ones assembled in the browser.
+function enhancePost(container) {
+  container.querySelectorAll('img').forEach(img => {
+    img.loading = 'lazy';
+    img.decoding = 'async';
+  });
+
+  if (typeof hljs !== 'undefined') {
+    container.querySelectorAll('pre code').forEach(block => {
+      if (!block.classList.contains('hljs')) hljs.highlightElement(block);
+    });
+  }
+
+  if (typeof renderMathInElement === 'function') {
+    renderMathInElement(container, {
+      delimiters: [
+        { left: '$$', right: '$$', display: true },
+        { left: '$', right: '$', display: false }
+      ],
+      throwOnError: false
+    });
+  }
+
+  syncHljsTheme();
+}
+
 // === SINGLE POST PAGE ===
 async function loadPost() {
   const container = document.getElementById('post-content');
   if (!container) return;
+
+  // Pages built by scripts/build-blog.js already carry the article in HTML.
+  if (container.dataset.prerendered === 'true') {
+    enhancePost(container);
+    return;
+  }
 
   const params = new URLSearchParams(window.location.search);
   const slug = params.get('post');
@@ -220,7 +253,7 @@ async function loadPost() {
       document.title = `${meta.title} | Sashank Silwal`;
 
       // Dynamic SEO meta tags
-      const postUrl = 'https://ssilwal.com.np/blog/post.html?post=' + slug;
+      const postUrl = 'https://ssilwal.com.np/blog/' + slug + '.html';
       const imageUrl = meta.image
         ? 'https://ssilwal.com.np/blog/posts/' + meta.image
         : null;
@@ -282,25 +315,7 @@ async function loadPost() {
     const html = restoreMath(marked.parse(safeMd), mathBlocks);
     container.innerHTML = html;
 
-    // Post images sit below the fold, so defer them
-    container.querySelectorAll('img').forEach(img => {
-      img.loading = 'lazy';
-      img.decoding = 'async';
-    });
-
-    // Render KaTeX math
-    if (typeof renderMathInElement === 'function') {
-      renderMathInElement(container, {
-        delimiters: [
-          { left: '$$', right: '$$', display: true },
-          { left: '$', right: '$', display: false }
-        ],
-        throwOnError: false
-      });
-    }
-
-    // Sync highlight.js theme
-    syncHljsTheme();
+    enhancePost(container);
 
   } catch (err) {
     container.innerHTML = '<p class="empty-state">Could not load this post.</p>';

@@ -64,7 +64,7 @@ Say you're training two models for fraud detection. Model A converges quickly to
 
 Based on the flatness hypothesis, Model B is more likely to generalize to new fraud patterns because SGD with smaller batches probably found a flatter minimum. Model A might be sitting in a sharp valley, perfectly fitting the training data but fragile to any distribution change.
 
-This connects directly to what I wrote about [model degradation in production](/blog/post.html?post=ml-systems-production). A model in a sharp minimum is more vulnerable to covariate shift, because even small changes in the input distribution can push the effective parameters out of the narrow good region.
+This connects directly to what I wrote about [model degradation in production](/blog/ml-systems-production.html). A model in a sharp minimum is more vulnerable to covariate shift, because even small changes in the input distribution can push the effective parameters out of the narrow good region.
 
 ## What to Do With This
 

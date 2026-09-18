@@ -54,7 +54,7 @@ Here's the analogy I like: imagine you have a massive pipe organ with thousands 
 
 LoRA works because neural networks are surprisingly redundant. You don't need to change everything to change behavior meaningfully. In practice, LoRA gets you maybe 90-95% of the performance of full fine-tuning at a fraction of the cost. For most applications, that tradeoff is absolutely worth it.
 
-There's also **QLoRA**, which combines LoRA with quantization (compressing the model's numbers to take up less memory). I go deeper into quantization methods in my post on [fitting big models on small GPUs](/blog/post.html?post=fitting-big-models-small-gpus). QLoRA lets you fine-tune a 65-billion parameter model on a single consumer GPU. That was kind of a big deal when it came out.
+There's also **QLoRA**, which combines LoRA with quantization (compressing the model's numbers to take up less memory). I go deeper into quantization methods in my post on [fitting big models on small GPUs](/blog/fitting-big-models-small-gpus.html). QLoRA lets you fine-tune a 65-billion parameter model on a single consumer GPU. That was kind of a big deal when it came out.
 
 ## How Companies Actually Do This
 
@@ -74,4 +74,4 @@ Understanding fine-tuning explains a lot of things that otherwise seem mysteriou
 
 The base model is the raw intelligence. Fine-tuning is what turns it into something you'd actually want to talk to. And increasingly, the competitive advantage in AI isn't in who has the biggest model. It's in who has the best data and the most thoughtful fine-tuning process to shape it.
 
-If you want to go further down this rabbit hole, I also wrote about [model distillation](/blog/post.html?post=model-distillation), which is what happens when you use fine-tuning to compress a big model's knowledge into a smaller one.
+If you want to go further down this rabbit hole, I also wrote about [model distillation](/blog/model-distillation.html), which is what happens when you use fine-tuning to compress a big model's knowledge into a smaller one.

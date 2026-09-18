@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Airflow and DAGs: The Orchestration Tool Every Data Team Ends Up Using | Sashank Silwal</title>
+    <meta name="description" content="What Airflow is, how DAGs work, building your first ML pipeline, error handling, and when to use something else instead.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/airflow-dag-basics.html">
+    <meta property="og:title" content="Airflow and DAGs: The Orchestration Tool Every Data Team Ends Up Using">
+    <meta property="og:description" content="What Airflow is, how DAGs work, building your first ML pipeline, error handling, and when to use something else instead.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/airflow-dag-basics.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-03-16">
+    <meta name="twitter:title" content="Airflow and DAGs: The Orchestration Tool Every Data Team Ends Up Using">
+    <meta name="twitter:description" content="What Airflow is, how DAGs work, building your first ML pipeline, error handling, and when to use something else instead.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Airflow and DAGs: The Orchestration Tool Every Data Team Ends Up Using","description":"What Airflow is, how DAGs work, building your first ML pipeline, error handling, and when to use something else instead.","datePublished":"2026-03-16","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/airflow-dag-basics.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Airflow and DAGs: The Orchestration Tool Every Data Team Ends Up Using</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-03-16">March 16, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">mlops</span><span class="tag">data-engineering</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>At some point in every data team&#39;s life, someone writes a Python script, puts it in a cron job, and calls it a pipeline. It works fine until the script depends on another script that depends on a database export that runs on a different server on a different schedule. Then one job fails silently, the downstream job runs on stale data, and you spend your Friday figuring out what broke and when.</p>
+<p>Airflow exists because cron jobs don&#39;t scale.</p>
+<h2>What Airflow Actually Is</h2>
+<p>Apache Airflow is a workflow orchestrator. You define tasks and the dependencies between them, and Airflow handles scheduling, execution, retries, monitoring, and alerting. It doesn&#39;t process your data (that&#39;s what your tasks do). It makes sure your tasks run in the right order at the right time.</p>
+<p>Think of it like a project manager for your scripts. It doesn&#39;t write the code, but it knows what needs to happen before what, and it yells at you when something goes wrong.</p>
+<h2>DAGs: The Core Concept</h2>
+<p>Everything in Airflow is organized into DAGs (Directed Acyclic Graphs). A DAG is just a collection of tasks with dependencies between them.</p>
+<p><strong>Directed</strong> means the edges have direction. Task A runs before Task B, not the other way around.</p>
+<p><strong>Acyclic</strong> means no loops. You can&#39;t have Task A depend on Task B which depends on Task A. If you think about it, that would be an infinite loop, and Airflow won&#39;t let you create one.</p>
+<p><strong>Graph</strong> means it&#39;s a network of nodes (tasks) connected by edges (dependencies).</p>
+<p>Here&#39;s what a simple DAG looks like:</p>
+<pre><code>Extract Data → Transform Data → Train Model → Evaluate Model
+</code></pre>
+<p>Each arrow is a dependency. &quot;Transform Data&quot; won&#39;t start until &quot;Extract Data&quot; succeeds. If &quot;Extract Data&quot; fails, nothing downstream runs. That&#39;s the whole point.</p>
+<h2>Your First DAG</h2>
+<p>Here&#39;s a real, working Airflow DAG that runs a basic ML pipeline. This pulls data, transforms it, trains a model, and evaluates it.</p>
+<pre><code class="language-python">from airflow import DAG
+from airflow.operators.python import PythonOperator
+from datetime import datetime, timedelta
+
+default_args = {
+    &quot;owner&quot;: &quot;sashank&quot;,
+    &quot;retries&quot;: 2,
+    &quot;retry_delay&quot;: timedelta(minutes=5),
+    &quot;email_on_failure&quot;: True,
+    &quot;email&quot;: [&quot;your-email@example.com&quot;],
+}
+
+def extract_data(**kwargs):
+    &quot;&quot;&quot;Pull raw data from source.&quot;&quot;&quot;
+    import pandas as pd
+    df = pd.read_sql(&quot;SELECT * FROM transactions WHERE date &gt; &#39;2026-01-01&#39;&quot;, conn)
+    df.to_parquet(&quot;/tmp/raw_data.parquet&quot;)
+    return len(df)
+
+def transform_data(**kwargs):
+    &quot;&quot;&quot;Clean and feature engineer.&quot;&quot;&quot;
+    import pandas as pd
+    df = pd.read_parquet(&quot;/tmp/raw_data.parquet&quot;)
+    df = df.dropna(subset=[&quot;amount&quot;, &quot;category&quot;])
+    df[&quot;amount_log&quot;] = df[&quot;amount&quot;].apply(lambda x: np.log1p(x))
+    df.to_parquet(&quot;/tmp/features.parquet&quot;)
+
+def train_model(**kwargs):
+    &quot;&quot;&quot;Train a simple model.&quot;&quot;&quot;
+    import pandas as pd
+    from sklearn.ensemble import GradientBoostedClassifier
+    df = pd.read_parquet(&quot;/tmp/features.parquet&quot;)
+    X, y = df.drop(&quot;label&quot;, axis=1), df[&quot;label&quot;]
+    model = GradientBoostedClassifier().fit(X, y)
+    joblib.dump(model, &quot;/tmp/model.pkl&quot;)
+
+def evaluate_model(**kwargs):
+    &quot;&quot;&quot;Score model on held-out data and log metrics.&quot;&quot;&quot;
+    model = joblib.load(&quot;/tmp/model.pkl&quot;)
+    accuracy = model.score(X_test, y_test)
+    print(f&quot;Model accuracy: {accuracy}&quot;)
+    if accuracy &lt; 0.85:
+        raise ValueError(f&quot;Accuracy {accuracy} below threshold 0.85&quot;)
+
+with DAG(
+    dag_id=&quot;ml_training_pipeline&quot;,
+    default_args=default_args,
+    description=&quot;Weekly model retraining pipeline&quot;,
+    schedule_interval=&quot;@weekly&quot;,
+    start_date=datetime(2026, 1, 1),
+    catchup=False,
+) as dag:
+
+    extract = PythonOperator(task_id=&quot;extract_data&quot;, python_callable=extract_data)
+    transform = PythonOperator(task_id=&quot;transform_data&quot;, python_callable=transform_data)
+    train = PythonOperator(task_id=&quot;train_model&quot;, python_callable=train_model)
+    evaluate = PythonOperator(task_id=&quot;evaluate_model&quot;, python_callable=evaluate_model)
+
+    extract &gt;&gt; transform &gt;&gt; train &gt;&gt; evaluate
+</code></pre>
+<p>That last line (<code>&gt;&gt;</code>) defines the dependency chain. Airflow reads it as &quot;extract runs first, then transform, then train, then evaluate.&quot; You can also do parallel branches:</p>
+<pre><code class="language-python"># transform and validate run in parallel after extract
+extract &gt;&gt; [transform, validate]
+[transform, validate] &gt;&gt; train
+</code></pre>
+<h2>Key Concepts</h2>
+<p><strong>Operators</strong> are the building blocks. <code>PythonOperator</code> runs a Python function. <code>BashOperator</code> runs a shell command. There are operators for BigQuery, S3, Spark, Snowflake, and basically every data tool you&#39;ve heard of.</p>
+<p><strong>Tasks</strong> are instances of operators within a DAG. The operator is the template, the task is the specific instance with specific arguments.</p>
+<p><strong>XComs</strong> (cross-communications) let tasks pass small pieces of data to each other. The <code>extract_data</code> function above returns <code>len(df)</code>, which downstream tasks can read. Don&#39;t use XComs for large data. Use files, databases, or object storage instead.</p>
+<p><strong>The Scheduler</strong> checks your DAGs on an interval and kicks off runs when they&#39;re due. <strong>The Executor</strong> actually runs the tasks. The default <code>SequentialExecutor</code> runs one task at a time (fine for local dev). In production you&#39;d use the <code>CeleryExecutor</code> or <code>KubernetesExecutor</code> for parallelism.</p>
+<h2>Error Handling</h2>
+<p>Airflow&#39;s retry logic is one of its best features. The <code>default_args</code> above specify 2 retries with a 5-minute delay. If a task fails (raises an exception), Airflow waits 5 minutes and tries again. If it fails twice more, it marks the task as failed and sends you an email.</p>
+<p>You can also set up more specific behavior:</p>
+<pre><code class="language-python">PythonOperator(
+    task_id=&quot;flaky_api_call&quot;,
+    python_callable=call_external_api,
+    retries=5,
+    retry_delay=timedelta(minutes=2),
+    retry_exponential_backoff=True,  # 2min, 4min, 8min, 16min, 32min
+    max_retry_delay=timedelta(minutes=30),
+)
+</code></pre>
+<p>For conditional logic, use branching:</p>
+<pre><code class="language-python">from airflow.operators.python import BranchPythonOperator
+
+def decide_path(**kwargs):
+    accuracy = kwargs[&quot;ti&quot;].xcom_pull(task_ids=&quot;evaluate_model&quot;)
+    if accuracy &gt; 0.90:
+        return &quot;deploy_model&quot;
+    return &quot;notify_team&quot;
+
+branch = BranchPythonOperator(
+    task_id=&quot;check_quality&quot;,
+    python_callable=decide_path,
+)
+</code></pre>
+<h2>When NOT to Use Airflow</h2>
+<p>Airflow is great for batch workflows that run on a schedule. It&#39;s not great for everything.</p>
+<p><strong>Real-time streaming</strong>: If you need sub-second latency, use Kafka, Flink, or Spark Streaming. Airflow&#39;s minimum scheduling interval is effectively about a minute, and it&#39;s not designed for continuous processing.</p>
+<p><strong>Simple cron jobs</strong>: If you have one script that runs once a day with no dependencies, a cron job is fine. Airflow adds overhead (a web server, a scheduler, a database, workers) that isn&#39;t worth it for simple cases.</p>
+<p><strong>Event-driven workflows</strong>: Airflow can be triggered by events using sensors, but it&#39;s clunky compared to tools designed for it. If most of your workflows are &quot;run this when that file appears&quot; or &quot;run this when that API fires a webhook,&quot; look at something else.</p>
+<h2>Alternatives Worth Knowing</h2>
+<p><strong>Prefect</strong> is basically &quot;Airflow but modern.&quot; It uses Python-native decorators, has better error messages, and doesn&#39;t require you to deploy a separate web server. If I were starting fresh today, I&#39;d seriously consider it.</p>
+<p><strong>Dagster</strong> focuses on data assets rather than tasks. Instead of &quot;run this function, then that function,&quot; you think in terms of &quot;this dataset depends on that dataset.&quot; The mental model is different and arguably better for data pipelines.</p>
+<p><strong>Luigi</strong> (from Spotify) is simpler than Airflow and fine for smaller teams. It&#39;s showing its age though.</p>
+<p>Airflow&#39;s advantage is ecosystem. It has operators for everything, massive community support, and it&#39;s what most job postings ask for. If you&#39;re learning one orchestration tool, it should probably still be Airflow. But know that there are alternatives and they&#39;re getting better.</p>
+<h2>The Practical Takeaway</h2>
+<p>The real value of Airflow isn&#39;t fancy features. It&#39;s that when something breaks at 3 AM, you can open the web UI, see exactly which task failed, read the logs, fix the issue, and re-run just the failed task and everything downstream. Compare that to debugging a chain of cron jobs by grepping through log files on different servers.</p>
+<p>If you&#39;re building ML systems that need to <a href="/blog/ml-systems-production.html">retrain on a schedule, monitor for drift, and redeploy automatically</a>, Airflow is usually where that automation lives. It&#39;s not glamorous software. It&#39;s plumbing. But good plumbing is the difference between a system that runs itself and a system that runs you.</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

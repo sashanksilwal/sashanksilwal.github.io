@@ -122,8 +122,8 @@ After studying these systems and talking to people who build them at scale, here
 
 **Features matter more than architecture.** The difference between matrix factorization and a state-of-the-art GNN might be 2-3% in offline metrics. The difference between "just user-item interactions" and "user-item interactions plus time-of-day, device type, session length, and recency-weighted history" can be 10-15%. Most recommendation teams spend 80% of their time on feature engineering and 20% on model architecture.
 
-**Real-time features are a multiplier.** What a user did in the last 5 minutes is far more predictive than what they did last month. This is why companies invest heavily in real-time feature infrastructure (I'll write more about [feature stores and Redis](/blog/post.html?post=feature-stores) separately).
+**Real-time features are a multiplier.** What a user did in the last 5 minutes is far more predictive than what they did last month. This is why companies invest heavily in real-time feature infrastructure (I'll write more about [feature stores and Redis](/blog/feature-stores.html) separately).
 
 **Evaluation is harder than training.** Offline metrics (AUC, NDCG, recall@K) don't always correlate with online metrics (click-through rate, session time, revenue). The only way to know if your model is actually better is to A/B test it with real users. This means your recommendation system needs to be built for experimentation from day one.
 
-The best recommendation system isn't the one with the cleverest architecture. It's the one that can be retrained daily, A/B tested continuously, and debugged when something goes wrong. Which is, honestly, most of the advice for [ML in production](/blog/post.html?post=ml-systems-production) in general.
+The best recommendation system isn't the one with the cleverest architecture. It's the one that can be retrained daily, A/B tested continuously, and debugged when something goes wrong. Which is, honestly, most of the advice for [ML in production](/blog/ml-systems-production.html) in general.

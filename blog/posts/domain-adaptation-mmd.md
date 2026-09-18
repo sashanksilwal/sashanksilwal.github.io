@@ -14,7 +14,7 @@ This isn't just an academic problem. It shows up constantly in real applications
 
 **E-commerce.** A product classifier trained on studio photos fails on user-uploaded images taken with phone cameras in messy bedrooms.
 
-**Financial fraud.** Transaction patterns shift as user behavior evolves. I wrote about this in my [ML systems in production post](/blog/post.html?post=ml-systems-production). The underlying fraud patterns might be stable, but the input features look different quarter to quarter.
+**Financial fraud.** Transaction patterns shift as user behavior evolves. I wrote about this in my [ML systems in production post](/blog/ml-systems-production.html). The underlying fraud patterns might be stable, but the input features look different quarter to quarter.
 
 In all these cases, what changes is P(X), the distribution of inputs. What stays the same is P(Y|X), the relationship between inputs and correct outputs. A car is a car. Fraud is fraud. The model just can't see it because the surface-level statistics changed. This specific type of shift is called covariate shift.
 
@@ -107,7 +107,7 @@ Domain adaptation isn't just an academic exercise. A few real scenarios where th
 
 **Autonomous driving.** A model trained on sunny California driving data gets deployed in overcast Seattle. Same road signs, same lane markings, different lighting distribution.
 
-**Financial fraud.** This connects to what I wrote about [models degrading in production](/blog/post.html?post=ml-systems-production). Transaction patterns shift as user behavior evolves, new products launch, or markets change. The underlying fraud patterns might be stable, but the input features look different.
+**Financial fraud.** This connects to what I wrote about [models degrading in production](/blog/ml-systems-production.html). Transaction patterns shift as user behavior evolves, new products launch, or markets change. The underlying fraud patterns might be stable, but the input features look different.
 
 In all these cases, you have labeled data from the source environment and (often) unlabeled data from the target environment. MMD-based adaptation fits naturally.
 

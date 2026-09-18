@@ -1,6 +1,6 @@
 There's a particular kind of frustration that comes from watching your Claude Code session slow to a crawl, burning through tokens while you sit there waiting for it to come back with something useful. You paste in a few more files, ask a follow-up, and the response gets worse. Then worse again. Most people hit this wall and blame the model. But the model isn't the problem. The way you feed it context is.
 
-This post is for people who already use Claude Code daily and want to get meaningfully better at it. If you're brand new to Claude Code, start with [the basics post](/blog/post.html?post=claude-code-basics) first. This isn't tips-and-tricks stuff. These are the structural changes that compound over weeks.
+This post is for people who already use Claude Code daily and want to get meaningfully better at it. If you're brand new to Claude Code, start with [the basics post](/blog/claude-code-basics.html) first. This isn't tips-and-tricks stuff. These are the structural changes that compound over weeks.
 
 ---
 

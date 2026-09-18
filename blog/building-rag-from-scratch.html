@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Building a RAG System from Scratch | Sashank Silwal</title>
+    <meta name="description" content="A step-by-step guide to building retrieval-augmented generation with Python. Embeddings, vector search, and generation, no frameworks required.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/building-rag-from-scratch.html">
+    <meta property="og:title" content="Building a RAG System from Scratch">
+    <meta property="og:description" content="A step-by-step guide to building retrieval-augmented generation with Python. Embeddings, vector search, and generation, no frameworks required.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/building-rag-from-scratch.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-03-08">
+    <meta name="twitter:title" content="Building a RAG System from Scratch">
+    <meta name="twitter:description" content="A step-by-step guide to building retrieval-augmented generation with Python. Embeddings, vector search, and generation, no frameworks required.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Building a RAG System from Scratch","description":"A step-by-step guide to building retrieval-augmented generation with Python. Embeddings, vector search, and generation, no frameworks required.","datePublished":"2026-03-08","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/building-rag-from-scratch.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Building a RAG System from Scratch</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-03-08">March 8, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">llm</span><span class="tag">rag</span><span class="tag">python</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>Last week I watched a friend spend three hours trying to get ChatGPT to answer questions about his company&#39;s internal docs. He kept pasting chunks of text into the chat window, hitting the token limit, and starting over. That&#39;s basically what RAG does, except it automates the whole process and does it well.</p>
+<p>RAG stands for Retrieval-Augmented Generation. The idea is simple: instead of hoping a language model memorized the answer to your question during training, you find the relevant information first, then hand it to the model along with your question. That&#39;s it. The model reads your documents and gives you an answer grounded in actual data.</p>
+<p>I&#39;m going to walk you through building one from scratch in Python. No frameworks, no magic abstractions. Just the core pieces so you understand what&#39;s actually happening.</p>
+<h2>The four pieces</h2>
+<p>Every RAG system has four parts:</p>
+<ol>
+<li><strong>Chunking</strong> - breaking your documents into smaller pieces</li>
+<li><strong>Embedding</strong> - turning those pieces into numbers (vectors) that capture meaning</li>
+<li><strong>Retrieval</strong> - finding the most relevant pieces for a given question</li>
+<li><strong>Generation</strong> - feeding those pieces to an LLM to get an answer</li>
+</ol>
+<p>Let&#39;s build each one.</p>
+<h2>Step 1: Chunk your documents</h2>
+<p>You can&#39;t just throw an entire PDF at a language model. Context windows are limited, and even when they&#39;re large, stuffing in irrelevant text makes the model worse at answering. So you split your documents into chunks.</p>
+<pre><code class="language-python">def chunk_text(text, chunk_size=500, overlap=50):
+    &quot;&quot;&quot;Split text into overlapping chunks.&quot;&quot;&quot;
+    chunks = []
+    start = 0
+    while start &lt; len(text):
+        end = start + chunk_size
+        chunk = text[start:end]
+        chunks.append(chunk)
+        start = end - overlap
+    return chunks
+
+# Example usage
+with open(&quot;my_document.txt&quot;, &quot;r&quot;) as f:
+    raw_text = f.read()
+
+chunks = chunk_text(raw_text)
+print(f&quot;Created {len(chunks)} chunks&quot;)
+</code></pre>
+<p>The overlap matters. Without it, you&#39;ll split sentences in half and lose context at the boundaries. 50 characters of overlap is minimal. In practice, you&#39;d want to split on sentence boundaries or paragraphs instead of raw character counts. But this gets the idea across.</p>
+<h2>Step 2: Turn text into vectors</h2>
+<p>Here&#39;s where embeddings come in. An embedding model takes a piece of text and outputs a list of numbers (a vector) that represents its meaning. Similar texts end up with similar vectors. This is what makes search possible.</p>
+<p>You can use OpenAI&#39;s embedding API or an open-source model. I&#39;ll show both.</p>
+<p><strong>Option A: OpenAI embeddings</strong></p>
+<pre><code class="language-python">from openai import OpenAI
+
+client = OpenAI()  # uses OPENAI_API_KEY env variable
+
+def get_embeddings(texts):
+    &quot;&quot;&quot;Get embeddings for a list of texts using OpenAI.&quot;&quot;&quot;
+    response = client.embeddings.create(
+        model=&quot;text-embedding-3-small&quot;,
+        input=texts
+    )
+    return [item.embedding for item in response.data]
+
+chunk_embeddings = get_embeddings(chunks)
+print(f&quot;Each embedding has {len(chunk_embeddings[0])} dimensions&quot;)
+</code></pre>
+<p><strong>Option B: Open-source with sentence-transformers (free, runs locally)</strong></p>
+<pre><code class="language-python">from sentence_transformers import SentenceTransformer
+
+model = SentenceTransformer(&quot;all-MiniLM-L6-v2&quot;)
+
+chunk_embeddings = model.encode(chunks).tolist()
+print(f&quot;Each embedding has {len(chunk_embeddings[0])} dimensions&quot;)
+</code></pre>
+<p>The open-source option is great for getting started. No API key needed, runs on your laptop, and the quality is surprisingly good for most use cases.</p>
+<h2>Step 3: Build a vector store and retrieve</h2>
+<p>Now you need somewhere to store these vectors and a way to search them. A vector database does this, but for learning purposes, we can use plain NumPy. The search works by computing cosine similarity between your question&#39;s embedding and every chunk&#39;s embedding, then returning the top matches.</p>
+<pre><code class="language-python">import numpy as np
+
+class SimpleVectorStore:
+    def __init__(self):
+        self.embeddings = []
+        self.texts = []
+
+    def add(self, texts, embeddings):
+        self.texts.extend(texts)
+        self.embeddings.extend(embeddings)
+
+    def search(self, query_embedding, top_k=3):
+        &quot;&quot;&quot;Find the top_k most similar chunks to the query.&quot;&quot;&quot;
+        query = np.array(query_embedding)
+        scores = []
+        for emb in self.embeddings:
+            emb = np.array(emb)
+            # Cosine similarity
+            score = np.dot(query, emb) / (
+                np.linalg.norm(query) * np.linalg.norm(emb)
+            )
+            scores.append(score)
+
+        # Get indices of top_k highest scores
+        top_indices = np.argsort(scores)[-top_k:][::-1]
+        results = []
+        for i in top_indices:
+            results.append({
+                &quot;text&quot;: self.texts[i],
+                &quot;score&quot;: scores[i]
+            })
+        return results
+
+# Build the store
+store = SimpleVectorStore()
+store.add(chunks, chunk_embeddings)
+</code></pre>
+<p>This is intentionally naive. With 10,000 chunks it works fine. With 10 million, you&#39;d want a proper vector database like ChromaDB, Pinecone, or pgvector. Those use approximate nearest neighbor algorithms (like HNSW) that trade a tiny bit of accuracy for massive speed gains.</p>
+<p>Here&#39;s how you&#39;d swap in ChromaDB if you want something more production-ready:</p>
+<pre><code class="language-python">import chromadb
+
+client = chromadb.Client()
+collection = client.create_collection(&quot;my_docs&quot;)
+
+collection.add(
+    documents=chunks,
+    ids=[f&quot;chunk_{i}&quot; for i in range(len(chunks))],
+    embeddings=chunk_embeddings
+)
+
+results = collection.query(
+    query_embeddings=[query_embedding],
+    n_results=3
+)
+</code></pre>
+<h2>Step 4: Generate an answer</h2>
+<p>This is the fun part. Take your retrieved chunks, stuff them into a prompt with the user&#39;s question, and let the LLM do its thing.</p>
+<pre><code class="language-python">def ask(question, store, embed_fn):
+    &quot;&quot;&quot;Full RAG pipeline: embed question, retrieve, generate.&quot;&quot;&quot;
+    # 1. Embed the question
+    query_embedding = embed_fn([question])[0]
+
+    # 2. Retrieve relevant chunks
+    results = store.search(query_embedding, top_k=3)
+    context = &quot;\n\n---\n\n&quot;.join([r[&quot;text&quot;] for r in results])
+
+    # 3. Generate answer
+    response = client.chat.completions.create(
+        model=&quot;gpt-4o-mini&quot;,
+        messages=[
+            {
+                &quot;role&quot;: &quot;system&quot;,
+                &quot;content&quot;: (
+                    &quot;Answer the user&#39;s question based on the provided context. &quot;
+                    &quot;If the context doesn&#39;t contain the answer, say so. &quot;
+                    &quot;Do not make up information.&quot;
+                )
+            },
+            {
+                &quot;role&quot;: &quot;user&quot;,
+                &quot;content&quot;: f&quot;Context:\n{context}\n\nQuestion: {question}&quot;
+            }
+        ]
+    )
+    return response.choices[0].message.content
+
+# Ask a question
+answer = ask(
+    &quot;What is the refund policy?&quot;,
+    store,
+    get_embeddings
+)
+print(answer)
+</code></pre>
+<p>That system prompt is doing important work. Telling the model to only use the provided context and admit when it doesn&#39;t know prevents hallucination. Without those instructions, the model will happily make things up.</p>
+<h2>Putting it all together</h2>
+<p>Here&#39;s the complete pipeline in one script:</p>
+<pre><code class="language-python">from openai import OpenAI
+import numpy as np
+
+client = OpenAI()
+
+# 1. Load and chunk
+with open(&quot;my_document.txt&quot;, &quot;r&quot;) as f:
+    raw_text = f.read()
+
+chunks = chunk_text(raw_text)
+
+# 2. Embed
+chunk_embeddings = get_embeddings(chunks)
+
+# 3. Store
+store = SimpleVectorStore()
+store.add(chunks, chunk_embeddings)
+
+# 4. Ask questions
+while True:
+    question = input(&quot;\nAsk a question (or &#39;quit&#39;): &quot;)
+    if question.lower() == &quot;quit&quot;:
+        break
+    answer = ask(question, store, get_embeddings)
+    print(f&quot;\n{answer}&quot;)
+</code></pre>
+<p>That&#39;s a working RAG system in under 100 lines of real code.</p>
+<h2>Things I&#39;d do differently in production</h2>
+<p>The version above works for learning, but there are gaps you&#39;d want to fill before putting this in front of real users.</p>
+<p><strong>Better chunking.</strong> Split on paragraphs or sentences instead of character counts. Libraries like LangChain have recursive text splitters that handle this well. Even better, if your documents have structure (headers, sections), chunk by section.</p>
+<p><strong>Hybrid search.</strong> Vector similarity search is great at finding semantically similar content, but it sometimes misses exact keyword matches. Combining vector search with traditional keyword search (BM25) catches both cases.</p>
+<p><strong>Reranking.</strong> Your initial retrieval might return 20 candidates. A reranker (like Cohere&#39;s rerank API or a cross-encoder model) can re-score those candidates with much higher accuracy, since it looks at the query and document together rather than comparing pre-computed vectors.</p>
+<p><strong>Chunk metadata.</strong> Store which document, page, and section each chunk came from. This lets you cite sources in your answers, which builds trust and lets users verify the information.</p>
+<h2>What actually matters</h2>
+<p>I&#39;ve seen people obsess over which embedding model to use or which vector database is fastest. Those things matter eventually, but they&#39;re not where most RAG systems fail.</p>
+<p>Most RAG systems fail because of bad chunking. If your chunks split a paragraph about refund policies across two pieces, neither piece has the full answer, and the model gives a confused response. Spend your time on chunking strategy and you&#39;ll get 80% of the way there.</p>
+<p>The second biggest failure mode is not evaluating. Build a set of 20-30 question/answer pairs from your documents. Run your pipeline on those questions. Check if the right chunks are being retrieved. Check if the answers are correct. Do this before tweaking anything else.</p>
+<p>If you&#39;re building RAG for production, you should also think about what happens when someone poisons your documents. I wrote about that in my post on <a href="/blog/context-poisoning.html">context poisoning</a>. And if you want a more comprehensive reference covering evaluation, reranking, and other production concerns, I have a <a href="/blog/rag-guide.html">longer guide on production RAG</a> as well.</p>
+<p>The best RAG system is the one where you actually understand every piece. That&#39;s why I&#39;d encourage you to build it from scratch at least once before reaching for a framework. Once you know what each component does, the frameworks make a lot more sense, and you&#39;ll know exactly where to look when something goes wrong.</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

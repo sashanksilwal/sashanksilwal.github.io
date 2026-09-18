@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Model Distillation: The Technique, The Controversy, and How To Do It | Sashank Silwal</title>
+    <meta name="description" content="What model distillation is, how DeepSeek allegedly used it on frontier model outputs, and a practical guide with lessons from our reasoning distillation paper.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/model-distillation.html">
+    <meta property="og:title" content="Model Distillation: The Technique, The Controversy, and How To Do It">
+    <meta property="og:description" content="What model distillation is, how DeepSeek allegedly used it on frontier model outputs, and a practical guide with lessons from our reasoning distillation paper.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/model-distillation.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-03-02">
+    <meta name="twitter:title" content="Model Distillation: The Technique, The Controversy, and How To Do It">
+    <meta name="twitter:description" content="What model distillation is, how DeepSeek allegedly used it on frontier model outputs, and a practical guide with lessons from our reasoning distillation paper.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Model Distillation: The Technique, The Controversy, and How To Do It","description":"What model distillation is, how DeepSeek allegedly used it on frontier model outputs, and a practical guide with lessons from our reasoning distillation paper.","datePublished":"2026-03-02","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/model-distillation.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Model Distillation: The Technique, The Controversy, and How To Do It</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-03-02">March 2, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">llm</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>When DeepSeek-R1 dropped in January 2025, the AI community spent about 48 hours celebrating the open weights before the accusations started. OpenAI claimed DeepSeek had used outputs from ChatGPT to train their models. Anthropic stayed quieter about it publicly, but the implication was the same: distillation from frontier models without permission. The whole episode raised a question that I think most practitioners have been avoiding: where exactly is the line between learning from a model and stealing from it?</p>
+<p>I&#39;ve been thinking about this more than usual lately because I recently co-authored a paper on reasoning distillation for automated program repair during <a href="/experience/">my research at Purdue</a>. So I have some opinions.</p>
+<h2>What distillation actually is</h2>
+<p>The core idea is simple. You have a large, expensive model (the teacher) and a small, cheap model (the student). You <a href="/blog/what-is-fine-tuning.html">fine-tune</a> the student to mimic the teacher&#39;s behavior, not just its final answers but ideally its intermediate reasoning and probability distributions. The student ends up performing surprisingly close to the teacher on the target task, at a fraction of the inference cost.</p>
+<p>The classic formulation from Hinton et al. (2015) uses a modified loss function:</p>
+<pre><code class="language-python">loss = alpha * KL_divergence(
+    softmax(teacher_logits / T),
+    softmax(student_logits / T)
+) + (1 - alpha) * cross_entropy(student_logits, hard_labels)
+</code></pre>
+<p>The temperature parameter <code>T</code> softens the probability distributions so the student can learn from the teacher&#39;s &quot;dark knowledge,&quot; the relative probabilities assigned to incorrect classes. At <code>T=1</code> you get the standard softmax. At higher temperatures the distribution flattens out and reveals more information about how the teacher ranks alternatives.</p>
+<p>This works. It works really well. And it&#39;s been standard practice in ML for a decade.</p>
+<h2>The DeepSeek situation</h2>
+<p>Here&#39;s what made the DeepSeek case interesting. They weren&#39;t just distilling from an open-source model they had access to. The allegation is that they systematically queried commercial APIs (Claude, GPT-4) and used those responses as training data. OpenAI&#39;s terms of service explicitly prohibit using outputs to train competing models. Microsoft reportedly found instances where DeepSeek&#39;s outputs contained phrasing patterns characteristic of GPT-4.</p>
+<p>DeepSeek&#39;s R1 paper itself describes distilling from their own R1 model into smaller variants (1.5B, 7B, 8B, 14B, 32B, 70B). That part is simple enough, they own R1. But the question is whether R1 itself was bootstrapped using data generated by proprietary models during earlier training stages. The paper is vague on the full data pipeline. Section 4 discusses their distillation methodology for the smaller models, but the pretraining data composition for the base model gets much less detail.</p>
+<p>The uncomfortable truth is that the technical boundary between &quot;I used GPT-4 to generate synthetic training data&quot; and &quot;I used GPT-4 as a research tool to help me understand what good outputs look like&quot; is fuzzy. Almost every ML team I know has used ChatGPT or Claude outputs in some capacity during development. The question is scale and intent.</p>
+<h2>The ethics, honestly</h2>
+<p>I think there are three distinct positions here, and I find myself somewhere between the second and third.</p>
+<p><strong>Position 1: All outputs are fair game.</strong> Once a model generates text, it&#39;s just text. You can&#39;t own the output of a statistical process. This is the most permissive view and it&#39;s wrong, at least legally. ToS agreements exist and they matter.</p>
+<p><strong>Position 2: The spirit matters more than the letter.</strong> Using API outputs to build a direct competitor is clearly a violation. Using them to evaluate your own model, generate test cases, or augment a small dataset for a research project is a gray area that probably shouldn&#39;t be prosecuted. Most people live here.</p>
+<p><strong>Position 3: Build your own data pipeline.</strong> If you want to compete at the frontier, generate your own synthetic data from models you own or have explicit licenses for. Use reinforcement learning from human feedback with your own annotators. This is expensive, but it&#39;s the only position that&#39;s completely defensible.</p>
+<p>The practical reality is that enforcement is nearly impossible. You can&#39;t fingerprint model outputs reliably enough to prove distillation in court. OpenAI knows this. Anthropic knows this. The ToS exists more as a deterrent and a basis for breach-of-contract claims than as a technical protection.</p>
+<h2>How distillation actually works in practice</h2>
+<p>Let me get concrete. In our paper, &quot;Reasoning Distillation for Lightweight Automated Program Repair&quot; (arXiv:2601.09087), Aanand Balasubramanian and I investigated whether you could make small program repair models significantly better by distilling structured reasoning from a larger model, not just the final predictions.</p>
+<p>The setup: we used a large teacher model to generate symbolic reasoning tags alongside fix-type labels for buggy programs from the IntroClass benchmark. These weren&#39;t just &quot;the answer is X&quot; labels. The teacher produced structured annotations explaining the reasoning chain, things like identifying the bug category, mapping it to a repair strategy, and justifying the fix type. We then trained a CodeT5-based student model on these enriched labels.</p>
+<p>The key insight was that reasoning supervision matters more than you&#39;d expect. The student model didn&#39;t just learn to classify fix types better. It learned something about the structure of the reasoning process itself, which transferred to examples outside the training distribution.</p>
+<p>Here&#39;s a simplified version of what the distillation pipeline looks like:</p>
+<pre><code class="language-python"># 1. Generate teacher annotations
+for buggy_program in dataset:
+    teacher_output = teacher_model.generate(
+        prompt=f&quot;Analyze this buggy program. Provide symbolic reasoning &quot;
+               f&quot;tags and fix-type classification.\n{buggy_program}&quot;
+    )
+    # teacher_output contains structured reasoning + label
+    annotated_data.append({
+        &quot;input&quot;: buggy_program,
+        &quot;reasoning_tags&quot;: parse_reasoning(teacher_output),
+        &quot;fix_label&quot;: parse_label(teacher_output)
+    })
+
+# 2. Train student with reasoning-augmented loss
+for batch in dataloader:
+    student_out = student_model(batch[&quot;input&quot;])
+
+    # Standard task loss
+    task_loss = cross_entropy(student_out.logits, batch[&quot;fix_label&quot;])
+
+    # Reasoning alignment loss
+    reasoning_loss = compute_tag_alignment(
+        student_out.hidden_states,
+        batch[&quot;reasoning_tags&quot;]
+    )
+
+    loss = task_loss + lambda_r * reasoning_loss
+    loss.backward()
+</code></pre>
+<p>The reasoning alignment loss is what makes this different from vanilla distillation. You&#39;re not just matching output distributions. You&#39;re encouraging the student&#39;s internal representations to align with the teacher&#39;s reasoning structure.</p>
+<h2>If you want to do this yourself</h2>
+<p>A few practical notes from having actually built these pipelines.</p>
+<p><strong>Start with task-specific distillation, not general-purpose.</strong> Distilling a model that&#39;s great at everything into a small model that&#39;s okay at everything is much harder than distilling a model that&#39;s great at one thing into a small model that&#39;s also great at that one thing. Pick your task. Curate your dataset for that task. Distill for that task.</p>
+<p><strong>Temperature matters more than you think.</strong> I&#39;ve seen teams spend weeks tuning architectures when the real bottleneck was using <code>T=1</code> instead of <code>T=3</code> or <code>T=5</code>. Sweep it. The optimal temperature varies by task and by how different the teacher and student capacities are.</p>
+<p><strong>Synthetic data quality &gt; quantity.</strong> 10,000 carefully generated teacher examples will outperform 100,000 sloppy ones. Filter aggressively. If you&#39;re using an LLM as the teacher, validate its outputs against ground truth where possible. In our APR work, we discarded teacher annotations that were internally inconsistent.</p>
+<p><strong>Watch for mode collapse.</strong> Small student models trained on distillation data can collapse to a narrow set of outputs, especially if the teacher has strong preferences. Mix in some fraction of original training data or use regularization.</p>
+<pre><code class="language-python"># Simple but effective: mix distillation and original data
+if random.random() &lt; mix_ratio:
+    loss = distillation_loss(student_out, teacher_out, T=temperature)
+else:
+    loss = cross_entropy(student_out, original_labels)
+</code></pre>
+<p><strong>Consider the legal implications before you ship.</strong> If your teacher model is behind a commercial API, read the terms of service. If you&#39;re distilling from an open-weights model like Llama or Mistral, read the license. Some licenses explicitly permit distillation, others don&#39;t. &quot;It&#39;s open source&quot; doesn&#39;t mean &quot;you can do whatever you want.&quot;</p>
+<h2>Where this is going</h2>
+<p>Distillation is becoming the default deployment strategy for LLMs in production. Train or fine-tune a large model, distill it down to something you can serve cheaply, ship the small model. OpenAI does this internally. Google does this. Every startup serving LLM-based features at scale does this or will soon.</p>
+<p>The DeepSeek controversy won&#39;t be the last. As models get better and API access gets cheaper, the temptation to distill from competitors will only grow. I expect we&#39;ll see a combination of technical watermarking (probably ineffective), contractual enforcement (probably selective), and industry norms (probably the most important in practice) emerge to handle this.</p>
+<p>The thing I keep coming back to is that distillation itself is not the problem. It&#39;s a powerful, well-understood technique that makes AI more accessible by making good models smaller and cheaper (I wrote more about the nuts and bolts of that in my <a href="/blog/fitting-big-models-small-gpus.html">quantization post</a>). The problem is when the teacher didn&#39;t consent to being a teacher. That distinction, between the technique and its application, is what the field needs to get better at articulating.</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

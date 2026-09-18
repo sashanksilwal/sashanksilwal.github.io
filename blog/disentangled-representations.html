@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Disentangled Representations: Why VAEs Can't Disentangle (and What Actually Works) | Sashank Silwal</title>
+    <meta name="description" content="Locatello et al. proved unsupervised disentanglement is impossible. Here's why rotational symmetry breaks identifiability, and how sparsity fixes it.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/disentangled-representations.html">
+    <meta property="og:title" content="Disentangled Representations: Why VAEs Can't Disentangle (and What Actually Works)">
+    <meta property="og:description" content="Locatello et al. proved unsupervised disentanglement is impossible. Here's why rotational symmetry breaks identifiability, and how sparsity fixes it.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/disentangled-representations.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-03-23">
+    <meta name="twitter:title" content="Disentangled Representations: Why VAEs Can't Disentangle (and What Actually Works)">
+    <meta name="twitter:description" content="Locatello et al. proved unsupervised disentanglement is impossible. Here's why rotational symmetry breaks identifiability, and how sparsity fixes it.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Disentangled Representations: Why VAEs Can't Disentangle (and What Actually Works)","description":"Locatello et al. proved unsupervised disentanglement is impossible. Here's why rotational symmetry breaks identifiability, and how sparsity fixes it.","datePublished":"2026-03-23","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/disentangled-representations.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Disentangled Representations: Why VAEs Can't Disentangle (and What Actually Works)</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-03-23">March 23, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">ml</span><span class="tag">deep-learning</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>Imagine you&#39;re building a face generation tool. You want a slider for &quot;smile,&quot; another for &quot;age,&quot; another for &quot;lighting.&quot; Each slider controls exactly one thing without affecting the others. That&#39;s the promise of disentangled representations: a latent space where each dimension maps to one interpretable factor of variation.</p>
+<p>This idea shows up everywhere. In drug discovery, you want to adjust a molecule&#39;s binding affinity without changing its toxicity. In image editing, StyleGAN&#39;s appeal is that you can change hair color without also changing the background. In fairness, you need to separate &quot;relevant features&quot; from &quot;sensitive attributes&quot; like race or gender.</p>
+<p>The problem is that Locatello et al. proved in 2019 that achieving this is fundamentally impossible without additional assumptions. Not &quot;hard.&quot; Not &quot;requires more data.&quot; Mathematically impossible with standard unsupervised methods. I worked through the proof during my deep learning course at Purdue, and it&#39;s one of those results that changes how you think about the whole field.</p>
+<h2>The Identifiability Problem</h2>
+<p>Say you have a generative model that maps latent variables $z$ to observations $x$ through some function $f$, so $x = f(z)$. The model learns $f$ from data. The question is: can you recover the &quot;true&quot; latent factors from the learned representation?</p>
+<p>The answer is no, and here&#39;s why. For any orthogonal rotation matrix $Q$, the pair $(f, z)$ and $(f \circ Q^T, Qz)$ produce exactly the same observations. The model $f \circ Q^T$ applied to the rotated latents $Qz$ gives you:</p>
+<p>$$(f \circ Q^T)(Qz) = f(Q^T Q z) = f(z) = x$$</p>
+<p>Same output. Different latent space. And if your latent prior is a standard Gaussian $\mathcal{N}(0, I)$, it&#39;s rotationally symmetric, so $Qz$ has exactly the same distribution as $z$. There is literally no statistical signal that distinguishes the &quot;true&quot; representation from any rotated version.</p>
+<p>This means a VAE or any unsupervised generative model has infinitely many equally valid latent spaces, related by arbitrary rotations. One of them might be nicely disentangled. The rest aren&#39;t. And the model has no way to prefer the disentangled one.</p>
+<h2>What This Looks Like in Practice</h2>
+<p>Imagine you train a VAE on face images. You hope dimension 1 captures &quot;smile&quot; and dimension 2 captures &quot;head rotation.&quot; But any rotation of those two dimensions is equally valid:</p>
+<ul>
+<li>(0.7 * smile + 0.7 * rotation, -0.7 * smile + 0.7 * rotation) is a valid representation</li>
+<li>(-smile, rotation) is a valid representation</li>
+<li>Any 2D rotation of (smile, rotation) is a valid representation</li>
+</ul>
+<p>They all reconstruct images equally well. They all have the same ELBO. The loss function simply cannot distinguish between them.</p>
+<p>This is why different random seeds produce different &quot;disentanglement&quot; results in papers. The model isn&#39;t learning different things about the data. It&#39;s landing on different rotations of the same underlying representation. The one that happens to align with human-interpretable factors is luck, not learning.</p>
+<h2>beta-VAE and Why It Sometimes Seems to Work</h2>
+<p>beta-VAE (Higgins et al., 2017) adds a weight $\beta > 1$ to the KL divergence term:</p>
+<p>$$\mathcal{L} = \mathbb{E}[\log p(x|z)] - \beta \cdot D_{KL}(q(z|x) \| p(z))$$</p>
+<p>The higher $\beta$ pushes the posterior closer to the prior, which encourages independence between latent dimensions. And it does produce representations that look more disentangled on benchmarks like dSprites and CelebA.</p>
+<p>But here&#39;s the catch: the Locatello paper showed that across 12,000 trained models with different hyperparameters and random seeds, there was no reliable relationship between the inductive bias (beta value, model architecture) and the degree of disentanglement achieved. Good disentanglement was mostly a function of the random seed. Some seeds got lucky.</p>
+<p>The fundamental impossibility result doesn&#39;t go away just because you increase $\beta$. What $\beta > 1$ does is reduce the capacity of the latent space (by pushing it toward the prior), which can accidentally encourage axis-alignment in some cases. But it doesn&#39;t solve the rotation ambiguity in any principled way.</p>
+<h2>Sparsity: The Fix That Actually Works</h2>
+<p>So how do you get identifiable (provably unique) representations? You need to break the rotational symmetry. One way that works is sparsity.</p>
+<p>The idea: require that the Jacobian of the generative function $f$ is sparse. Meaning each observation dimension depends on only a few latent dimensions, not all of them.</p>
+<p>Why does this help? Consider what happens when you rotate the latent space. If the original Jacobian $J_f(z)$ has at most $s$ nonzero entries per row (each output pixel depends on at most $s$ latent factors), then the rotated version $J_{f \circ Q^T}(z') = J_f(z) \cdot Q^T$ will generally have more nonzero entries per row. Matrix multiplication with a non-diagonal matrix fills in zeros.</p>
+<p>The proof is elegant. If $Q$ is not a permutation-and-scaling matrix, then $J_f \cdot Q^T$ has strictly more nonzeros per row than $J_f$. So if you constrain the Jacobian to be sparse, the only valid transformations $Q$ are permutations and scalings, not arbitrary rotations. That makes the representation identifiable up to the ordering and scale of dimensions, which is the best you can hope for.</p>
+<pre><code class="language-python"># Conceptual: sparse Jacobian encourages identifiability
+# In practice, you&#39;d add a sparsity penalty to the decoder Jacobian
+
+def sparsity_loss(decoder, z_sample):
+    &quot;&quot;&quot;Penalize non-sparse Jacobian of the decoder.&quot;&quot;&quot;
+    z_sample.requires_grad_(True)
+    x_reconstructed = decoder(z_sample)
+
+    # Compute Jacobian
+    jacobian = torch.autograd.functional.jacobian(decoder, z_sample)
+
+    # L1 penalty encourages sparsity
+    return torch.abs(jacobian).mean()
+</code></pre>
+<h2>Real-World Examples</h2>
+<p>Disentanglement matters beyond academic benchmarks. A few places where it shows up:</p>
+<p><strong>Drug discovery.</strong> You want a latent space where one dimension controls a molecule&#39;s binding affinity and another controls its toxicity. If these are entangled, you can&#39;t optimize one without accidentally changing the other. With a disentangled representation, you can search along the binding affinity axis while holding toxicity fixed.</p>
+<p><strong>Image editing.</strong> Tools like StyleGAN&#39;s latent space let you edit specific attributes (age, expression, lighting) because the representation is partially disentangled. When it&#39;s not, editing &quot;hair color&quot; also changes &quot;background&quot; or &quot;pose&quot; because those factors are mixed in the same dimensions.</p>
+<p><strong>Fairness in ML.</strong> If a model&#39;s representation entangles &quot;relevant features&quot; with &quot;sensitive attributes&quot; (race, gender), the model can&#39;t be fair even if you remove the sensitive attribute at prediction time. Disentangling the representation is a prerequisite for removing the influence of protected attributes.</p>
+<p><strong>Transfer learning.</strong> A disentangled representation is more likely to transfer across tasks, because each dimension captures a distinct concept. An entangled representation might capture a task-specific combination of features that&#39;s useless for a different task.</p>
+<h2>The Broader Lesson</h2>
+<p>What I found most interesting about the identifiability result isn&#39;t the math itself (though the proof via orthogonal rotations is clean). It&#39;s the implication for how we evaluate representation learning.</p>
+<p>If unsupervised disentanglement is impossible without extra assumptions, then every paper claiming to achieve it must be relying on some implicit assumption, whether they acknowledge it or not. That assumption might be the architecture (convolutional structure imposes spatial locality), the optimizer (SGD with specific hyperparameters), or the data (natural images have statistical structure that breaks some symmetries).</p>
+<p>Understanding what those implicit assumptions are, and when they hold, is more useful than finding yet another metric for &quot;disentanglement score&quot; on dSprites. The Locatello paper pushed the field in this direction, and recent work on identifiable VAEs, causal representation learning, and sparse independent component analysis has followed.</p>
+<p>The takeaway isn&#39;t that disentangled representations are hopeless. It&#39;s that you need to be explicit about what inductive bias is doing the work. &quot;Train a VAE and hope for the best&quot; is not a strategy. Constraining the Jacobian, using multiple environments or data modalities, or incorporating weak supervision are strategies. The impossibility result doesn&#39;t close the door. It tells you which doors are actually open.</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

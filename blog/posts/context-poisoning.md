@@ -10,7 +10,7 @@ LLMs don't have a clean separation between "code" and "data." Everything is text
 
 When an attacker controls any portion of that context, they can influence the model's behavior. The attack surface is proportional to how much of the context is attacker-controlled.
 
-Think about a typical RAG application (if you haven't built one before, I walk through it step by step in [building a RAG system from scratch](/blog/post.html?post=building-rag-from-scratch)):
+Think about a typical RAG application (if you haven't built one before, I walk through it step by step in [building a RAG system from scratch](/blog/building-rag-from-scratch.html)):
 
 ```
 [System Prompt] → trusted

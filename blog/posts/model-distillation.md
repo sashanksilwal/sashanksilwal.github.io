@@ -4,7 +4,7 @@ I've been thinking about this more than usual lately because I recently co-autho
 
 ## What distillation actually is
 
-The core idea is simple. You have a large, expensive model (the teacher) and a small, cheap model (the student). You [fine-tune](/blog/post.html?post=what-is-fine-tuning) the student to mimic the teacher's behavior, not just its final answers but ideally its intermediate reasoning and probability distributions. The student ends up performing surprisingly close to the teacher on the target task, at a fraction of the inference cost.
+The core idea is simple. You have a large, expensive model (the teacher) and a small, cheap model (the student). You [fine-tune](/blog/what-is-fine-tuning.html) the student to mimic the teacher's behavior, not just its final answers but ideally its intermediate reasoning and probability distributions. The student ends up performing surprisingly close to the teacher on the target task, at a fraction of the inference cost.
 
 The classic formulation from Hinton et al. (2015) uses a modified loss function:
 
@@ -110,4 +110,4 @@ Distillation is becoming the default deployment strategy for LLMs in production.
 
 The DeepSeek controversy won't be the last. As models get better and API access gets cheaper, the temptation to distill from competitors will only grow. I expect we'll see a combination of technical watermarking (probably ineffective), contractual enforcement (probably selective), and industry norms (probably the most important in practice) emerge to handle this.
 
-The thing I keep coming back to is that distillation itself is not the problem. It's a powerful, well-understood technique that makes AI more accessible by making good models smaller and cheaper (I wrote more about the nuts and bolts of that in my [quantization post](/blog/post.html?post=fitting-big-models-small-gpus)). The problem is when the teacher didn't consent to being a teacher. That distinction, between the technique and its application, is what the field needs to get better at articulating.
+The thing I keep coming back to is that distillation itself is not the problem. It's a powerful, well-understood technique that makes AI more accessible by making good models smaller and cheaper (I wrote more about the nuts and bolts of that in my [quantization post](/blog/fitting-big-models-small-gpus.html)). The problem is when the teacher didn't consent to being a teacher. That distinction, between the technique and its application, is what the field needs to get better at articulating.

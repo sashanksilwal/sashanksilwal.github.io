@@ -9,88 +9,88 @@
 
     <item>
       <title>I Asked GPT-6 Astra for a 3D Boudhanath and Got 2,004 Prayer Flags</title>
-      <link>https://ssilwal.com.np/blog/post.html?post=astra-nepal-in-3d</link>
-      <guid>https://ssilwal.com.np/blog/post.html?post=astra-nepal-in-3d</guid>
+      <link>https://ssilwal.com.np/blog/astra-nepal-in-3d.html</link>
+      <guid>https://ssilwal.com.np/blog/astra-nepal-in-3d.html</guid>
       <pubDate>Fri, 18 Sep 2026 00:00:00 +0000</pubDate>
       <description>I&apos;ve used Claude daily for months. Then GPT-6 Astra landed, so I pointed it at a 3D reconstruction of Boudhanath. Two hours later, I hadn&apos;t written a line.</description>
     </item>
 
     <item>
       <title>Getting Started with Claude Code: Everything I Wish I Knew on Day One</title>
-      <link>https://ssilwal.com.np/blog/post.html?post=claude-code-basics</link>
-      <guid>https://ssilwal.com.np/blog/post.html?post=claude-code-basics</guid>
+      <link>https://ssilwal.com.np/blog/claude-code-basics.html</link>
+      <guid>https://ssilwal.com.np/blog/claude-code-basics.html</guid>
       <pubDate>Sun, 08 Mar 2026 00:00:00 +0000</pubDate>
       <description>A beginner's guide to Claude Code covering CLAUDE.md, context management, key commands, and the feedback loop that makes it actually useful.</description>
     </item>
 
     <item>
       <title>Claude Code Beyond the Basics: Agents, Context Engineering, and Production Workflows</title>
-      <link>https://ssilwal.com.np/blog/post.html?post=claude-code-intermediate</link>
-      <guid>https://ssilwal.com.np/blog/post.html?post=claude-code-intermediate</guid>
+      <link>https://ssilwal.com.np/blog/claude-code-intermediate.html</link>
+      <guid>https://ssilwal.com.np/blog/claude-code-intermediate.html</guid>
       <pubDate>Sun, 08 Mar 2026 00:00:00 +0000</pubDate>
       <description>An intermediate guide to Claude Code covering context management, CLAUDE.md patterns, subagents, custom commands, hooks, MCP, skills, and CI integration.</description>
     </item>
 
     <item>
       <title>Context Poisoning: How Attackers Manipulate LLM Context Windows</title>
-      <link>https://ssilwal.com.np/blog/post.html?post=context-poisoning</link>
-      <guid>https://ssilwal.com.np/blog/post.html?post=context-poisoning</guid>
+      <link>https://ssilwal.com.np/blog/context-poisoning.html</link>
+      <guid>https://ssilwal.com.np/blog/context-poisoning.html</guid>
       <pubDate>Fri, 06 Mar 2026 00:00:00 +0000</pubDate>
       <description>Prompt injection, data poisoning in RAG systems, and adversarial inputs that hijack LLM behavior. Real attack vectors and practical defenses for production systems.</description>
     </item>
 
     <item>
       <title>Building a RAG System from Scratch</title>
-      <link>https://ssilwal.com.np/blog/post.html?post=building-rag-from-scratch</link>
-      <guid>https://ssilwal.com.np/blog/post.html?post=building-rag-from-scratch</guid>
+      <link>https://ssilwal.com.np/blog/building-rag-from-scratch.html</link>
+      <guid>https://ssilwal.com.np/blog/building-rag-from-scratch.html</guid>
       <pubDate>Sun, 08 Mar 2026 00:00:00 +0000</pubDate>
       <description>A step-by-step guide to building retrieval-augmented generation with Python. Embeddings, vector search, and generation, no frameworks required.</description>
     </item>
 
     <item>
       <title>What is Fine-Tuning, and Why Does Every AI Company Do It?</title>
-      <link>https://ssilwal.com.np/blog/post.html?post=what-is-fine-tuning</link>
-      <guid>https://ssilwal.com.np/blog/post.html?post=what-is-fine-tuning</guid>
+      <link>https://ssilwal.com.np/blog/what-is-fine-tuning.html</link>
+      <guid>https://ssilwal.com.np/blog/what-is-fine-tuning.html</guid>
       <pubDate>Wed, 04 Mar 2026 00:00:00 +0000</pubDate>
       <description>RLHF, LoRA, full fine-tuning explained without the jargon. How companies take a base model and turn it into something actually useful.</description>
     </item>
 
     <item>
       <title>Fitting Big Models on Small GPUs</title>
-      <link>https://ssilwal.com.np/blog/post.html?post=fitting-big-models-small-gpus</link>
-      <guid>https://ssilwal.com.np/blog/post.html?post=fitting-big-models-small-gpus</guid>
+      <link>https://ssilwal.com.np/blog/fitting-big-models-small-gpus.html</link>
+      <guid>https://ssilwal.com.np/blog/fitting-big-models-small-gpus.html</guid>
       <pubDate>Tue, 03 Mar 2026 00:00:00 +0000</pubDate>
       <description>Quantization techniques (GPTQ, GGUF, AWQ), distillation as a size reduction strategy, and practical tradeoffs for running 70B models on consumer hardware.</description>
     </item>
 
     <item>
       <title>Model Distillation: The Technique, The Controversy, and How To Do It</title>
-      <link>https://ssilwal.com.np/blog/post.html?post=model-distillation</link>
-      <guid>https://ssilwal.com.np/blog/post.html?post=model-distillation</guid>
+      <link>https://ssilwal.com.np/blog/model-distillation.html</link>
+      <guid>https://ssilwal.com.np/blog/model-distillation.html</guid>
       <pubDate>Mon, 02 Mar 2026 00:00:00 +0000</pubDate>
       <description>What model distillation is, how DeepSeek allegedly used it on frontier model outputs, and a practical guide with lessons from our reasoning distillation paper.</description>
     </item>
 
     <item>
       <title>Automated Rule Generation for Fraud Detection Using Deep Learning and Explainability</title>
-      <link>https://ssilwal.com.np/blog/post.html?post=fraud-rule-generation</link>
-      <guid>https://ssilwal.com.np/blog/post.html?post=fraud-rule-generation</guid>
+      <link>https://ssilwal.com.np/blog/fraud-rule-generation.html</link>
+      <guid>https://ssilwal.com.np/blog/fraud-rule-generation.html</guid>
       <pubDate>Wed, 25 Feb 2026 00:00:00 +0000</pubDate>
       <description>Surveying the landscape of approaches to automatically extract interpretable, auditable fraud detection rules from LSTM models using SHAP, Anchors, knowledge distillation, and temporal pattern mining.</description>
     </item>
 
     <item>
       <title>UrbanTherm: GPU-Accelerated Surface Energy Balance for Urban Microclimate Modeling</title>
-      <link>https://ssilwal.com.np/blog/post.html?post=urbantherm</link>
-      <guid>https://ssilwal.com.np/blog/post.html?post=urbantherm</guid>
+      <link>https://ssilwal.com.np/blog/urbantherm.html</link>
+      <guid>https://ssilwal.com.np/blog/urbantherm.html</guid>
       <pubDate>Tue, 24 Feb 2026 00:00:00 +0000</pubDate>
       <description>How we extended SOLWEIG with a full surface energy balance solver, Newton-Raphson surface temperatures, multi-layer conduction, canopy transpiration, and spatial air temperature, all running on GPU at 1m resolution.</description>
     </item>
 
     <item>
       <title>Industry-Level RAG Practices: A Comprehensive Reference</title>
-      <link>https://ssilwal.com.np/blog/post.html?post=rag-guide</link>
-      <guid>https://ssilwal.com.np/blog/post.html?post=rag-guide</guid>
+      <link>https://ssilwal.com.np/blog/rag-guide.html</link>
+      <guid>https://ssilwal.com.np/blog/rag-guide.html</guid>
       <pubDate>Sun, 15 Feb 2026 00:00:00 +0000</pubDate>
       <description>A detailed guide covering the full RAG pipeline: chunking, embeddings, vector databases, retrieval strategies, reranking, advanced architectures (CRAG, Self-RAG, Graph RAG, RAPTOR), evaluation, and production deployment.</description>
     </item>

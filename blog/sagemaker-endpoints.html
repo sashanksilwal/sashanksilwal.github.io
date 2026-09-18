@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Deploying ML Models with SageMaker: Endpoints, Scaling, and When Not to Bother | Sashank Silwal</title>
+    <meta name="description" content="Real-time and serverless endpoints, auto-scaling, A/B testing with production variants, cost optimization, and when a FastAPI server is the better choice.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/sagemaker-endpoints.html">
+    <meta property="og:title" content="Deploying ML Models with SageMaker: Endpoints, Scaling, and When Not to Bother">
+    <meta property="og:description" content="Real-time and serverless endpoints, auto-scaling, A/B testing with production variants, cost optimization, and when a FastAPI server is the better choice.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/sagemaker-endpoints.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-03-14">
+    <meta name="twitter:title" content="Deploying ML Models with SageMaker: Endpoints, Scaling, and When Not to Bother">
+    <meta name="twitter:description" content="Real-time and serverless endpoints, auto-scaling, A/B testing with production variants, cost optimization, and when a FastAPI server is the better choice.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Deploying ML Models with SageMaker: Endpoints, Scaling, and When Not to Bother","description":"Real-time and serverless endpoints, auto-scaling, A/B testing with production variants, cost optimization, and when a FastAPI server is the better choice.","datePublished":"2026-03-14","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/sagemaker-endpoints.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Deploying ML Models with SageMaker: Endpoints, Scaling, and When Not to Bother</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-03-14">March 14, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">mlops</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>In college, deploying a model meant calling <code>model.predict()</code> in a notebook and checking the output. Then I joined Binance and had to get a model serving real production traffic, thousands of requests per second with near-zero downtime. The gap between those two worlds is enormous, and it&#39;s where most ML projects stall.</p>
+<p>SageMaker isn&#39;t always the right answer for bridging that gap. It&#39;s expensive, opinionated, and ties you to AWS. But if you&#39;re already on AWS and need to go from trained model to production endpoint without building a serving stack from scratch, it removes a lot of the grunt work.</p>
+<h2>What SageMaker Actually Gives You</h2>
+<p>SageMaker is a collection of services, not a single tool. The main pieces:</p>
+<p><strong>Training</strong>: managed compute for training jobs. You define the code, the data location, and the instance type. SageMaker spins up machines, runs training, saves the model artifact to S3, and shuts everything down.</p>
+<p><strong>Hosting</strong>: model endpoints for real-time inference. This is what most people mean when they say &quot;SageMaker.&quot;</p>
+<p><strong>Batch Transform</strong>: offline inference on large datasets.</p>
+<p><strong>Model Monitor</strong>: drift detection and data quality checks (relevant if you&#39;ve read my post on <a href="/blog/ml-systems-production.html">ML systems in production</a>).</p>
+<p>I&#39;m going to focus on hosting and endpoints since that&#39;s where the deployment complexity lives.</p>
+<h2>Deploying a Real-Time Endpoint</h2>
+<p>The basic flow: you have a trained model artifact (a <code>.tar.gz</code> file in S3 containing your model weights and any preprocessing code), and you want to create an HTTPS endpoint that accepts input, runs inference, and returns predictions.</p>
+<pre><code class="language-python">import sagemaker
+from sagemaker.sklearn import SKLearnModel
+
+role = &quot;arn:aws:iam::123456789:role/SageMakerRole&quot;
+model_data = &quot;s3://my-bucket/models/fraud-model/model.tar.gz&quot;
+
+# Define the model
+model = SKLearnModel(
+    model_data=model_data,
+    role=role,
+    framework_version=&quot;1.2-1&quot;,
+    entry_point=&quot;inference.py&quot;,  # your custom inference code
+)
+
+# Deploy to an endpoint
+predictor = model.deploy(
+    initial_instance_count=1,
+    instance_type=&quot;ml.m5.xlarge&quot;,
+)
+
+# Now you can call it
+result = predictor.predict({&quot;features&quot;: [1.2, 3.4, 5.6, 7.8]})
+</code></pre>
+<p>The <code>inference.py</code> file defines how your model loads and how it processes requests. At minimum, you need a <code>model_fn</code> (load the model) and <code>predict_fn</code> (run inference):</p>
+<pre><code class="language-python">import joblib
+import numpy as np
+
+def model_fn(model_dir):
+    &quot;&quot;&quot;Load model from the model directory.&quot;&quot;&quot;
+    return joblib.load(f&quot;{model_dir}/model.pkl&quot;)
+
+def input_fn(request_body, content_type):
+    &quot;&quot;&quot;Parse the incoming request.&quot;&quot;&quot;
+    import json
+    data = json.loads(request_body)
+    return np.array(data[&quot;features&quot;]).reshape(1, -1)
+
+def predict_fn(input_data, model):
+    &quot;&quot;&quot;Run inference.&quot;&quot;&quot;
+    return model.predict_proba(input_data).tolist()
+</code></pre>
+<p>This is the simplest version. For PyTorch or TensorFlow models, SageMaker has framework-specific containers that handle most of this automatically.</p>
+<h2>Serverless Endpoints</h2>
+<p>Real-time endpoints run 24/7 on dedicated instances. That&#39;s great for steady traffic but wasteful for bursty workloads. If your model gets 100 requests at 9 AM and nothing until the next day, you&#39;re paying for an idle instance 23 hours a day.</p>
+<p>Serverless endpoints fix this. They scale to zero when idle and spin up on demand.</p>
+<pre><code class="language-python">from sagemaker.serverless import ServerlessInferenceConfig
+
+serverless_config = ServerlessInferenceConfig(
+    memory_size_in_mb=4096,
+    max_concurrency=10,
+)
+
+predictor = model.deploy(
+    serverless_inference_config=serverless_config,
+)
+</code></pre>
+<p>The catch: cold starts. When an endpoint scales from zero, the first request takes 10-30 seconds while the container loads and the model initializes. For a 500MB model, you might see 15-20 seconds of cold start latency. That&#39;s unacceptable for user-facing applications but fine for internal tools, async processing, or low-traffic services.</p>
+<p>My rule of thumb: if you get fewer than 100 requests per hour and can tolerate occasional latency spikes, serverless saves you a lot of money. Otherwise, use a real-time endpoint.</p>
+<h2>Batch Transform</h2>
+<p>Not every prediction needs to happen in real time. If you need to score a million records overnight (like generating recommendations or risk scores for all active users), batch transform is simpler and cheaper.</p>
+<pre><code class="language-python">transformer = model.transformer(
+    instance_count=4,
+    instance_type=&quot;ml.m5.4xlarge&quot;,
+    output_path=&quot;s3://my-bucket/predictions/output/&quot;,
+    strategy=&quot;MultiRecord&quot;,  # batch records together for efficiency
+    max_payload=6,  # MB per batch
+)
+
+transformer.transform(
+    data=&quot;s3://my-bucket/predictions/input/&quot;,
+    content_type=&quot;text/csv&quot;,
+    split_type=&quot;Line&quot;,
+)
+</code></pre>
+<p>SageMaker spins up 4 instances, distributes the input data across them, runs inference in parallel, writes results to S3, and tears everything down. You pay only for the compute time.</p>
+<h2>Auto-Scaling</h2>
+<p>For real-time endpoints, auto-scaling is how you handle traffic spikes without over-provisioning.</p>
+<pre><code class="language-python">import boto3
+
+client = boto3.client(&quot;application-autoscaling&quot;)
+
+# Register the endpoint as a scalable target
+client.register_scalable_target(
+    ServiceNamespace=&quot;sagemaker&quot;,
+    ResourceId=f&quot;endpoint/{endpoint_name}/variant/AllTraffic&quot;,
+    ScalableDimension=&quot;sagemaker:variant:DesiredInstanceCount&quot;,
+    MinCapacity=1,
+    MaxCapacity=10,
+)
+
+# Scale based on invocations per instance
+client.put_scaling_policy(
+    PolicyName=&quot;invocation-scaling&quot;,
+    ServiceNamespace=&quot;sagemaker&quot;,
+    ResourceId=f&quot;endpoint/{endpoint_name}/variant/AllTraffic&quot;,
+    ScalableDimension=&quot;sagemaker:variant:DesiredInstanceCount&quot;,
+    PolicyType=&quot;TargetTrackingScaling&quot;,
+    TargetTrackingScalingPolicyConfiguration={
+        &quot;TargetValue&quot;: 100,  # target invocations per instance per minute
+        &quot;PredefinedMetricSpecification&quot;: {
+            &quot;PredefinedMetricType&quot;: &quot;SageMakerVariantInvocationsPerInstance&quot;
+        },
+        &quot;ScaleInCooldown&quot;: 300,
+        &quot;ScaleOutCooldown&quot;: 60,
+    },
+)
+</code></pre>
+<p>The <code>TargetValue</code> of 100 means: if each instance is handling more than 100 invocations per minute, add more instances. If they&#39;re handling fewer, remove instances (after a 5-minute cooldown to avoid thrashing).</p>
+<p>Set <code>ScaleOutCooldown</code> shorter than <code>ScaleInCooldown</code>. You want to scale up fast and scale down slowly. Scaling up too slow means dropped requests. Scaling down too fast means you&#39;ll bounce between instance counts.</p>
+<h2>Load Balancing and A/B Testing</h2>
+<p>SageMaker distributes traffic across instances automatically. For A/B testing models, you can deploy multiple &quot;production variants&quot; behind the same endpoint:</p>
+<pre><code class="language-python">from sagemaker.model import Model
+
+model_v1 = Model(model_data=&quot;s3://bucket/model-v1.tar.gz&quot;, ...)
+model_v2 = Model(model_data=&quot;s3://bucket/model-v2.tar.gz&quot;, ...)
+
+endpoint_config = sagemaker.session.production_variant(
+    model_name=&quot;model-v1&quot;,
+    instance_type=&quot;ml.m5.xlarge&quot;,
+    initial_instance_count=1,
+    initial_weight=90,  # 90% of traffic
+    variant_name=&quot;ControlVariant&quot;,
+)
+
+endpoint_config_challenger = sagemaker.session.production_variant(
+    model_name=&quot;model-v2&quot;,
+    instance_type=&quot;ml.m5.xlarge&quot;,
+    initial_instance_count=1,
+    initial_weight=10,  # 10% of traffic
+    variant_name=&quot;ChallengerVariant&quot;,
+)
+</code></pre>
+<p>Start with 90/10 split. Monitor the challenger variant&#39;s metrics. If it&#39;s better, gradually shift traffic. This is how you safely roll out model updates without risking your entire user base.</p>
+<h2>Cost Optimization</h2>
+<p>SageMaker is not cheap. Here are the things that actually save money:</p>
+<p><strong>Right-size your instances.</strong> Most models don&#39;t need GPU for inference. A <code>ml.m5.xlarge</code> (4 vCPUs, 16GB RAM) handles surprisingly high throughput for sklearn, XGBoost, and small PyTorch models. Only use GPU instances (<code>ml.g5.xlarge</code>) for models that genuinely need them (large neural networks, models with batch inference optimizations on GPU).</p>
+<p><strong>Use spot instances for training.</strong> Spot instances are 60-90% cheaper. Training jobs can be interrupted, but SageMaker handles checkpointing and resumption automatically. I use spot for almost all training.</p>
+<p><strong>Multi-model endpoints</strong> let you serve hundreds of models behind a single endpoint. SageMaker loads and unloads models from memory as requests arrive. Great if you have many low-traffic models (per-customer models, for example).</p>
+<p><strong>Turn off dev endpoints.</strong> This sounds obvious but it&#39;s the number one cost surprise. A single <code>ml.g5.xlarge</code> running 24/7 costs about $1,000/month. Put auto-shutdown on anything that isn&#39;t serving production traffic.</p>
+<h2>When NOT to Use SageMaker</h2>
+<p>SageMaker solves real problems, but it&#39;s not always the right tool.</p>
+<p><strong>For simple models with low traffic</strong>: a FastAPI server on a single EC2 instance (or even a Lambda function with a container image) is simpler, cheaper, and easier to debug. You can deploy a sklearn model behind FastAPI in 20 minutes.</p>
+<p><strong>For maximum flexibility</strong>: SageMaker&#39;s inference containers have opinions about directory structure, serialization formats, and request handling. If your model has complex preprocessing or unusual serving requirements, you might fight the framework more than it helps.</p>
+<p><strong>For non-AWS environments</strong>: if you&#39;re on GCP, use Vertex AI. If you&#39;re multi-cloud, consider Seldon, BentoML, or Ray Serve. SageMaker locks you into AWS.</p>
+<p><strong>For LLM serving</strong>: vLLM, TGI (Text Generation Inference), or a managed service like Bedrock or Replicate are usually better choices than raw SageMaker endpoints for serving large language models. I wrote about running <a href="/blog/fitting-big-models-small-gpus.html">large models on small hardware</a> separately, and most of those approaches work better outside SageMaker&#39;s container constraints.</p>
+<h2>The Bottom Line</h2>
+<p>Model deployment is its own discipline. You can learn it piece by piece (Docker, load balancers, auto-scaling, monitoring) or you can use a managed service that bundles it all together. SageMaker is the most complete bundle on AWS. It&#39;s not the cheapest option, and it&#39;s not the most flexible. But it gets you from &quot;model in S3&quot; to &quot;model serving production traffic&quot; faster than building everything yourself.</p>
+<p>The teams I&#39;ve seen use SageMaker most successfully are the ones who use it for what it&#39;s good at (endpoint management, auto-scaling, A/B testing) and build their own solutions for everything else (feature engineering with <a href="/blog/distributed-computing-basics.html">Spark</a>, pipeline orchestration with <a href="/blog/airflow-dag-basics.html">Airflow</a>, monitoring with custom dashboards). Don&#39;t try to do everything inside SageMaker. Use it for the serving layer, and keep everything else flexible.</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

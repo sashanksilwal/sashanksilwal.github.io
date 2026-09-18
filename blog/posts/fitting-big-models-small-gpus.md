@@ -94,11 +94,11 @@ But there are exceptions. Heavily quantized models (2-bit, 3-bit) can fall apart
 
 ## Distillation: A Different Kind of Small
 
-Quantization compresses an existing model. Distillation trains a new, smaller model to mimic the behavior of a larger one. I [wrote about distillation separately](/blog/post.html?post=model-distillation) if you want the full picture. They solve the same problem (running capable models on limited hardware) but they work in fundamentally different ways.
+Quantization compresses an existing model. Distillation trains a new, smaller model to mimic the behavior of a larger one. I [wrote about distillation separately](/blog/model-distillation.html) if you want the full picture. They solve the same problem (running capable models on limited hardware) but they work in fundamentally different ways.
 
 The recent DeepSeek-R1 distilled models are a good example. The distilled 7B and 14B versions capture a surprising amount of the full model's reasoning capability, particularly for math and code. They run at full precision on modest hardware and often outperform quantized versions of much larger models at comparable inference speeds.
 
-The tradeoff is obvious: distillation requires significant compute to [fine-tune](/blog/post.html?post=what-is-fine-tuning) the student, and you lose the generality of the original model. A distilled model inherits the teacher's strengths on the training distribution but can be worse on out-of-distribution inputs. Quantization preserves the original model's behavior more faithfully, even if every individual output is slightly degraded.
+The tradeoff is obvious: distillation requires significant compute to [fine-tune](/blog/what-is-fine-tuning.html) the student, and you lose the generality of the original model. A distilled model inherits the teacher's strengths on the training distribution but can be worse on out-of-distribution inputs. Quantization preserves the original model's behavior more faithfully, even if every individual output is slightly degraded.
 
 For production systems, I often end up using both. Distill to get into the right parameter range, then quantize the distilled model to squeeze it onto the target hardware.
 

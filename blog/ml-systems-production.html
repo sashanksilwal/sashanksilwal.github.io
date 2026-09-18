@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Why Your Model Works in the Notebook but Breaks in Production | Sashank Silwal</title>
+    <meta name="description" content="Covariate shift, concept drift, retraining strategies, and the monitoring that keeps ML systems alive after deployment.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/ml-systems-production.html">
+    <meta property="og:title" content="Why Your Model Works in the Notebook but Breaks in Production">
+    <meta property="og:description" content="Covariate shift, concept drift, retraining strategies, and the monitoring that keeps ML systems alive after deployment.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/ml-systems-production.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-03-18">
+    <meta name="twitter:title" content="Why Your Model Works in the Notebook but Breaks in Production">
+    <meta name="twitter:description" content="Covariate shift, concept drift, retraining strategies, and the monitoring that keeps ML systems alive after deployment.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Why Your Model Works in the Notebook but Breaks in Production","description":"Covariate shift, concept drift, retraining strategies, and the monitoring that keeps ML systems alive after deployment.","datePublished":"2026-03-18","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/ml-systems-production.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Why Your Model Works in the Notebook but Breaks in Production</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-03-18">March 18, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">ml</span><span class="tag">mlops</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>In college, every ML project ended the same way: train a model in a notebook, check the accuracy, submit the assignment. Then I joined Binance, and within my first month a fraud detection model started approving transactions it should have flagged. Not a lot. Just enough to notice. The model hadn&#39;t changed. The code hadn&#39;t changed. The world had changed, and the model didn&#39;t keep up.</p>
+<p>That was the first time I realized that training a model is maybe 20% of the work. Keeping it working in production is the other 80%.</p>
+<h2>Why Models Break</h2>
+<p>A model learns patterns from historical data. It assumes the future looks like the past. Sometimes that assumption holds for years. Sometimes it breaks in a week.</p>
+<p>There are two main ways it breaks, and they require different responses.</p>
+<h2>Covariate Shift: The Inputs Change</h2>
+<p>Covariate shift means the distribution of your input features changes, but the relationship between inputs and outputs stays the same. The model is still &quot;right&quot; in theory, it just never sees inputs like these during training.</p>
+<p>Example: you train a credit scoring model on data from 2023. In 2024, a new &quot;buy now, pay later&quot; product launches and suddenly you&#39;re seeing transaction patterns the model has never encountered. The model&#39;s logic for scoring risk hasn&#39;t become wrong. It&#39;s just being asked to score things it&#39;s never seen.</p>
+<p>Detection is relatively simple. You compare feature distributions between your training data and recent production data.</p>
+<pre><code class="language-python">from scipy import stats
+import numpy as np
+
+def detect_drift(reference_data, production_data, threshold=0.05):
+    &quot;&quot;&quot;KS test for each feature. Returns features with significant drift.&quot;&quot;&quot;
+    drifted = []
+    for feature in reference_data.columns:
+        stat, p_value = stats.ks_2samp(
+            reference_data[feature].dropna(),
+            production_data[feature].dropna()
+        )
+        if p_value &lt; threshold:
+            drifted.append({
+                &quot;feature&quot;: feature,
+                &quot;ks_stat&quot;: stat,
+                &quot;p_value&quot;: p_value
+            })
+    return drifted
+
+# Run weekly against your training distribution
+drifted_features = detect_drift(train_df, last_week_df)
+if drifted_features:
+    print(f&quot;Drift detected in {len(drifted_features)} features&quot;)
+</code></pre>
+<p>The Kolmogorov-Smirnov test works well for continuous features. For categorical features, Population Stability Index (PSI) is more standard. A PSI above 0.2 usually means something meaningful has shifted.</p>
+<pre><code class="language-python">def psi(reference, production, bins=10):
+    &quot;&quot;&quot;Population Stability Index for a single feature.&quot;&quot;&quot;
+    breakpoints = np.linspace(0, 100, bins + 1)
+    ref_percents = np.percentile(reference, breakpoints)
+
+    ref_counts = np.histogram(reference, bins=ref_percents)[0] / len(reference)
+    prod_counts = np.histogram(production, bins=ref_percents)[0] / len(production)
+
+    # Avoid division by zero
+    ref_counts = np.clip(ref_counts, 0.001, None)
+    prod_counts = np.clip(prod_counts, 0.001, None)
+
+    return np.sum((prod_counts - ref_counts) * np.log(prod_counts / ref_counts))
+</code></pre>
+<h2>Concept Drift: The Rules Change</h2>
+<p>This one is harder. Concept drift (sometimes called target shift) means the relationship between inputs and outputs changes. The same input that used to mean &quot;approve&quot; now means &quot;reject.&quot;</p>
+<p>Going back to fraud: attackers adapt. The transaction patterns that signaled fraud six months ago might be different from today&#39;s patterns because fraudsters learned what gets flagged. The inputs might look similar, but what counts as fraud has shifted.</p>
+<p>The tricky part is you often can&#39;t detect concept drift without labels. With covariate shift, you just compare input distributions. With concept drift, you need to know what the correct output <em>should</em> have been, and that information often arrives with a delay (sometimes weeks for fraud chargebacks).</p>
+<p>The practical approach is to monitor proxy metrics. If your model&#39;s precision on recent labeled data drops below a threshold, something has probably shifted. Set up a feedback loop where human reviewers label a sample of recent predictions, and track accuracy on that sample over time.</p>
+<h2>Retraining: Scheduled vs. Triggered</h2>
+<p>So the model is drifting. When do you retrain?</p>
+<p><strong>Scheduled retraining</strong> is the simplest approach. Retrain every week, every month, whatever cadence makes sense. Most teams start here because it&#39;s predictable and easy to automate. The downside is waste (retraining when nothing has changed) and risk (not retraining fast enough when something has).</p>
+<p><strong>Triggered retraining</strong> means you retrain when your monitoring detects that performance has degraded. This is more efficient but requires good monitoring, which is its own project.</p>
+<p>In practice, most production teams I&#39;ve seen use a hybrid. Scheduled retraining on a regular cadence (weekly or monthly) as a baseline, with triggered retraining as a safety net for sudden shifts.</p>
+<pre><code class="language-python"># Simplified retraining trigger logic
+def should_retrain(metrics, thresholds):
+    &quot;&quot;&quot;Check if any monitored metric has crossed its threshold.&quot;&quot;&quot;
+    triggers = []
+    if metrics[&quot;accuracy_7d&quot;] &lt; thresholds[&quot;min_accuracy&quot;]:
+        triggers.append(&quot;accuracy_drop&quot;)
+    if metrics[&quot;max_psi&quot;] &gt; thresholds[&quot;max_psi&quot;]:
+        triggers.append(&quot;input_drift&quot;)
+    if metrics[&quot;prediction_distribution_shift&quot;] &gt; thresholds[&quot;max_pred_shift&quot;]:
+        triggers.append(&quot;output_drift&quot;)
+    return triggers
+
+triggers = should_retrain(
+    metrics=get_recent_metrics(),
+    thresholds={&quot;min_accuracy&quot;: 0.92, &quot;max_psi&quot;: 0.2, &quot;max_pred_shift&quot;: 0.15}
+)
+
+if triggers:
+    print(f&quot;Retraining triggered by: {triggers}&quot;)
+    launch_training_pipeline()
+</code></pre>
+<h2>Online vs. Offline Models</h2>
+<p>This distinction matters more than people realize.</p>
+<p><strong>Offline models</strong> (also called batch models) run predictions on a schedule. You collect a batch of data, run inference, store the results, and serve them from a database. Think recommendation systems that update nightly or risk scores that refresh every morning.</p>
+<p><strong>Online models</strong> make predictions in real time, on demand. A user does something, you call the model, you get a prediction back in milliseconds. Think fraud detection at checkout, content moderation, or autocomplete.</p>
+<p>The tradeoff is freshness vs. simplicity. Offline models are easier to build, debug, and monitor. You can inspect every prediction after the fact. But the predictions are stale by the time they&#39;re served. Online models give you up-to-the-second predictions but add latency requirements, scaling concerns, and a whole category of failure modes (what happens when the model service is down?).</p>
+<p>A common pattern is to combine both. Use an offline model to pre-compute features and baseline scores, then use an online model that takes those pre-computed features plus real-time signals to make the final decision. This way the online model is fast (fewer features to compute in real time) and the system degrades gracefully (if the online model fails, you fall back to the offline scores).</p>
+<h2>What to Monitor</h2>
+<p>Here&#39;s what I actually track for production models:</p>
+<ol>
+<li><strong>Input distributions</strong> (PSI or KS test per feature, weekly)</li>
+<li><strong>Prediction distribution</strong> (are we predicting the same class balance as usual?)</li>
+<li><strong>Latency</strong> (p50 and p99, because a slow model is a broken model)</li>
+<li><strong>Error rate</strong> (model service errors, not prediction errors)</li>
+<li><strong>Accuracy on labeled samples</strong> (delayed, but the most important signal)</li>
+<li><strong>Feature freshness</strong> (are upstream data pipelines actually delivering?)</li>
+</ol>
+<p>The last one catches more incidents than you&#39;d expect. Half the time the model isn&#39;t broken. The data feeding it is.</p>
+<h2>The Unglamorous Truth</h2>
+<p>The difference between a model that works in a notebook and a model that works in production is mostly plumbing. Data pipelines that run reliably. Monitoring that catches problems before users do. Retraining loops that don&#39;t require a human to click buttons at 2 AM. None of this is exciting work. All of it matters.</p>
+<p>The teams that do ML well in production aren&#39;t the ones with the fanciest models. They&#39;re the ones with the best infrastructure around their models. If you&#39;re building an ML system and spending more than 30% of your time on the model itself, you&#39;re probably underinvesting in everything else. If you want to see how these monitoring concepts connect to orchestrating actual pipelines, I wrote about that in my <a href="/blog/airflow-dag-basics.html">Airflow and DAGs post</a>.</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

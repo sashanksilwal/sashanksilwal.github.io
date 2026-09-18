@@ -168,4 +168,4 @@ Airflow's advantage is ecosystem. It has operators for everything, massive commu
 
 The real value of Airflow isn't fancy features. It's that when something breaks at 3 AM, you can open the web UI, see exactly which task failed, read the logs, fix the issue, and re-run just the failed task and everything downstream. Compare that to debugging a chain of cron jobs by grepping through log files on different servers.
 
-If you're building ML systems that need to [retrain on a schedule, monitor for drift, and redeploy automatically](/blog/post.html?post=ml-systems-production), Airflow is usually where that automation lives. It's not glamorous software. It's plumbing. But good plumbing is the difference between a system that runs itself and a system that runs you.
+If you're building ML systems that need to [retrain on a schedule, monitor for drift, and redeploy automatically](/blog/ml-systems-production.html), Airflow is usually where that automation lives. It's not glamorous software. It's plumbing. But good plumbing is the difference between a system that runs itself and a system that runs you.

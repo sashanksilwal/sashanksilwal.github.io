@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Automated Rule Generation for Fraud Detection Using Deep Learning and Explainability | Sashank Silwal</title>
+    <meta name="description" content="How to automatically extract interpretable, auditable fraud detection rules from LSTM models using SHAP, Anchors, knowledge distillation, and temporal pattern mining.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/fraud-rule-generation.html">
+    <meta property="og:title" content="Automated Rule Generation for Fraud Detection Using Deep Learning and Explainability">
+    <meta property="og:description" content="How to automatically extract interpretable, auditable fraud detection rules from LSTM models using SHAP, Anchors, knowledge distillation, and temporal pattern mining.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/fraud-rule-generation.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-02-25">
+    <meta name="twitter:title" content="Automated Rule Generation for Fraud Detection Using Deep Learning and Explainability">
+    <meta name="twitter:description" content="How to automatically extract interpretable, auditable fraud detection rules from LSTM models using SHAP, Anchors, knowledge distillation, and temporal pattern mining.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Automated Rule Generation for Fraud Detection Using Deep Learning and Explainability","description":"How to automatically extract interpretable, auditable fraud detection rules from LSTM models using SHAP, Anchors, knowledge distillation, and temporal pattern mining.","datePublished":"2026-02-25","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/fraud-rule-generation.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Automated Rule Generation for Fraud Detection Using Deep Learning and Explainability</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-02-25">February 25, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">ml</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>Financial institutions face a fundamental tension: <strong>rule-based fraud detection systems</strong> are interpretable and auditable but fail to catch complex fraud patterns, while <strong>machine learning models</strong> (especially deep learning) capture complex patterns but are black boxes that regulators and compliance teams cannot audit.</p>
+<p>No automated pipeline exists to take a high-accuracy deep learning model, understand <em>why</em> it makes predictions via explainability methods, and <strong>automatically generate human-readable rules</strong> that can be deployed, audited, and explained to regulators. This post surveys the landscape of approaches and outlines a concrete path forward.</p>
+<hr>
+<h2>The Scale of the Problem</h2>
+<ul>
+<li><strong>$12.5 billion</strong> in reported U.S. fraud losses in 2024 (25% increase YoY)  - FTC</li>
+<li><strong>$10 billion</strong> in card-not-present fraud in the U.S. alone (2024)</li>
+<li><strong>$404 billion</strong> projected global card fraud losses over the next decade  - Nilson Report</li>
+<li>Fraud detection market valued at <strong>$33-53 billion</strong> (2024), growing at <strong>18-24% CAGR</strong></li>
+</ul>
+<hr>
+<h2>Why Rule-Based Systems Fall Short</h2>
+<p>Rule-based systems are the most widely deployed approach in production today. Nearly every bank and payment processor uses a rule engine as their first line of defense. But they have fundamental problems:</p>
+<table>
+<thead>
+<tr>
+<th>Problem</th>
+<th>Details</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Low Detection Rate</td>
+<td>Rule-based systems catch only <strong>37%</strong> of first-party and <strong>42%</strong> of third-party fraud</td>
+</tr>
+<tr>
+<td>Massive False Positives</td>
+<td>Up to <strong>95%</strong> of AML alerts are false positives; only 1 in 5 blocked transactions is actually fraud</td>
+</tr>
+<tr>
+<td>False Positives Cost More Than Fraud</td>
+<td>False positive losses = <strong>19%</strong> of total fraud cost vs. actual fraud losses = <strong>7%</strong> (J.P. Morgan)</td>
+</tr>
+<tr>
+<td>Static &amp; Brittle</td>
+<td>Once fraudsters learn the rules, they evade them. Rules can&#39;t adapt without manual intervention</td>
+</tr>
+<tr>
+<td>Rule Sprawl</td>
+<td>Banks accumulate 1,000+ rules over years. Rules conflict, overlap, and nobody fully understands the interactions</td>
+</tr>
+</tbody></table>
+<h3>Types of Rules in Production</h3>
+<p>Rules range from simple to complex:</p>
+<p><strong>Threshold rules</strong> (stateless):</p>
+<pre><code>IF transaction_amount &gt; 5000 THEN flag
+IF country != home_country THEN flag
+</code></pre>
+<p><strong>Velocity rules</strong> (time-window based)  - the primary way rule systems handle temporal patterns:</p>
+<pre><code>IF count(transactions) &gt; 5 within 10 minutes THEN flag
+IF count(distinct_countries) &gt; 2 within 1 hour THEN flag
+</code></pre>
+<p><strong>Aggregation rules</strong>:</p>
+<pre><code>IF sum(transaction_amount) &gt; 10000 within 24 hours THEN flag
+IF avg(transaction_amount) last 7 days &gt; 3x historical_avg THEN flag
+</code></pre>
+<p><strong>Sequential / pattern rules</strong>  - the most complex and hardest to write by hand:</p>
+<pre><code>IF small_transaction(&lt;$1) THEN large_transaction(>$500)
+   within 5 minutes on same card THEN flag  (card testing)
+IF password_reset THEN wire_transfer within 30 min THEN flag
+</code></pre>
+<p>Even with all these rule types, manual rules have fundamental limitations with temporal data: fixed time windows that fraudsters can evade, inability to capture complex multi-step sequences, arbitrary thresholds based on analyst intuition rather than data, and rule explosion as the system grows.</p>
+<hr>
+<h2>The Landscape of Approaches</h2>
+<h3>A. Pure Rule-Based (Status Quo)</h3>
+<p>Fraud analysts manually write conditional rules deployed in a rule engine (FICO Blaze Advisor, SAS, Unit21). Each transaction is evaluated against hundreds of rules in real time. Interpretable but low recall and high false positive rate.</p>
+<h3>B. Pure ML/DL (Black Box)</h3>
+<p>Neural networks, gradient boosting (XGBoost, LightGBM), random forests. High accuracy and adapts to new fraud patterns. But not interpretable  - regulators require explainability and compliance teams can&#39;t audit.</p>
+<h3>C. Hybrid (Rules + ML Side-by-Side)</h3>
+<p>ML model generates a risk score; separate rule engine flags based on thresholds. Most modern fintechs use this approach. But the two systems don&#39;t inform each other  - rules are still manually written and become stale.</p>
+<h3>D. Our Idea: ML → Explainability → Auto-Generated Rules</h3>
+<p>Train a powerful model (LSTM on transaction sequences), then <strong>automatically extract interpretable rules</strong> from what the model has learned. Rules are data-driven (not gut-feel), update when the model retrains, and are traceable back to model explanations for regulatory compliance.</p>
+<hr>
+<h2>Explainability Methods for Rule Generation</h2>
+<h3>Model-Agnostic Methods</h3>
+<p><strong>SHAP (SHapley Additive exPlanations)</strong>  - Game-theoretic approach. Computes each feature&#39;s contribution to a prediction using Shapley values. Variants for deep learning include <code>DeepExplainer</code> (DeepLIFT-based) and <code>GradientExplainer</code>. Gives per-feature attribution scores but needs an additional step (thresholding, SHAP-Rule) to convert to rules. (Lundberg &amp; Lee, NeurIPS 2017)</p>
+<p><strong>LIME</strong>  - Perturbs input around a single prediction, fits a local linear model. Gives local feature weights for individual predictions but less suitable as the primary rule-generation method. (Ribeiro et al., KDD 2016)</p>
+<p><strong>Anchors</strong>  - Finds sufficient IF-THEN conditions that &quot;anchor&quot; a prediction, using reinforcement learning + beam search for minimal conditions. <strong>Natively produces rules</strong> with a precision guarantee  - the rule holds with $\geq \tau$ probability in its coverage region. E.g., <code>IF amount &gt; 3000 AND merchant_category = &quot;electronics&quot; THEN fraud</code>. (Ribeiro, Singh &amp; Guestrin, AAAI 2018)</p>
+<p><strong>SHAP-Rule</strong>  - Automatically converts numeric SHAP values into fuzzy linguistic IF-THEN rules with quantified activation strength. E.g., <code>IF amount IS high AND frequency IS very_high THEN fraud (strength: 0.87)</code>. Runs at 1-2 ms per instance, and domain experts preferred these over raw SHAP vectors. (Mathematics, 2024)</p>
+<p><strong>RuleFit</strong>  - Two-step: grow an ensemble of decision trees, extract rules from all tree paths, fit a sparse linear model (Lasso) using original features + rule features. Produces weighted, sparse rule sets. Can be used as a surrogate  - fit RuleFit on the LSTM&#39;s predictions to distill knowledge into rules. (Friedman &amp; Popescu, 2008)</p>
+<h3>Deep Learning-Specific Methods</h3>
+<p><strong>Attention Mechanisms</strong>  - Attention weights indicate which time steps (transactions) the model focused on. Tells us <em>when</em> things matter, complementing SHAP which tells us <em>which features</em> matter. Combined: &quot;Transaction 3 was important <em>because</em> the amount was high and the location was unusual.&quot;</p>
+<p><strong>Integrated Gradients</strong>  - Computes attribution by integrating gradients along the path from a baseline to the actual input. Satisfies the completeness axiom (attributions sum to the output difference). Faster than KernelSHAP. (Sundararajan et al., ICML 2017)</p>
+<h3>Knowledge Distillation Methods</h3>
+<p>Instead of explaining the model and converting explanations to rules, these methods <strong>directly distill</strong> the model into a simpler, inherently interpretable model.</p>
+<p><strong>LSTM → Soft Decision Tree</strong>  - Train a &quot;soft&quot; decision tree to mimic the LSTM&#39;s predictions (Frosst &amp; Hinton, 2017). At each internal node, a learned filter produces a probability of going left vs. right. The soft tree generalizes better than a hard tree trained directly on data because it learns from the LSTM&#39;s soft predictions. Each tree path becomes a rule.</p>
+<p><strong>Automatic Rule Extraction from LSTMs</strong>  - Tracks importance of specific inputs to LSTM output by decomposing the cell state (Murdoch &amp; Szlam, 2017). Identifies consistently important input patterns and constructs a rule-based classifier from them. Originally applied to NLP, but the methodology transfers to sequential transaction data  - instead of &quot;important phrases,&quot; we find &quot;important transaction patterns.&quot;</p>
+<p><strong>KDDT (Knowledge Distillation Decision Tree)</strong>  - The simplest approach: use the LSTM&#39;s soft predictions as training labels for a standard scikit-learn decision tree. The tree learns to mimic the LSTM, and its splits become interpretable rules.</p>
+<hr>
+<h2>The Core Technical Challenge: Temporal Rules</h2>
+<p>The LSTM processes sequences of transactions, but most explainability methods produce flat feature attributions. A deployable fraud rule needs to say <code>IF count(transactions) &gt; 5 in 10 min AND amount &gt; 3x average THEN flag</code>, not just &quot;feature X at timestep T was important.&quot;</p>
+<h3>Strategies to Bridge the Gap</h3>
+<p><strong>Strategy A: Engineered temporal features → SHAP → Rules.</strong> Pre-compute temporal features before the explainability step:</p>
+<pre><code>velocity_1h        = count(transactions in last 1 hour)
+sum_1h             = sum(amounts in last 1 hour)
+amount_ratio       = current_amount / avg_amount_30d
+distinct_countries = count(distinct countries in 24h)
+time_since_last    = seconds since previous transaction
+</code></pre>
+<p>Now SHAP operates on these features, and rules are directly interpretable:</p>
+<pre><code>IF velocity_1h &gt; 8 AND amount_ratio &gt; 3.5 THEN fraud
+</code></pre>
+<p>This is probably the most practical approach. The LSTM still sees the raw sequence for maximum accuracy, but SHAP/rules operate on the engineered feature layer.</p>
+<p>Other promising strategies include using <strong>attention weights</strong> to identify which timesteps matter and combining that with SHAP for feature-level explanations, <strong>LSTM cell state decomposition</strong> to directly identify which sub-sequences of transactions drive predictions, and <strong>distilling the LSTM into a decision tree</strong> over temporal features so that tree paths become rules with data-driven thresholds.</p>
+<hr>
+<h2>References</h2>
+<ol>
+<li>Lundberg &amp; Lee. &quot;A Unified Approach to Interpreting Model Predictions&quot; (SHAP). NeurIPS 2017.</li>
+<li>Ribeiro et al. &quot;Anchors: High-Precision Model-Agnostic Explanations.&quot; AAAI 2018.</li>
+<li>Frosst &amp; Hinton. &quot;Distilling a Neural Network Into a Soft Decision Tree.&quot; 2017.</li>
+<li>Murdoch &amp; Szlam. &quot;Automatic Rule Extraction from Long Short Term Memory Networks.&quot; 2017.</li>
+<li>Zilke et al. &quot;DeepRED  - Rule Extraction from Deep Neural Networks.&quot; 2016.</li>
+<li>Friedman &amp; Popescu. &quot;Predictive Learning via Rule Ensembles&quot; (RuleFit). 2008.</li>
+<li>&quot;SHAP-Rule: Fuzzy Linguistic Explanations from SHAP Values.&quot; Mathematics, 2024.</li>
+<li>&quot;RuleSHAP: SHAP vs Rule Extraction vs RuleSHAP.&quot; arXiv, 2025.</li>
+<li>&quot;Knowledge Distillation Decision Tree.&quot; arXiv, 2022.</li>
+<li>&quot;Enhanced credit card fraud detection based on attention mechanism and LSTM.&quot; Journal of Big Data, 2021.</li>
+<li>&quot;Rule Learning from Time-Dependent Data Applied to Fraud Detection.&quot; CEUR-WS, 2023.</li>
+<li>&quot;MINT: Detecting Fraudulent Behaviors from Time-Series Relational Data.&quot; VLDB, 2023.</li>
+<li>Christoph Molnar. &quot;Interpretable Machine Learning&quot; (Book).</li>
+</ol>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

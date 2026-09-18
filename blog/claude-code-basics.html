@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Getting Started with Claude Code: Everything I Wish I Knew on Day One | Sashank Silwal</title>
+    <meta name="description" content="A beginner's guide to Claude Code covering CLAUDE.md, context management, key commands, and the feedback loop that makes it actually useful.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/claude-code-basics.html">
+    <meta property="og:title" content="Getting Started with Claude Code: Everything I Wish I Knew on Day One">
+    <meta property="og:description" content="A beginner's guide to Claude Code covering CLAUDE.md, context management, key commands, and the feedback loop that makes it actually useful.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/claude-code-basics.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-03-08">
+    <meta name="twitter:title" content="Getting Started with Claude Code: Everything I Wish I Knew on Day One">
+    <meta name="twitter:description" content="A beginner's guide to Claude Code covering CLAUDE.md, context management, key commands, and the feedback loop that makes it actually useful.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Getting Started with Claude Code: Everything I Wish I Knew on Day One","description":"A beginner's guide to Claude Code covering CLAUDE.md, context management, key commands, and the feedback loop that makes it actually useful.","datePublished":"2026-03-08","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/claude-code-basics.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Getting Started with Claude Code: Everything I Wish I Knew on Day One</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-03-08">March 8, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">claude</span><span class="tag">llm</span><span class="tag">developer-tools</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>I used GitHub Copilot for about two years. It was fine. Autocomplete on steroids, basically. Then two months ago I tried Claude Code for the first time and it genuinely changed how I write software. Not in a hype-y &quot;this changes everything&quot; way, but in a &quot;wait, I just built in 20 minutes what would have taken me an afternoon&quot; way.</p>
+<p>The thing is, to really feel that difference, you have to actually use it. Reading about it doesn&#39;t do it justice. So I wanted to write the simplest possible guide to get you from zero to running Claude Code on your own project.</p>
+<h2>What Is Claude Code?</h2>
+<p>Claude Code is an AI that lives in your terminal (the black window where you type commands). Unlike ChatGPT or regular Claude on the web, it doesn&#39;t just give you text answers. It can actually read your files, edit your code, run commands, install packages, and create new files. When you tell it to fix a bug, it opens the file and changes the code itself.</p>
+<p>Think of it like having a programmer sitting next to you who can type really fast, but needs you to tell them what to do.</p>
+<h2>What You Need Before Starting</h2>
+<p>Three things:</p>
+<ol>
+<li><strong>A terminal.</strong> On Mac, search for &quot;Terminal&quot; in Spotlight. On Windows, use PowerShell. If you&#39;ve never used a terminal before, Anthropic has a <a href="https://code.claude.com/docs/en/terminal-guide">beginner-friendly terminal guide</a>.</li>
+<li><strong>A code project.</strong> Any folder with code in it works. Even a folder with a single HTML file.</li>
+<li><strong>A Claude subscription.</strong> You need a paid plan (Pro, Max, Teams, or Enterprise). You can sign up at <a href="https://claude.com/pricing">claude.com/pricing</a>.</li>
+</ol>
+<h2>Step 1: Install It</h2>
+<p>Open your terminal and paste this command:</p>
+<p><strong>Mac or Linux:</strong></p>
+<pre><code class="language-bash">curl -fsSL https://claude.ai/install.sh | bash
+</code></pre>
+<p><strong>Windows PowerShell:</strong></p>
+<pre><code class="language-powershell">irm https://claude.ai/install.ps1 | iex
+</code></pre>
+<p>If you use Homebrew on Mac, you can also do:</p>
+<pre><code class="language-bash">brew install --cask claude-code
+</code></pre>
+<p>That&#39;s the entire installation. It takes about a minute.</p>
+<h2>Step 2: Open It in Your Project</h2>
+<p>Navigate to your project folder in the terminal and type <code>claude</code>:</p>
+<pre><code class="language-bash">cd /path/to/your/project
+claude
+</code></pre>
+<p>Replace <code>/path/to/your/project</code> with the actual path to your code. For example, if your project is on your Desktop in a folder called &quot;my-app&quot;:</p>
+<pre><code class="language-bash">cd ~/Desktop/my-app
+claude
+</code></pre>
+<p>The first time you run it, it&#39;ll ask you to log in. Just follow the prompts. Pick your account, authorize it, and you&#39;re done. You only need to do this once.</p>
+<p>You should see a welcome screen. You&#39;re in.</p>
+<h2>Step 3: Talk to It</h2>
+<p>Now you can just type what you want in plain English. Here are some things to try first:</p>
+<pre><code>what does this project do?
+</code></pre>
+<pre><code>explain the folder structure
+</code></pre>
+<pre><code>what technologies does this project use?
+</code></pre>
+<p>Claude reads your files automatically. You don&#39;t need to copy-paste anything.</p>
+<h2>Step 4: Ask It to Change Something</h2>
+<p>This is where it gets interesting. Try something like:</p>
+<pre><code>add a hello world function to the main file
+</code></pre>
+<p>Claude will:</p>
+<ol>
+<li>Find the right file</li>
+<li>Show you what it wants to change</li>
+<li>Wait for you to approve</li>
+<li>Make the edit</li>
+</ol>
+<p>It always asks permission before changing your files. You&#39;ll see a prompt asking you to accept or reject each change.</p>
+<h2>How to Talk to Claude Code (This Matters a Lot)</h2>
+<p>The more specific you are, the better the results. Compare these two:</p>
+<p><strong>Vague:</strong> &quot;Fix the login&quot;</p>
+<p><strong>Specific:</strong> &quot;The login form in src/login.js doesn&#39;t show an error message when the password is wrong. Add an error message that appears below the password field.&quot;</p>
+<p>The specific version tells Claude exactly where to look and what to do. The vague version makes it guess, and guessing wastes time and tokens.</p>
+<p>A good rule: talk to it like you&#39;d talk to a new teammate on their first day. Give context. Point to specific files. Describe the problem clearly.</p>
+<h2>The Five Commands You Need to Know</h2>
+<p>You don&#39;t need to memorize a lot. These five will cover 90% of what you do:</p>
+<table>
+<thead>
+<tr>
+<th>What you type</th>
+<th>What it does</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><code>/help</code></td>
+<td>Shows all available commands. Start here if you forget anything.</td>
+</tr>
+<tr>
+<td><code>/clear</code></td>
+<td>Clears the conversation and starts fresh. Use this between tasks.</td>
+</tr>
+<tr>
+<td><code>/init</code></td>
+<td>Auto-generates a CLAUDE.md file for your project (more on this below).</td>
+</tr>
+<tr>
+<td><code>/cost</code></td>
+<td>Shows how much you&#39;ve spent this session.</td>
+</tr>
+<tr>
+<td><code>Ctrl+C</code></td>
+<td>Stops Claude mid-response if it&#39;s going in the wrong direction.</td>
+</tr>
+</tbody></table>
+<p>That&#39;s it for now. There are more commands, but these are the ones you&#39;ll actually use every day.</p>
+<p><img src="posts/images/claude-code-help.png" alt="The /help command in Claude Code showing available commands and shortcuts"></p>
+<h2>Useful Shortcuts</h2>
+<p>A few keyboard tricks that save time:</p>
+<ul>
+<li><strong>Shift+Tab</strong>: Toggles plan mode on and off. With plan mode on, Claude will think through the problem and outline a plan without changing any files. Turn it off and Claude can actually edit things. Good habit: start with plan mode on, review the plan, then toggle it off to let Claude make changes.</li>
+</ul>
+<p><img src="posts/images/claude-code-plan-mode.png" alt="Plan mode enabled in Claude Code, showing the status bar indicator"></p>
+<ul>
+<li><strong>Esc Esc</strong> (press Escape twice): Interrupts whatever Claude is doing right now. If it&#39;s mid-edit or mid-response, this stops it. It won&#39;t undo changes already saved to disk, so pair this with git commits for a real safety net.</li>
+<li><strong><code>@</code> in your prompt</strong>: Autocompletes file paths. Type <code>@</code> and start typing a filename. Way easier than typing full paths.</li>
+<li><strong><code>!</code> before a command</strong>: Runs a terminal command without leaving Claude. For example: <code>! npm test</code> or <code>! python main.py</code>.</li>
+</ul>
+<h2>What Is CLAUDE.md?</h2>
+<p>When Claude Code starts, it looks for a file called <code>CLAUDE.md</code> in your project folder. This file tells Claude about your project, like a cheat sheet for a new team member.</p>
+<p>You can create one automatically by typing <code>/init</code>. Claude will look at your code and generate one. It won&#39;t be perfect, but it&#39;s a good starting point you can edit.</p>
+<p>A simple CLAUDE.md might look like this:</p>
+<pre><code class="language-markdown"># My Project
+A personal portfolio website built with HTML, CSS, and JavaScript.
+
+## How to run it
+- Open index.html in a browser
+- Or run: python -m http.server 8000
+
+## Project structure
+- index.html (main page)
+- styles/ (CSS files)
+- scripts/ (JavaScript files)
+- images/ (image assets)
+</code></pre>
+<p>Keep it short. Under 200 lines. Just include the stuff that isn&#39;t obvious from looking at the code.</p>
+<h2>The One Concept That Matters Most: Context</h2>
+<p>Claude Code has a memory limit per conversation (about 200,000 tokens). Every file it reads, every command it runs, every response it gives fills up that memory. When it fills up, Claude starts forgetting earlier parts of the conversation.</p>
+<p>This is why <code>/clear</code> exists. Use it often. Finished fixing a bug? Type <code>/clear</code> before moving to the next thing. Think of each task as a separate conversation.</p>
+<p>If you want to check how much memory you&#39;ve used, type <code>/status</code> and tab over to the Usage section. It shows a breakdown of your context usage.</p>
+<p><img src="posts/images/claude-code-status.png" alt="The /status command showing Status, Config, and Usage tabs"></p>
+<h2>Let Claude Check Its Own Work</h2>
+<p>Here&#39;s a trick that makes a big difference. Don&#39;t just ask Claude to write code. Ask it to write code AND test it.</p>
+<p>Instead of:</p>
+<pre><code>write a function that adds two numbers
+</code></pre>
+<p>Try:</p>
+<pre><code>write a function that adds two numbers, then run it with a few test cases to make sure it works
+</code></pre>
+<p>When Claude can see the output of what it just wrote, it catches its own mistakes. This turns it from &quot;write and hope&quot; into &quot;write and verify.&quot;</p>
+<h2>Save Your Work Often</h2>
+<p>When Claude makes changes, commit them to git frequently. Here&#39;s why: if Claude makes a bunch of changes and something goes wrong, you want a recent save point to go back to.</p>
+<p>A simple workflow:</p>
+<ol>
+<li>Ask Claude to do something</li>
+<li>Review the changes (you can ask: <code>what files have I changed?</code>)</li>
+<li>If they look good, ask Claude: <code>commit my changes with a descriptive message</code></li>
+<li>Move to the next task</li>
+</ol>
+<p>Don&#39;t let changes pile up without committing. Small, frequent saves are your safety net.</p>
+<h2>Quick Recap</h2>
+<ol>
+<li>Install with one command</li>
+<li><code>cd</code> into your project and type <code>claude</code></li>
+<li>Talk to it in plain English, be specific</li>
+<li>Use <code>/clear</code> between tasks</li>
+<li>Let Claude test its own work</li>
+<li>Commit often</li>
+</ol>
+<p>That&#39;s genuinely all you need to get started. Everything else you&#39;ll pick up as you go.</p>
+<p>If you want to go further after you&#39;re comfortable with the basics, I wrote a follow-up on <a href="/blog/claude-code-intermediate.html">advanced workflows, agents, and power-user features</a>.</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

@@ -266,6 +266,44 @@ ${items}
   );
 }
 
+// The index builds its card list in the browser, so crawlers see an empty
+// container and can't follow links to any post. Write the same markup
+// renderPostList() produces into the HTML; blog.js still takes over for
+// filtering once it loads.
+function writeIndexCards(published) {
+  const indexPath = path.join(BLOG, 'index.html');
+  let html = fs.readFileSync(indexPath, 'utf8');
+
+  const cards = published
+    .map(p => {
+      const tags = (p.tags || []).map(t => `<span class="tag">${escapeHtml(t)}</span>`).join('');
+      const category = p.category
+        ? `<span class="tag tag-category">${escapeHtml(p.category)}</span>`
+        : '';
+      return `      <a href="${p.slug}.html" class="post-card" data-category="${escapeHtml(p.category || '')}" data-tags="${escapeHtml((p.tags || []).join(','))}">
+        <h2 class="post-card-title">${escapeHtml(p.title)}</h2>
+        <div class="post-card-date">${formatDate(p.date)}</div>
+        <p class="post-card-description">${escapeHtml(p.description)}</p>
+        <div class="post-card-tags">${category}${tags}</div>
+      </a>`;
+    })
+    .join('\n');
+
+  // Replace the whole container so re-running never nests or duplicates.
+  const replaced = html.replace(
+    /<div id="post-list">[\s\S]*?<\/div>(?=\s*(?:<\/main>|<!--|<div|<footer|<script))/,
+    `<div id="post-list">\n${cards}\n    </div>`
+  );
+
+  if (replaced === html) {
+    console.warn('warning: could not find <div id="post-list"> in blog/index.html');
+    return 0;
+  }
+
+  fs.writeFileSync(indexPath, replaced);
+  return published.length;
+}
+
 const published = [];
 const skipped = [];
 
@@ -289,9 +327,11 @@ published.sort((a, b) => new Date(b.date) - new Date(a.date));
 
 writeSitemap(published);
 writeFeed(published);
+const carded = writeIndexCards(published);
 
 console.log(`built ${published.length} post pages`);
 console.log(`sitemap: ${STATIC_PAGES.length + published.length} URLs, feed: ${published.length} items`);
+console.log(`index: ${carded} post cards pre-rendered`);
 if (skipped.length) {
   console.log(`skipped (no markdown file): ${skipped.join(', ')}`);
 }

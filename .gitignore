@@ -1,3 +1,7 @@
 .DS_Store
 **/.DS_Store
 *.pdf
+
+# Local-only authoring notes, not for publication
+CLAUDE.md
+blog/IDEAS.md

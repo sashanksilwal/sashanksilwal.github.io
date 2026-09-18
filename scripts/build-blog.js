@@ -201,7 +201,72 @@ ${body}
 `;
 }
 
-let built = 0;
+// Pages the blog build doesn't own, kept in the sitemap alongside the posts.
+const STATIC_PAGES = [
+  { loc: `${SITE}/`, changefreq: 'monthly', priority: '1.0' },
+  { loc: `${SITE}/experience/`, changefreq: 'monthly', priority: '0.8' },
+  { loc: `${SITE}/blog/`, changefreq: 'weekly', priority: '0.9' }
+];
+
+function escapeXml(s) {
+  return String(s)
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function rfc822(dateStr) {
+  return new Date(dateStr + 'T00:00:00Z').toUTCString().replace('GMT', '+0000');
+}
+
+function writeSitemap(published) {
+  const urls = [
+    ...STATIC_PAGES.map(
+      p => `  <url>\n    <loc>${p.loc}</loc>\n    <changefreq>${p.changefreq}</changefreq>\n    <priority>${p.priority}</priority>\n  </url>`
+    ),
+    ...published.map(
+      m => `  <url>\n    <loc>${SITE}/blog/${m.slug}.html</loc>\n    <lastmod>${m.date}</lastmod>\n    <changefreq>monthly</changefreq>\n    <priority>0.7</priority>\n  </url>`
+    )
+  ];
+  fs.writeFileSync(
+    path.join(ROOT, 'sitemap.xml'),
+    `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.join('\n')}\n</urlset>\n`
+  );
+}
+
+function writeFeed(published) {
+  const items = published
+    .map(
+      m => `    <item>
+      <title>${escapeXml(m.title)}</title>
+      <link>${SITE}/blog/${m.slug}.html</link>
+      <guid>${SITE}/blog/${m.slug}.html</guid>
+      <pubDate>${rfc822(m.date)}</pubDate>
+      <description>${escapeXml(m.description)}</description>
+    </item>`
+    )
+    .join('\n\n');
+
+  fs.writeFileSync(
+    path.join(ROOT, 'feed.xml'),
+    `<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sashank Silwal's Blog</title>
+    <link>${SITE}/blog/</link>
+    <description>Blog posts on machine learning, computer science, and software engineering by Sashank Silwal.</description>
+    <language>en-us</language>
+    <atom:link href="${SITE}/feed.xml" rel="self" type="application/rss+xml"/>
+
+${items}
+
+  </channel>
+</rss>
+`
+  );
+}
+
+const published = [];
 const skipped = [];
 
 for (const meta of posts) {
@@ -216,10 +281,17 @@ for (const meta of posts) {
   const body = renderMarkdown(fs.readFileSync(mdPath, 'utf8'));
 
   fs.writeFileSync(path.join(BLOG, meta.slug + '.html'), head(meta, url, imageUrl, body));
-  built++;
+  published.push(meta);
 }
 
-console.log(`built ${built} post pages`);
+// Newest first, so the feed reads correctly and the sitemap stays stable.
+published.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+writeSitemap(published);
+writeFeed(published);
+
+console.log(`built ${published.length} post pages`);
+console.log(`sitemap: ${STATIC_PAGES.length + published.length} URLs, feed: ${published.length} items`);
 if (skipped.length) {
   console.log(`skipped (no markdown file): ${skipped.join(', ')}`);
 }

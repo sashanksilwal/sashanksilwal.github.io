@@ -3,7 +3,8 @@
   "private": true,
   "description": "Build tooling for the blog. The site itself is static.",
   "scripts": {
-    "build:blog": "node scripts/build-blog.js"
+    "build": "node scripts/build-site.js",
+    "build:blog": "node scripts/build-site.js"
   },
   "devDependencies": {
     "marked": "12.0.1"

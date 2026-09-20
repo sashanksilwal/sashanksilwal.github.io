@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Sashank Silwal — Reflections</title>
+    <link>https://ssilwal.com.np/reflections/</link>
+    <description>Short personal essays by Sashank Silwal on choices, work, and figuring things out.</description>
+    <language>en-us</language>
+    <atom:link href="https://ssilwal.com.np/reflections/feed.xml" rel="self" type="application/rss+xml"/>
+
+    <item>
+      <title>Dubai, Norway, and the Lives I Didn't Pick</title>
+      <link>https://ssilwal.com.np/reflections/lives-i-didnt-pick.html</link>
+      <guid>https://ssilwal.com.np/reflections/lives-i-didnt-pick.html</guid>
+      <pubDate>Sun, 20 Sep 2026 00:00:00 +0000</pubDate>
+      <description>I turned down Dubai and Norway to study ML in the US. A year on, I still think it was the right call, and I still think about the other two lives.</description>
+    </item>
+
+  </channel>
+</rss>

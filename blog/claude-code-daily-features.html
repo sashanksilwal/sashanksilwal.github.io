@@ -32,6 +32,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/post.css">
     <link rel="stylesheet" href="blog.css">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
@@ -72,6 +73,7 @@
             <a href="/" class="nav-link">Home</a>
             <a href="/experience/" class="nav-link">Experience</a>
             <a href="/blog/" class="nav-link active">Blog</a>
+            <a href="/reflections/" class="nav-link">Reflections</a>
         </div>
         <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
     </nav>
@@ -122,7 +124,7 @@
 <p>The point isn&#39;t that typing <code>vercel</code> is hard. It&#39;s that the gap between &quot;the code is written&quot; and &quot;it&#39;s live and the build passed&quot; used to span two windows and a few minutes of split attention. Now it&#39;s one continuous back-and-forth.</p>
 <h2>A status line that watches your context for you</h2>
 <p>The default status line is fine. <code>/statusline</code> lets you replace it with something that actually earns its space, and it&#39;ll generate the script for you if you describe what you want. Mine packs in the model I&#39;m on (Opus 4.7, with the 1M-token context window), how much of that context I&#39;ve used, how close I am to my usage limits over the last 5 hours and 7 days, and the current git branch:</p>
-<p><img src="posts/images/claude-code-statusline.png" alt="My Claude Code status line showing the git branch, model, context percentage used, and 5-hour and 7-day usage limits"></p>
+<p><img loading="lazy" decoding="async" src="posts/images/claude-code-statusline.png" alt="My Claude Code status line showing the git branch, model, context percentage used, and 5-hour and 7-day usage limits"></p>
 <p>That context number is the one that changed my habits. The sneakiest performance killer in Claude Code is letting the context window fill up, which I got into at length in the <a href="/blog/claude-code-intermediate.html">intermediate post</a>. I used to find out I was running low only when I went looking for it with a command. Now it sits in front of me the whole time, so I clear or compact <em>before</em> the responses start getting vague, not after. It turned context management from something I had to remember into something I just see.</p>
 <h2>Hand off instead of compacting, and set a <code>/goal</code></h2>
 <p>When a session gets long and context runs low, the obvious move is <code>/compact</code>, which summarizes everything so far and keeps going. I&#39;ve mostly stopped reaching for it first. A compacted session is still the same tired session, now running on a lossy summary of itself. More often I&#39;d rather hand the work to a fresh context: write a two-line note of what&#39;s done and what&#39;s left, start clean, and point the new session at it. Subagents are the built-in version of this idea: you delegate a scoped chunk to an agent with its own context window, so the main session stays clean. I got into that in <a href="/blog/claude-code-intermediate.html">the intermediate post</a>.</p>
@@ -138,7 +140,7 @@
 </ul>
 <h2>The one that maps the whole tool: <code>/powerup</code></h2>
 <p>I&#39;ll end on the feature that, in a way, contains all the others. <code>/powerup</code> opens a checklist of Claude Code&#39;s ten core capabilities and tracks which ones you&#39;ve actually used, with a short lesson behind each row. Here&#39;s mine, fully unlocked:</p>
-<p><img src="posts/images/claude-code-powerup.png" alt="Claude Code&#39;s /powerup screen reading &quot;All powered up, 10/10 unlocked,&quot; listing ten capabilities and the commands behind each"></p>
+<p><img loading="lazy" decoding="async" src="posts/images/claude-code-powerup.png" alt="Claude Code&#39;s /powerup screen reading &quot;All powered up, 10/10 unlocked,&quot; listing ten capabilities and the commands behind each"></p>
 <p>What I like is that it&#39;s organized by what you&#39;re trying to do, not by command name:</p>
 <ul>
 <li><strong>Talk to your codebase</strong> with <code>@</code> files and line refs</li>

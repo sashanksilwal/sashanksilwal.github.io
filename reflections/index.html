@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflections | Sashank Silwal</title>
+    <meta name="description" content="Short personal essays by Sashank Silwal on choices, work, grad school, and the parts of a career you only understand looking backwards.">
+    <meta property="og:title" content="Reflections | Sashank Silwal">
+    <meta property="og:description" content="Short personal essays on choices, work, grad school, and the parts of a career you only understand looking backwards.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ssilwal.com.np/reflections/">
+    <link rel="canonical" href="https://ssilwal.com.np/reflections/">
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal — Reflections" href="https://ssilwal.com.np/reflections/feed.xml">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="Reflections | Sashank Silwal">
+    <meta name="twitter:description" content="Short personal essays on choices, work, grad school, and the parts of a career you only understand looking backwards.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/post.css">
+    <link rel="stylesheet" href="reflections.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link">Blog</a>
+            <a href="/reflections/" class="nav-link active">Reflections</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <h1 class="reflections-page-title">Reflections</h1>
+    <p class="reflections-intro">Choices and doubts. The <a href="/blog/">blog</a> is where the technical writing lives.</p>
+
+    <div id="reflection-list">
+      <a href="lives-i-didnt-pick.html" class="reflection-card">
+        <h2 class="reflection-card-title">Dubai, Norway, and the Lives I Didn't Pick</h2>
+        <time class="reflection-card-date" datetime="2026-09-20">September 20, 2026</time>
+        <p class="reflection-card-description">I turned down Dubai and Norway to study ML in the US. A year on, I still think it was the right call, and I still think about the other two lives.</p>
+      </a>
+    </div>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+
+</body>
+</html>

@@ -32,6 +32,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/post.css">
     <link rel="stylesheet" href="blog.css">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
@@ -72,6 +73,7 @@
             <a href="/" class="nav-link">Home</a>
             <a href="/experience/" class="nav-link">Experience</a>
             <a href="/blog/" class="nav-link active">Blog</a>
+            <a href="/reflections/" class="nav-link">Reflections</a>
         </div>
         <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
     </nav>
@@ -87,7 +89,7 @@
         <div id="post-content" class="post-body" data-prerendered="true">
 <p>Cities are getting hotter. Urban surfaces  - asphalt, concrete, rooftops  - absorb solar radiation and re-emit it as heat, creating the urban heat island (UHI) effect. Understanding <em>where</em> and <em>how much</em> hotter at fine spatial resolution is critical for urban planning, public health, and climate adaptation. But existing tools either lack the physics or can&#39;t scale.</p>
 <p>This post describes <strong>UrbanTherm</strong>, an energy balance extension to the SOLWEIG radiation model that computes physics-based surface temperatures, air temperatures, and thermal comfort at <strong>1-meter resolution</strong> using GPU acceleration.</p>
-<p><img src="posts/images/urbantherm-architecture.png" alt="UrbanTherm Architecture"></p>
+<p><img loading="lazy" decoding="async" src="posts/images/urbantherm-architecture.png" alt="UrbanTherm Architecture"></p>
 <hr>
 <h2>The Problem with Parametric Surface Temperatures</h2>
 <p>SOLWEIG (Solar and Longwave Environmental Irradiance Geometry) is a well-established model for computing Mean Radiant Temperature ($T_\mathrm{mrt}$) in urban environments. It uses digital surface models (DSMs) to compute shadow patterns, sky view factors, and shortwave/longwave radiation fluxes at each pixel.</p>
@@ -136,7 +138,7 @@
 <hr>
 <h2>GPU Acceleration with PyTorch</h2>
 <p>The entire energy balance  - Newton-Raphson solver, Thomas algorithm conduction, Jarvis-Stewart conductance, TARGET air temperature  - is implemented in <strong>PyTorch</strong> and runs on GPU. Every pixel is computed in parallel.</p>
-<p><img src="posts/images/urbantherm-gpu-pipeline.png" alt="GPU Pipeline"></p>
+<p><img loading="lazy" decoding="async" src="posts/images/urbantherm-gpu-pipeline.png" alt="GPU Pipeline"></p>
 <p>For a 1 km$^2$ domain at 1 m resolution, that&#39;s <strong>1 million pixels per timestep</strong>, all processed simultaneously on an RTX 6000 Ada. The key design decisions:</p>
 <ul>
 <li><strong>Fixed 5 Newton-Raphson iterations</strong> (no branching/early exit, better for GPU)</li>

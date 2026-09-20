@@ -1,0 +1,193 @@
+/* === SHARED ARTICLE STYLES ===
+   Used by both /blog/ and /reflections/. Section-specific styling lives in
+   blog/blog.css and reflections/reflections.css. */
+
+/* === LISTING CARDS === */
+.post-card {
+  display: block;
+  padding: 24px 0;
+  border-bottom: 1px solid var(--divider-color);
+  text-decoration: none;
+  color: inherit;
+  transition: opacity 0.2s ease;
+}
+
+.post-card:hover {
+  opacity: 0.7;
+  text-decoration: none;
+  color: inherit;
+}
+
+.post-card-title {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-h2);
+  font-weight: 600;
+  color: var(--secondary-color);
+  margin: 0 0 6px 0;
+  letter-spacing: -0.01em;
+}
+
+.post-card-date {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 8px;
+}
+
+.post-card-description {
+  font-size: 15px;
+  line-height: 1.6;
+  margin-bottom: 10px;
+  color: var(--text-muted);
+}
+
+.post-card-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+/* === TAGS === */
+.tag {
+  display: inline-block;
+  background-color: var(--tag-bg);
+  color: var(--tag-color);
+  padding: 2px 10px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 500;
+  font-family: var(--font-heading);
+}
+
+/* === ARTICLE HEADER === */
+.back-link {
+  display: inline-block;
+  margin-bottom: 24px;
+  font-size: 14px;
+  color: var(--text-muted);
+  text-decoration: none;
+  font-family: var(--font-heading);
+  font-weight: 500;
+  transition: color 0.2s ease;
+}
+
+.back-link:hover {
+  color: var(--primary-color);
+  text-decoration: none;
+}
+
+#post-title {
+  margin-bottom: 4px;
+}
+
+.post-meta-date {
+  display: block;
+  font-size: 13px;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+}
+
+.post-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 40px;
+}
+
+/* === RENDERED MARKDOWN === */
+.post-body {
+  line-height: 1.8;
+}
+
+.post-body h1 {
+  font-size: 28px;
+  margin-top: 48px;
+  margin-bottom: 16px;
+}
+
+.post-body h2 {
+  font-size: 22px;
+  margin-top: 40px;
+  margin-bottom: 14px;
+}
+
+.post-body h3 {
+  font-size: 18px;
+  margin-top: 32px;
+  margin-bottom: 12px;
+}
+
+.post-body p {
+  margin-bottom: 16px;
+}
+
+.post-body img {
+  display: block;
+  max-width: 100%;
+  margin: 28px auto;
+  border-radius: var(--border-radius);
+}
+
+.post-body blockquote {
+  border-left: 2px solid var(--divider-color);
+  margin: 20px 0;
+  padding: 4px 20px;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.post-body ul,
+.post-body ol {
+  margin-bottom: 16px;
+  padding-left: 24px;
+}
+
+.post-body li {
+  margin-bottom: 4px;
+}
+
+/* === CODE === */
+.post-body code {
+  font-family: 'JetBrains Mono', 'SFMono-Regular', Consolas, monospace;
+  font-size: 0.85em;
+  background-color: var(--code-bg);
+  padding: 2px 6px;
+  border-radius: 3px;
+}
+
+.post-body pre {
+  background-color: var(--code-bg);
+  border: 1px solid var(--code-border);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  overflow-x: auto;
+  margin: 20px 0;
+}
+
+.post-body pre code {
+  background: none;
+  padding: 0;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.dark-theme .post-body pre,
+.dark-theme .post-body code {
+  background-color: var(--code-bg);
+  border-color: var(--code-border);
+}
+
+/* === EMPTY STATE === */
+.empty-state {
+  text-align: center;
+  color: var(--text-muted);
+  padding: 48px 0;
+  font-size: 16px;
+}
+
+/* === RESPONSIVE === */
+@media screen and (max-width: 768px) {
+  .post-body h1 { font-size: 24px; }
+  .post-body h2 { font-size: 20px; }
+  .post-body h3 { font-size: 17px; }
+  .post-body pre { font-size: 13px; }
+}

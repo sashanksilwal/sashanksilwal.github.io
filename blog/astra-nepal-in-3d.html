@@ -35,6 +35,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/post.css">
     <link rel="stylesheet" href="blog.css">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
@@ -75,6 +76,7 @@
             <a href="/" class="nav-link">Home</a>
             <a href="/experience/" class="nav-link">Experience</a>
             <a href="/blog/" class="nav-link active">Blog</a>
+            <a href="/reflections/" class="nav-link">Reflections</a>
         </div>
         <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
     </nav>
@@ -93,7 +95,7 @@
 <p>Benchmarks are a weak signal for whether something is any good on a Wednesday night, though. So rather than test it on work I already know how to do, I picked a domain I know nothing about. My understanding of 3D graphics began and ended at having seen the file extension <code>.glb</code> somewhere.</p>
 <p>So I asked it to build the Boudhanath stupa.</p>
 <p>Two hours later I had <a href="https://nepalin3d.com">nepalin3d.com</a>, and I hadn&#39;t written a line of the code. Not the 2,700 lines of Python that drive Blender and generate the whole thing from scratch, not the textures, not the 2,004 individually modeled prayer flags.</p>
-<p><img src="posts/images/boudhanath-nepalin3d.webp" alt="The Boudhanath stupa rendered in 3D on nepalin3d.com, with prayer flags running from the gilded spire down to the octagonal wall of prayer wheels, surrounded by the shop-houses of Boudha at dusk"></p>
+<p><img loading="lazy" decoding="async" src="posts/images/boudhanath-nepalin3d.webp" alt="The Boudhanath stupa rendered in 3D on nepalin3d.com, with prayer flags running from the gilded spire down to the octagonal wall of prayer wheels, surrounded by the shop-houses of Boudha at dusk"></p>
 <h2>The part that surprised me</h2>
 <p>Not that it could write the code. I assumed that.</p>
 <p>What I didn&#39;t expect was that it would hold up under real engineering pressure. The build uses fixed random seeds, so running it twice gives you the same stupa instead of a slightly different one. There&#39;s a validation step that exports the finished model, reads it back in, and checks that the eyes are on all four faces, that all six butter lamps still flicker, that all 2,004 flags survived the export, that no texture went missing. When I pushed on one part, it held the shape of the rest instead of forgetting what it had already built.</p>

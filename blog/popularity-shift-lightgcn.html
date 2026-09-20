@@ -32,6 +32,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/post.css">
     <link rel="stylesheet" href="blog.css">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
@@ -72,6 +73,7 @@
             <a href="/" class="nav-link">Home</a>
             <a href="/experience/" class="nav-link">Experience</a>
             <a href="/blog/" class="nav-link active">Blog</a>
+            <a href="/reflections/" class="nav-link">Reflections</a>
         </div>
         <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
     </nav>
@@ -97,8 +99,8 @@
 <p>In distribution-shift language: the labelling mechanism (what users actually like) is stable, but the conditioning graph the model uses has changed. Item degrees shift. Neighborhood structure changes. The GNN sees a different world at test time than the one it trained on.</p>
 <p>This isn&#39;t a surprise in general (covariate shift is a classic problem, <a href="/blog/ml-systems-production.html">I wrote about it for production ML systems</a>), but GNN recommenders get hit harder because the shift propagates through message passing. A degree shift on item $i$ changes the messages every neighbor of $i$ sends in the next layer. One perturbation ripples outward.</p>
 <p>The shift is easiest to see as a scatter plot of train rank vs. test rank for items that appear in both windows:</p>
-<p><img src="posts/images/popularity-shift/popularity_shift_yelp2018.png" alt="Train vs. test rank scatter for Yelp-2018 and Amazon-Books. Yelp sits around the diagonal; Amazon is diffuse."></p>
-<p><img src="posts/images/popularity-shift/popularity_shift_amazon-books.png" alt="Amazon-Books is more chaotically re-ranked than Yelp."></p>
+<p><img loading="lazy" decoding="async" src="posts/images/popularity-shift/popularity_shift_yelp2018.png" alt="Train vs. test rank scatter for Yelp-2018 and Amazon-Books. Yelp sits around the diagonal; Amazon is diffuse."></p>
+<p><img loading="lazy" decoding="async" src="posts/images/popularity-shift/popularity_shift_amazon-books.png" alt="Amazon-Books is more chaotically re-ranked than Yelp."></p>
 <p>Points above the diagonal are Rising items (low train rank, high test rank); points below are Falling. Yelp&#39;s cloud hugs the diagonal, which says rankings shift but not violently. Amazon&#39;s cloud is diffuse: popularity gets shuffled across years. The Spearman $\rho$ between train and test ranks is 0.52 on Yelp and 0.39 on Amazon. These are the graphs the model is being asked to generalize across, and the shape of the cloud is what any fix has to handle.</p>
 <h2>Why we didn&#39;t just fix it with a better backbone</h2>
 <p>Before getting to invariant learning, the honest question: why not just use a different architecture? Attention-based recommenders, debiased two-tower models, causal approaches. There&#39;s a whole zoo.</p>
@@ -125,7 +127,7 @@ def env_of_triplet(triplet, env_of_item):
     return env_of_item[pos]
 </code></pre>
 <p>That gives three environments that correspond to the axis along which the distribution actually shifts: popularity. If a training-popular item becomes less relevant at test time, the shift happens within the popular environment. If a training-cold item explodes, the shift is felt by the cold environment. Forcing a single predictor to be optimal across all three buckets at train time is the asymptotic analog of forcing it to be robust to popularity moving at test time.</p>
-<p><img src="posts/images/popularity-shift/env_partition_yelp2018.png" alt="Environment partition on Yelp-2018: items bucketed by training-time degree percentile into cold, average, and popular."></p>
+<p><img loading="lazy" decoding="async" src="posts/images/popularity-shift/env_partition_yelp2018.png" alt="Environment partition on Yelp-2018: items bucketed by training-time degree percentile into cold, average, and popular."></p>
 <h2>IRM and VREx, briefly</h2>
 <p>Both losses add a penalty on top of the base Bayesian Personalized Ranking (BPR) loss:</p>
 <p>$$\min_{\phi, w} \sum_e R^e(\phi, w) + \lambda \cdot \Omega(\phi, w)$$</p>
@@ -174,16 +176,16 @@ def env_of_triplet(triplet, env_of_item):
 <p>The main result: VREx works, IRM collapses at high $\lambda$.</p>
 <p>To measure this carefully, we partitioned test items by how much their popularity rank changed between train and test. Items whose rank rose (they became more popular) form the <strong>Rising</strong> group. Items whose rank fell are <strong>Falling</strong>. The middle 60% is <strong>Stable</strong>. Subgroup recall tells you where any improvement is actually coming from.</p>
 <p>On Yelp at $\lambda = 10$, VREx lifted Falling Recall@20 from 0.0166 to 0.0295, a 77% improvement, at only 1.2% cost on overall Recall@20. On Amazon, VREx at $\lambda = 1$ improved Falling by 20% at 1.5% overall cost. Stable recall stayed within noise. These are the numbers the project was designed to produce, and they landed.</p>
-<p><img src="posts/images/popularity-shift/lambda_sweep.png" alt="Lambda sweep. Left: overall Recall@20 vs. lambda. Right: VREx subgroup recall as a ratio to baseline."></p>
+<p><img loading="lazy" decoding="async" src="posts/images/popularity-shift/lambda_sweep.png" alt="Lambda sweep. Left: overall Recall@20 vs. lambda. Right: VREx subgroup recall as a ratio to baseline."></p>
 <p>The left panel is the headline: VREx holds overall Recall@20 flat (within 2% of baseline) up through $\lambda = 100$ on Yelp. IRM does not. The right panel is where the real story lives: the Falling subgroup ratio jumps to 1.77x at $\lambda = 10$, which is all the win.</p>
-<p><img src="posts/images/popularity-shift/subgroup_recall_yelp2018.png" alt="Subgroup Recall@20 on Yelp-2018. VREx primarily improves the Falling group."></p>
+<p><img loading="lazy" decoding="async" src="posts/images/popularity-shift/subgroup_recall_yelp2018.png" alt="Subgroup Recall@20 on Yelp-2018. VREx primarily improves the Falling group."></p>
 <p>Falling is the group I&#39;d most expect to improve. These are items that were popular during training but less so at test time. The baseline over-predicts them (their embeddings are confident, they show up everywhere). Variance regularization forces the encoder to not lean so hard on popularity as a feature, which pulls down the spuriously-high scores for Falling items and lets the genuinely-relevant ones surface.</p>
 <p>Rising is a different story. Those items hovered around Recall@20 = $10^{-4}$ across every configuration. Invariant learning doesn&#39;t help, nothing else did either. The brutal truth is that the training signal for these items is a handful of early interactions. No loss trick invents information that isn&#39;t there. Fixing Rising would need side information (item features, text descriptions) or a shorter, denser time window that keeps more of them in the training set.</p>
 <h2>The IRM collapse</h2>
 <p>This is the part I want to spend time on, because it wasn&#39;t in the project proposal and it&#39;s the most useful takeaway.</p>
 <p>IRM at $\lambda = 100$ catastrophically degraded both datasets: Yelp&#39;s overall Recall@20 dropped from 0.0321 to 0.0210, Amazon&#39;s from 0.0273 to 0.0188. VREx at the same $\lambda$ barely moved. We wanted to know why.</p>
 <p>We instrumented the trainer to log per-environment gradient magnitudes and per-environment BPR risks every epoch.</p>
-<p><img src="posts/images/popularity-shift/grad_diag.png" alt="Per-environment IRM gradient magnitudes. Top row: lambda=10 trains stably. Bottom row: lambda=100 collapses, cold-env BPR stalls at log 2."></p>
+<p><img loading="lazy" decoding="async" src="posts/images/popularity-shift/grad_diag.png" alt="Per-environment IRM gradient magnitudes. Top row: lambda=10 trains stably. Bottom row: lambda=100 collapses, cold-env BPR stalls at log 2."></p>
 <p>Three things showed up:</p>
 <p>First, at safe $\lambda = 10$, gradient magnitudes stayed around $10^{-2}$ on both datasets. The cross-environment coefficient of variation grew to about 0.6. IRM tolerates meaningful gradient heterogeneity at this regularization strength. The penalty nudges but doesn&#39;t dominate.</p>
 <p>Second, at $\lambda = 100$, the cold-environment BPR risk stalled at exactly $\log 2 \approx 0.69$. That number is the loss of a constant predictor (sigmoid(0) = 0.5, -log(0.5) = log 2). The model is literally refusing to rank cold items. IRM, pushed hard enough, achieves invariance by destroying the cold-item ranking signal entirely. Pop quiz: the easiest way to make a predictor equally good across three environments is to make it equally bad across all three. That&#39;s what&#39;s happening.</p>

@@ -32,6 +32,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
     <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
     <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/post.css">
     <link rel="stylesheet" href="blog.css">
     <!-- Google tag (gtag.js) -->
     <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
@@ -72,6 +73,7 @@
             <a href="/" class="nav-link">Home</a>
             <a href="/experience/" class="nav-link">Experience</a>
             <a href="/blog/" class="nav-link active">Blog</a>
+            <a href="/reflections/" class="nav-link">Reflections</a>
         </div>
         <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
     </nav>
@@ -91,7 +93,7 @@
 <h2>Context Is Infrastructure</h2>
 <p>Anthropic&#39;s engineering blog puts it well: context isn&#39;t just &quot;what Claude knows,&quot; it&#39;s the entire operating environment. System prompts, file contents, conversation history, tool outputs. All of it competes for the same finite window. When that window fills up, performance degrades in ways that are hard to diagnose. Responses get vague. Instructions get forgotten. You start blaming the model when really you&#39;ve just drowned it in tokens.</p>
 <p>The <code>/context</code> command shows your current token usage. Here&#39;s what it looks like mid-session:</p>
-<p><img src="posts/images/context-usage.png" alt="Claude Code /context command showing token usage breakdown at 27%"></p>
+<p><img loading="lazy" decoding="async" src="posts/images/context-usage.png" alt="Claude Code /context command showing token usage breakdown at 27%"></p>
 <p>At 27% this session is healthy. But notice how messages alone eat 20%. A few more large file reads and you&#39;re at 60%, then 80%, and suddenly Claude starts forgetting your earlier instructions. The autocompact buffer is your safety net (Claude will summarize old context when it runs low), but you don&#39;t want to rely on it. By the time autocompact kicks in, you&#39;ve already lost nuance.</p>
 <p>Check this often. I check it like I check disk space on a server.</p>
 <p>When context gets heavy, you have two good options:</p>

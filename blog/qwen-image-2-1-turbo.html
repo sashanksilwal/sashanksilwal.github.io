@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <script>
+    (function() {
+      try {
+        var saved = localStorage.getItem('darkTheme');
+        if (saved === null || saved === 'true') document.documentElement.classList.add('dark-theme');
+      } catch (e) {
+        document.documentElement.classList.add('dark-theme');
+      }
+    })();
+    </script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Qwen-Image-2.1-Turbo: Theory of Operation | Sashank Silwal</title>
+    <meta name="description" content="Follow a prompt through the text encoder, diffusion transformer, and VAE, with interactive diagrams and a calculator for exploring model memory.">
+    <link rel="canonical" href="https://ssilwal.com.np/blog/qwen-image-2-1-turbo.html">
+    <meta property="og:title" content="Qwen-Image-2.1-Turbo: Theory of Operation">
+    <meta property="og:description" content="Follow a prompt through the text encoder, diffusion transformer, and VAE, with interactive diagrams and a calculator for exploring model memory.">
+    <meta property="og:url" content="https://ssilwal.com.np/blog/qwen-image-2-1-turbo.html">
+    <meta property="og:type" content="article">
+    <meta property="article:published_time" content="2026-10-14">
+    <meta name="twitter:title" content="Qwen-Image-2.1-Turbo: Theory of Operation">
+    <meta name="twitter:description" content="Follow a prompt through the text encoder, diffusion transformer, and VAE, with interactive diagrams and a calculator for exploring model memory.">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">{"@context":"https://schema.org","@type":"BlogPosting","headline":"Qwen-Image-2.1-Turbo: Theory of Operation","description":"Follow a prompt through the text encoder, diffusion transformer, and VAE, with interactive diagrams and a calculator for exploring model memory.","datePublished":"2026-10-14","author":{"@type":"Person","name":"Sashank Silwal"},"url":"https://ssilwal.com.np/blog/qwen-image-2-1-turbo.html"}</script>
+    <link rel="alternate" type="application/rss+xml" title="Sashank Silwal's Blog" href="https://ssilwal.com.np/feed.xml">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" as="style" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet"></noscript>
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/post.css">
+    <link rel="stylesheet" href="blog.css">
+    <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TEPTW01GNL"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-TEPTW01GNL');
+    </script>
+    <link rel="preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css"></noscript>
+    <!-- Highlight.js -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css" id="hljs-light">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" id="hljs-dark" disabled>
+    <script>
+    (function() {
+      var isDark = document.documentElement.classList.contains('dark-theme');
+      var lightSheet = document.getElementById('hljs-light');
+      var darkSheet = document.getElementById('hljs-dark');
+      if (lightSheet && darkSheet) {
+        lightSheet.disabled = isDark;
+        darkSheet.disabled = !isDark;
+      }
+    })();
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <!-- KaTeX -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/katex.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/KaTeX/0.16.9/contrib/auto-render.min.js"></script>
+</head>
+<body>
+
+    <div class="main-content">
+    <nav class="site-nav">
+        <div class="nav-links">
+            <a href="/" class="nav-link">Home</a>
+            <a href="/experience/" class="nav-link">Experience</a>
+            <a href="/blog/" class="nav-link active">Blog</a>
+            <a href="/reflections/" class="nav-link">Reflections</a>
+        </div>
+        <button id="themeToggle" aria-label="Toggle dark theme"><i class="fas fa-moon"></i></button>
+    </nav>
+
+    <main>
+    <article id="post-container">
+        <div id="post-header">
+            <a href="/blog/" class="back-link"><i class="fas fa-arrow-left"></i> Back to blog</a>
+            <h1 id="post-title">Qwen-Image-2.1-Turbo: Theory of Operation</h1>
+            <time id="post-date" class="post-meta-date" datetime="2026-10-14">October 14, 2026</time>
+            <div id="post-tags" class="post-tags"><span class="tag">ml</span><span class="tag">deep-learning</span><span class="tag">gpu</span><span class="tag">ai-interactive-guide</span></div>
+        </div>
+        <div id="post-content" class="post-body" data-prerendered="true">
+<p>Over fall break, I worked on quantizing a model. This post collects what I learned while trying to understand Qwen-Image-2.1-Turbo: what each part does, where the memory goes, and what changes when you store the weights with fewer bits.</p>
+<p>Claude helped me build the interactive explainers below. Being able to change a setting and see the shapes, noise levels, or memory estimates made the pieces easier to connect. I wanted to keep all of those tools and examples together, so this includes the full guide, not just the final memory calculator.</p>
+<p>A text prompt goes in. An image comes out. The part I wanted to understand was everything in between: what represents the prompt, what changes during sampling, and what finally becomes pixels.</p>
+<h2>Explore the model</h2>
+<p><a href="/blog/demos/qwen-image-2-1-turbo.html">Open the interactive guide in a full page</a>. This is the easiest way to explore the diagrams on a phone or read the whole manual without scrolling inside the embed.</p>
+<iframe src="/blog/demos/qwen-image-2-1-turbo.html" title="Qwen-Image-2.1-Turbo interactive theory of operation: pipeline, denoising, attention, and memory" style="width:100%;height:850px;border:1px solid var(--border-color, #888);border-radius:12px;display:block;margin:28px auto;" loading="lazy" sandbox="allow-scripts allow-same-origin"></iframe>
+
+<p>The guide&#39;s token vectors, attention grid, and images are teaching illustrations, not outputs from a running model. Its model-specific figures are reproduced from the supplied guide; the memory calculator estimates working memory rather than measuring a device. Treat its fit indicators as estimates, not guarantees.</p>
+<h2>All the tools and examples</h2>
+<p>The full guide contains ten figures. You can jump directly to any of them:</p>
+<ol>
+<li><a href="/blog/demos/qwen-image-2-1-turbo.html#fig1">Prompt-to-image pipeline</a>: select a stage and change the image size to inspect its output shape.</li>
+<li><a href="/blog/demos/qwen-image-2-1-turbo.html#fig2">Tokens and vectors</a>: enter a prompt and compare illustrative vectors before and after contextual encoding.</li>
+<li><a href="/blog/demos/qwen-image-2-1-turbo.html#fig3">One word, two meanings</a>: compare “bank” in a river sentence and a money sentence.</li>
+<li><a href="/blog/demos/qwen-image-2-1-turbo.html#fig4">Pixels and the latent</a>: explore the illustrated relationship between image blocks and latent channels.</li>
+<li><a href="/blog/demos/qwen-image-2-1-turbo.html#fig5">Image sizes and token counts</a>: compare resolutions, latent grids, and numbers of image tokens.</li>
+<li><a href="/blog/demos/qwen-image-2-1-turbo.html#fig6">Eight denoising steps</a>: play the animation or move the slider through the noise schedule.</li>
+<li><a href="/blog/demos/qwen-image-2-1-turbo.html#fig7">Inside the transformer</a>: follow image tokens, text tokens, and the noise level through its blocks.</li>
+<li><a href="/blog/demos/qwen-image-2-1-turbo.html#fig8">Attention and the KV cache</a>: select token rows and compare the first step with later steps.</li>
+<li><a href="/blog/demos/qwen-image-2-1-turbo.html#fig9">Transformer runs per image</a>: compare the guide&#39;s illustrative base-model workload with the Turbo schedule.</li>
+<li><a href="/blog/demos/qwen-image-2-1-turbo.html#fig10">Memory calculator</a>: change weight precision, resolution, staged loading, and tiled decoding.</li>
+</ol>
+<h2>Three parts, three different jobs</h2>
+<p>The <strong>text encoder</strong> turns the prompt into contextual vectors. Those vectors give the image model a numerical representation of the words and their relationships. In the guide, try changing the prompt and switching between the vectors before and after the encoder. The values are illustrative, but the distinction is the point: a token&#39;s meaning depends on its context.</p>
+<p>The <strong>diffusion transformer</strong> repeatedly updates a noisy latent representation using that prompt information. Move the denoising slider to see how the illustrated noise level changes across the sampling schedule. The model works in a compressed space; it does not redraw every output pixel directly at each step.</p>
+<p>The <strong>VAE decoder</strong> turns the resulting latent into pixels. The latent visualization connects the image&#39;s spatial dimensions to the number of values that the transformer works with. Its block view is a simplified illustration of compression, not a claim that a learned decoder reconstructs each block independently.</p>
+<p>This guide focuses on how the components fit together at inference time. For the idea behind training a faster model to imitate a slower one, see <a href="/blog/model-distillation.html">Model Distillation</a>.</p>
+<h2>Explore the memory tradeoff</h2>
+<p>The last figure lets you change text encoder precision and transformer precision separately. It also lets you compare keeping the components loaded with releasing the text encoder after it has encoded the prompt. Toggle tiled VAE decoding to see how a different execution strategy changes the estimated peak.</p>
+<p>That distinction matters: weight size is only part of the memory budget. Activations, temporary buffers, image resolution, and which components remain resident all affect the peak. A smaller checkpoint file does not by itself establish that a generation will fit.</p>
+<p><a href="/blog/fitting-big-models-small-gpus.html">My post on fitting big models on small GPUs</a> covers the broader quantization tradeoff. Here, the useful question is more specific: which component occupies memory at the moment the pipeline needs the most of it?</p>
+
+        </div>
+    </article>
+    </main>
+
+    <footer class="footer-content">
+        <a href="https://github.com/sashanksilwal" target="_blank" rel="noopener noreferrer" aria-label="GitHub">
+        <i class="fa-brands fa-github"></i>
+        </a>
+        <a href="https://www.linkedin.com/in/sashank-silwal/" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">
+        <i class="fa-brands fa-linkedin"></i>
+        </a>
+        <a href="https://x.com/sashank_silwal" target="_blank" rel="noopener noreferrer" aria-label="X (Twitter)">
+        <i class="fa-brands fa-x-twitter"></i>
+        </a>
+    </footer>
+    </div>
+
+    <script src="/js/script.js"></script>
+    <script src="blog.js"></script>
+
+</body>
+</html>

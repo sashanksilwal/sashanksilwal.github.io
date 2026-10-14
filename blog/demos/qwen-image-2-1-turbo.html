@@ -1,0 +1,726 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style>
+<title>Qwen-Image-2.1-Turbo: Theory of Operation | Sashank's Site</title>
+<meta name="description" content="Follow a prompt through the text encoder, diffusion transformer, and VAE, with interactive diagrams and a calculator for exploring model memory.">
+<link rel="canonical" href="https://ssilwal.com.np/blog/qwen-image-2-1-turbo.html">
+<meta property="og:title" content="Qwen-Image-2.1-Turbo: Theory of Operation">
+<meta property="og:description" content="Follow a prompt through the text encoder, diffusion transformer, and VAE, with interactive diagrams and a calculator for exploring model memory.">
+<meta property="og:type" content="article">
+<meta property="og:url" content="https://ssilwal.com.np/blog/qwen-image-2-1-turbo.html">
+<meta name="twitter:card" content="summary">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,400..800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@400;600&display=swap">
+<style>
+/* Layout: a technical-manual page. One reading column, wide figure panels, numbered sections that follow the real data path. */
+:root{
+  --paper:#F4F5F2; --panel:#FFFFFF; --ink:#17202A; --muted:#56616C; --rule:#D3D8D4; --rule-strong:#9AA3A0;
+  --te:#2B5A9B; --dit:#B04E16; --vae:#6B45A0; --hilite:#DDE47A; --hilite-ink:#3D4410;
+  --warn:#B42318; --caution:#9A6100; --note:#2F5B6E;
+  --display:"Archivo",-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --body:"Atkinson Hyperlegible",-apple-system,"Segoe UI",Roboto,sans-serif;
+  --mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#111518; --panel:#192026; --ink:#E5E9E6; --muted:#9BA6AE; --rule:#2B343B; --rule-strong:#4A555D;
+  --te:#7FA9EA; --dit:#F28C4E; --vae:#B898EA; --hilite:#59601F; --hilite-ink:#EEF3B8;
+  --warn:#FF8A7A; --caution:#E8B04A; --note:#86BFD6; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#111518; --panel:#192026; --ink:#E5E9E6; --muted:#9BA6AE; --rule:#2B343B; --rule-strong:#4A555D;
+  --te:#7FA9EA; --dit:#F28C4E; --vae:#B898EA; --hilite:#59601F; --hilite-ink:#EEF3B8;
+  --warn:#FF8A7A; --caution:#E8B04A; --note:#86BFD6; color-scheme:dark}
+
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--body);font-size:17px;line-height:1.6;padding-inline:20px;padding-block:0 64px}
+.wrap{max-width:1040px;margin:0 auto}
+.prose{max-width:68ch}
+h1,h2,h3{font-family:var(--display);text-wrap:balance;line-height:1.15;margin:0}
+h1{font-size:clamp(2.1rem,5.5vw,3.6rem);font-weight:800;font-stretch:72%;letter-spacing:-.01em}
+h2{font-size:1.75rem;font-weight:750;font-stretch:80%;display:flex;gap:.6em;align-items:baseline}
+h2 .num{font-family:var(--mono);font-size:.9rem;font-weight:600;color:var(--muted)}
+h3{font-size:1.15rem;font-weight:700;font-stretch:90%;margin-top:1.6em}
+p{margin:.7em 0}
+code,.mono{font-family:var(--mono);font-size:.86em}
+a{color:var(--te)}
+a:focus-visible,button:focus-visible,select:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--dit);outline-offset:2px}
+
+/* header */
+header.title{padding-block:48px 28px;border-bottom:2px solid var(--ink);display:grid;gap:14px}
+.eyebrow{font-family:var(--mono);font-size:.78rem;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.lede{font-size:1.15rem;max-width:62ch;margin:0}
+.facts{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));border-top:1px solid var(--rule);border-left:1px solid var(--rule);margin-top:10px}
+.facts div{border-right:1px solid var(--rule);border-bottom:1px solid var(--rule);padding:10px 12px;background:var(--panel)}
+.facts dt{font-family:var(--mono);font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted)}
+.facts dd{margin:2px 0 0;font-family:var(--display);font-weight:700;font-size:1.25rem;font-stretch:85%;font-variant-numeric:tabular-nums}
+.ste{font-size:.9rem;color:var(--muted);max-width:70ch}
+
+section{padding-block:44px 8px;border-bottom:1px solid var(--rule)}
+section>h2{margin-bottom:.6em}
+
+/* part tags */
+.tag{display:inline-block;font-family:var(--mono);font-size:.78em;font-weight:600;padding:0 .4em;border:1.5px solid currentColor;border-radius:3px;white-space:nowrap}
+.tag.te{color:var(--te)} .tag.dit{color:var(--dit)} .tag.vae{color:var(--vae)}
+mark{background:var(--hilite);color:var(--hilite-ink);padding:0 .15em}
+
+/* tables */
+.tbl{overflow-x:auto;margin:1em 0}
+table{border-collapse:collapse;width:100%;font-size:.93rem;background:var(--panel)}
+th,td{border:1px solid var(--rule);padding:7px 10px;text-align:left;vertical-align:top}
+th{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:600}
+td.n{font-variant-numeric:tabular-nums;font-family:var(--mono);font-size:.85rem;text-align:right;white-space:nowrap}
+
+/* callouts, manual style */
+.callout{border:1.5px solid var(--c);background:var(--panel);margin:1.2em 0;max-width:68ch}
+.callout>b{display:block;text-align:center;font-family:var(--display);font-weight:800;letter-spacing:.14em;font-size:.8rem;color:var(--c);border-bottom:1.5px solid var(--c);padding:3px}
+.callout>p{margin:0;padding:10px 14px}
+.callout.note{--c:var(--note)} .callout.caution{--c:var(--caution)} .callout.warning{--c:var(--warn)}
+
+/* figures */
+figure{margin:1.6em 0;background:var(--panel);border:1px solid var(--rule-strong)}
+figcaption{display:flex;gap:10px;flex-wrap:wrap;align-items:baseline;padding:10px 14px;border-bottom:1px solid var(--rule)}
+figcaption .fn{font-family:var(--mono);font-size:.75rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+figcaption .ft{font-family:var(--display);font-weight:700;font-stretch:88%;font-size:1.02rem}
+.fig-body{padding:16px 14px;display:grid;gap:14px}
+.fig-help{font-size:.88rem;color:var(--muted);margin:0}
+.controls{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center;font-size:.9rem}
+.controls label{display:flex;gap:8px;align-items:center}
+select,input[type=text]{font:inherit;font-size:.9rem;color:var(--ink);background:var(--paper);border:1px solid var(--rule-strong);border-radius:4px;padding:5px 8px}
+input[type=text]{width:100%;min-width:0;font-family:var(--mono);font-size:.88rem}
+input[type=range]{accent-color:var(--dit);width:min(320px,100%)}
+input[type=checkbox]{accent-color:var(--dit);width:16px;height:16px}
+button{font:inherit;font-size:.88rem;font-weight:700;color:var(--ink);background:var(--paper);border:1.5px solid var(--ink);border-radius:4px;padding:5px 12px;cursor:pointer}
+button:hover{background:var(--hilite);color:var(--hilite-ink)}
+button[aria-pressed=true]{background:var(--ink);color:var(--paper)}
+.readout{font-family:var(--mono);font-size:.84rem;background:var(--paper);border:1px solid var(--rule);padding:10px 12px;font-variant-numeric:tabular-nums;overflow-x:auto}
+canvas{display:block;max-width:100%;image-rendering:pixelated}
+
+/* Fig 1 pipeline */
+.pipe{display:flex;flex-wrap:wrap;gap:6px;align-items:stretch}
+.pipe .st{flex:1 1 110px;min-width:0;text-align:left;border-radius:4px;border:1.5px solid var(--rule-strong);background:var(--paper);padding:8px 10px;display:grid;gap:2px;font-weight:400}
+.pipe .st small{font-family:var(--mono);font-size:.68rem;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.pipe .st span{font-family:var(--display);font-weight:700;font-stretch:85%;font-size:.98rem;line-height:1.2}
+.pipe .st[data-part=te]{border-color:var(--te)} .pipe .st[data-part=dit]{border-color:var(--dit)} .pipe .st[data-part=vae]{border-color:var(--vae)}
+.pipe .st[aria-pressed=true]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.pipe .st[aria-pressed=true] small{color:var(--paper);opacity:.75}
+.pipe .st.flow{animation:pulse .5s ease}
+@keyframes pulse{from{box-shadow:0 0 0 4px var(--hilite)}to{box-shadow:0 0 0 0 transparent}}
+.detail{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:14px}
+.detail h4{margin:0 0 4px;font-family:var(--display);font-size:1.1rem}
+.detail p{margin:0 0 .5em;font-size:.95rem}
+.shape{font-family:var(--mono);font-size:.9rem;background:var(--paper);border:1px solid var(--rule);padding:10px 12px;align-self:start;overflow-x:auto}
+.shape .big{font-size:1.15rem;font-weight:600;display:block;margin:.2em 0}
+
+/* Fig 2 tokens */
+.chips{display:flex;flex-wrap:wrap;gap:4px}
+.chip{font-family:var(--mono);font-size:.8rem;border:1px solid var(--te);border-radius:3px;padding:1px 6px;display:grid;line-height:1.3;background:var(--paper)}
+.chip i{font-style:normal;font-size:.62rem;color:var(--muted)}
+.chip.sp b::before{content:"·";color:var(--muted)}
+.chip b{font-weight:600}
+
+/* split panels */
+.two{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,256px),1fr));gap:14px;align-items:start}
+.panel-lbl{font-family:var(--mono);font-size:.72rem;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:6px;display:flex;justify-content:space-between;gap:8px}
+.cv{border:1px solid var(--rule);background:var(--paper);width:100%;aspect-ratio:1;max-width:100%;height:auto}
+.three{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,220px),1fr));gap:14px;align-items:start}
+
+/* Fig 5 block */
+.block{display:flex;flex-direction:column;gap:6px;max-width:520px}
+.blk{border:1.5px solid var(--rule-strong);padding:7px 10px;font-size:.9rem;display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;background:var(--paper)}
+.blk b{font-family:var(--display);font-stretch:88%}
+.blk .mono{color:var(--muted)}
+.blk.attn{border-color:var(--dit)} .blk.mlp{border-color:var(--dit)}
+.arrow{font-family:var(--mono);color:var(--muted);padding-left:12px;font-size:.8rem}
+.repeat{border:1.5px dashed var(--dit);padding:10px;display:flex;flex-direction:column;gap:6px;position:relative}
+.repeat>.rl{font-family:var(--mono);font-size:.75rem;color:var(--dit);font-weight:600}
+
+/* Fig 6 attention */
+.attn-wrap{display:grid;grid-template-columns:minmax(0,auto) minmax(0,1fr);gap:18px;align-items:start}
+.attn-wrap svg{width:100%;max-width:360px;height:auto}
+.legend{display:grid;gap:6px;font-size:.88rem}
+.legend span{display:inline-block;width:14px;height:14px;vertical-align:-2px;margin-right:6px;border:1px solid var(--rule-strong)}
+
+/* bars */
+.bars{display:grid;gap:10px}
+.bar-row{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr);gap:10px;align-items:center;font-size:.9rem}
+.bar-track{position:relative;height:26px;background:var(--paper);border:1px solid var(--rule)}
+.bar-fill{position:absolute;inset:0 auto 0 0;display:flex}
+.bar-fill>div{height:100%;display:flex;align-items:center;justify-content:center;font-family:var(--mono);font-size:.72rem;color:var(--panel);overflow:hidden;white-space:nowrap}
+.bar-val{font-family:var(--mono);font-size:.8rem;margin-left:6px}
+.mk{position:absolute;top:-6px;bottom:-6px;width:0;border-left:2px dashed var(--ink)}
+.mk.lim{border-left-color:var(--caution)}
+.mk.tot{border-left-color:var(--warn)}
+.scale{position:relative;height:18px;font-family:var(--mono);font-size:.68rem;color:var(--muted)}
+.scale span{position:absolute;transform:translateX(-50%)}
+.pill{display:inline-block;font-family:var(--mono);font-size:.78rem;font-weight:600;padding:2px 10px;border-radius:99px;border:1.5px solid currentColor}
+.pill.ok{color:var(--note)} .pill.tight{color:var(--caution)} .pill.bad{color:var(--warn)}
+
+dl.gloss{display:grid;grid-template-columns:minmax(120px,190px) minmax(0,1fr);gap:8px 18px;max-width:80ch}
+dl.gloss dt{font-family:var(--display);font-weight:700;font-stretch:88%}
+dl.gloss dd{margin:0}
+footer{padding-block:28px;font-size:.85rem;color:var(--muted)}
+footer ul{padding-left:1.2em}
+
+@media (max-width:640px){
+  .detail,.attn-wrap{grid-template-columns:minmax(0,1fr)}
+  .bar-row{grid-template-columns:minmax(0,1fr)}
+  dl.gloss{grid-template-columns:minmax(0,1fr);gap:2px}
+  dl.gloss dd{margin-bottom:10px}
+  body{font-size:16px}
+}
+@media (prefers-reduced-motion:reduce){.pipe .st.flow{animation:none}}
+</style>
+
+</head>
+<body>
+<div class="wrap">
+<nav aria-label="Blog navigation" style="padding-top:20px"><a href="/blog/qwen-image-2-1-turbo.html">← Back to the blog post</a></nav>
+<header class="title">
+  <div class="eyebrow">Description and operation · Text-to-image model</div>
+  <h1>Qwen-Image-2.1-Turbo</h1>
+  <p class="ste">Over fall break, I worked on quantizing a model. This guide collects my learning, with interactive explainers built with help from Claude.</p>
+  <p class="lede">This model makes an image from a text prompt. It has three parts. Each part does one task. This manual tells you what each part does, why the model needs it, and how much memory it uses.</p>
+  <dl class="facts">
+    <div><dt>Total weights (bf16)</dt><dd>32.4 GB</dd></div>
+    <div><dt>Parts</dt><dd>3</dd></div>
+    <div><dt>Denoising steps</dt><dd>8</dd></div>
+    <div><dt>Guidance (CFG)</dt><dd>1.0</dd></div>
+    <div><dt>Default size</dt><dd>2048 × 2048</dd></div>
+  </dl>
+  <p class="ste">Language: this manual uses the writing rules of ASD-STE100 Simplified Technical English. Sentences are short. Each sentence has one idea. The text uses the active voice. All values come from the model's configuration files on Hugging Face.</p>
+</header>
+
+<!-- 1 -->
+<section id="general">
+<h2><span class="num">1.</span>General</h2>
+<div class="prose">
+<p>A computer cannot "draw" from words directly. The model does this work in three stages:</p>
+</div>
+<div class="tbl"><table>
+<thead><tr><th>Part</th><th>Task</th><th>Size (bf16)</th><th>Runs per image</th></tr></thead>
+<tbody>
+<tr><td><span class="tag te">Text encoder</span><br>Qwen3-VL, 36 layers</td><td>Changes the prompt into numbers that hold its meaning.</td><td class="n">17.53 GB</td><td class="n">1</td></tr>
+<tr><td><span class="tag dit">Transformer</span><br>DiT, 32 layers</td><td>Changes random noise into a clean image, in small steps. It reads the prompt numbers at each step.</td><td class="n">14.23 GB</td><td class="n">8</td></tr>
+<tr><td><span class="tag vae">VAE</span><br>autoencoder</td><td>Changes the transformer's compressed result into pixels.</td><td class="n">0.68 GB</td><td class="n">1</td></tr>
+</tbody></table></div>
+<div class="prose">
+<p>Why three parts? Each task needs a different skill. The text encoder knows language. The transformer knows how images look. The VAE knows how to pack pixels into a small space and unpack them again. If one network did all three tasks, it would be larger and slower.</p>
+<p>The last column is important for this manual. The transformer runs 8 times. The other parts run only once. Thus the transformer controls the speed. The text encoder is the largest part. Thus it controls the memory.</p>
+</div>
+
+<figure id="fig1">
+  <figcaption><span class="fn">Figure 1</span><span class="ft">The data path from prompt to image</span></figcaption>
+  <div class="fig-body">
+    <div class="controls">
+      <button type="button" id="p-play">Run the data path</button>
+      <label>Image size <select id="p-res"></select></label>
+    </div>
+    <div class="pipe" id="pipe"></div>
+    <div class="detail">
+      <div id="p-text"></div>
+      <div class="shape" id="p-shape"></div>
+    </div>
+    <p class="fig-help">Select a stage to see what it does and the shape of the data that it makes. The prompt in Figure 2 sets the token count.</p>
+  </div>
+</figure>
+</section>
+
+<!-- 2 -->
+<section id="text-encoder">
+<h2><span class="num">2.</span>Text encoder <span class="tag te">TE</span></h2>
+<div class="prose">
+<h3>A. Function</h3>
+<p>The transformer cannot read words. It can only use numbers. The text encoder changes each word into a list of 4,096 numbers. This list is a <em>vector</em>. Words with similar meanings get similar vectors.</p>
+<p>The text encoder is Qwen3-VL, a full language model with 8.8 billion parameters. Why use such a large model? A large language model knows grammar, layout words and spelling. Thus the image model can follow long prompts and write correct text in the image. Qwen3-VL also has a vision part. In edit mode, it reads your input image together with the prompt.</p>
+
+<h3>B. Tokens</h3>
+<p>First, a tokenizer cuts the prompt into pieces. A piece is a <em>token</em>. A short word is usually one token. A long or rare word becomes two or more tokens. The vocabulary has 151,936 tokens. Each token has an ID number.</p>
+</div>
+
+<figure id="fig2">
+  <figcaption><span class="fn">Figure 2</span><span class="ft">Tokens and vectors</span></figcaption>
+  <div class="fig-body">
+    <label for="t-in" class="fig-help">Type a prompt:</label>
+    <input type="text" id="t-in" value="A black motor yacht with a yellow funnel on a calm blue sea at sunset">
+    <div class="chips" id="t-chips" aria-live="polite"></div>
+    <div class="controls">
+      <span>Show vectors:</span>
+      <button type="button" id="t-before" aria-pressed="true">Before the encoder</button>
+      <button type="button" id="t-after" aria-pressed="false">After 36 layers</button>
+    </div>
+    <div class="panel-lbl"><span id="t-lbl">Token vectors (48 of 4,096 values shown)</span><span id="t-count"></span></div>
+    <canvas id="t-heat" height="200"></canvas>
+    <p class="fig-help">Each row is one token. Each column is one value of its vector. Orange is a positive value. Blue is a negative value. The tokenizer and the values are an illustration. The real tokenizer uses byte-pair encoding, and the real values come from the trained model.</p>
+  </div>
+</figure>
+
+<div class="prose">
+<h3>C. Context</h3>
+<p>Before the encoder, each token has a fixed vector. The word "bank" always gets the same vector. The 36 layers use <em>attention</em>. Attention lets each token look at the other tokens. After the layers, the vector of "bank" holds the meaning of its sentence. Compare the two sentences below.</p>
+</div>
+<figure id="fig3">
+  <figcaption><span class="fn">Figure 3</span><span class="ft">One word, two meanings</span></figcaption>
+  <div class="fig-body">
+    <div class="readout" id="bank"></div>
+    <p class="fig-help">The similarity is the cosine of the angle between the two "bank" vectors. 1.00 means the same vector. The numbers are an illustration of the effect, not values from the real model.</p>
+  </div>
+</figure>
+<div class="callout note"><b>NOTE</b><p>The transformer uses the output of the text encoder, not the token IDs. Both models use vectors of 4,096 values. Thus the transformer's <code>context_in_dim</code> is 4096.</p></div>
+</section>
+
+<!-- 3 -->
+<section id="vae">
+<h2><span class="num">3.</span>VAE <span class="tag vae">VAE</span></h2>
+<div class="prose">
+<h3>A. Function</h3>
+<p>A 2048 × 2048 image has 4.2 million pixels. Each pixel has 3 colour values. That is 12.6 million numbers. The transformer cost increases with the square of the number of tokens. Thus the transformer cannot work on pixels directly.</p>
+<p>The VAE (variational autoencoder) solves this problem. It has two halves:</p>
+<ul>
+<li>The <strong>encoder</strong> packs each 16 × 16 block of pixels into 64 numbers. The model uses the encoder in edit mode, to read your input image.</li>
+<li>The <strong>decoder</strong> unpacks the 64 numbers into a 16 × 16 block of pixels. The model uses the decoder at the end of each generation.</li>
+</ul>
+<p>The packed data is the <em>latent</em>. The transformer works only on the latent. One latent cell is one image token for the transformer.</p>
+</div>
+<figure id="fig4">
+  <figcaption><span class="fn">Figure 4</span><span class="ft">Pixels and the latent</span></figcaption>
+  <div class="fig-body">
+    <div class="two">
+      <div><div class="panel-lbl"><span>Image · 256 × 256 × 3</span><span>196,608 values</span></div><canvas id="v-img" class="cv" width="256" height="256" tabindex="0" aria-label="Sample image. Move the pointer over it to select a 16 by 16 block."></canvas></div>
+      <div><div class="panel-lbl"><span>Latent · 16 × 16 × 64</span><span>16,384 values</span></div><canvas id="v-lat" class="cv" width="256" height="256" aria-label="Latent grid. Each cell shows 64 values as an 8 by 8 pattern."></canvas></div>
+    </div>
+    <div class="readout" id="v-read">Move the pointer over the image or the latent.</div>
+    <p class="fig-help">Each latent cell shows its 64 values as an 8 × 8 pattern. The latent is not a small picture. Its 64 channels hold colour, edges and texture together. The values here are an illustration.</p>
+  </div>
+</figure>
+<figure id="fig5">
+  <figcaption><span class="fn">Figure 5</span><span class="ft">Supported sizes and their token counts</span></figcaption>
+  <div class="fig-body">
+    <div class="tbl" style="margin:0"><table id="v-table"><thead><tr><th>Ratio</th><th>Pixels (W × H)</th><th>Pixel values</th><th>Latent grid</th><th>Latent values</th><th>Image tokens</th></tr></thead><tbody></tbody></table></div>
+    <p class="fig-help">The VAE reduces the data 12 times (16 × 16 × 3 = 768 values become 64). All seven presets give about 16,500 image tokens.</p>
+  </div>
+</figure>
+<div class="callout caution"><b>CAUTION</b><p>Do not quantize the VAE to a low bit width. It is small (0.68 GB), so you save almost no memory. Errors in the decoder go directly into the pixels.</p></div>
+</section>
+
+<!-- 4 -->
+<section id="transformer">
+<h2><span class="num">4.</span>Transformer <span class="tag dit">DiT</span></h2>
+<div class="prose">
+<h3>A. Function</h3>
+<p>The transformer is a <em>diffusion transformer</em> (DiT) with 7.1 billion parameters. It starts with random noise in the shape of the latent. Then it removes the noise in 8 steps. At each step, it reads the prompt vectors from the text encoder.</p>
+<p>The model uses <em>flow matching</em>. A noise level σ (sigma) goes from 1 to 0. At level σ, the latent is a mix of the clean latent x₀ and noise ε:</p>
+<p class="readout">x<sub>σ</sub> = (1 − σ) · x₀ + σ · ε</p>
+<p>At each step, the transformer predicts a direction <em>v</em>. The direction points from the clean latent to the noise. The sampler then moves the latent one step toward the clean latent:</p>
+<p class="readout">x ← x + (σ<sub>next</sub> − σ) · v</p>
+<p>The checkpoint has a fixed list of 8 σ values. Use the slider to see each step.</p>
+</div>
+<figure id="fig6">
+  <figcaption><span class="fn">Figure 6</span><span class="ft">The 8 denoising steps</span></figcaption>
+  <div class="fig-body">
+    <div class="controls">
+      <label>Step <input type="range" id="d-step" min="0" max="8" value="0" step="1"></label>
+      <button type="button" id="d-play">Play</button>
+      <span class="mono" id="d-lbl"></span>
+    </div>
+    <div class="three">
+      <div><div class="panel-lbl"><span>Latent at this step</span></div><canvas id="d-noisy" class="cv" width="256" height="256"></canvas></div>
+      <div><div class="panel-lbl"><span>Prediction of the result</span></div><canvas id="d-pred" class="cv" width="256" height="256"></canvas></div>
+      <div><div class="panel-lbl"><span>σ schedule (from the checkpoint)</span></div><svg id="d-chart" viewBox="0 0 300 220" role="img" aria-label="Noise level sigma at each of the 8 steps" style="width:100%;height:auto"></svg></div>
+    </div>
+    <p class="fig-help">The left panel shows x<sub>σ</sub> with the real σ values. For clarity, it mixes pixels, not latent values. The centre panel shows the clean image that the model predicts at that step (illustration). Look at the schedule: σ stays near 1 for 5 steps. The last 3 steps remove most of the noise. The first steps set the layout. The last steps add the detail.</p>
+  </div>
+</figure>
+
+<div class="prose">
+<h3>B. One transformer block</h3>
+<p>The transformer has 32 blocks of the same design. Each block gets two groups of tokens: the image tokens from the latent and the text tokens from the text encoder. The block puts the two groups together. Thus each image token can look at the words of the prompt.</p>
+<p>The block also gets the current σ value. A small network changes the scale and shift of the data in each block for this σ. This is <em>AdaLN</em> (adaptive layer normalization). With it, one set of weights can do all 8 steps.</p>
+</div>
+<figure id="fig7">
+  <figcaption><span class="fn">Figure 7</span><span class="ft">Data flow through the transformer</span></figcaption>
+  <div class="fig-body">
+    <div class="block">
+      <div class="blk"><b>Image tokens</b><span class="mono" id="b-img">16,384 × 4096</span></div>
+      <div class="blk"><b>Text tokens</b><span class="mono" id="b-txt">T × 4096</span></div>
+      <div class="blk"><b>Noise level σ</b><span class="mono">1 value → AdaLN</span></div>
+      <div class="arrow">↓</div>
+      <div class="repeat"><span class="rl">× 32 blocks</span>
+        <div class="blk"><b>AdaLN</b><span class="mono">scale and shift from σ</span></div>
+        <div class="blk attn"><b>Joint attention</b><span class="mono">32 heads × 128 = 4096</span></div>
+        <div class="blk"><b>AdaLN</b><span class="mono">scale and shift from σ</span></div>
+        <div class="blk mlp"><b>MLP</b><span class="mono">4096 → 12288 → 4096</span></div>
+      </div>
+      <div class="arrow">↓</div>
+      <div class="blk"><b>Direction v</b><span class="mono">same shape as the latent</span></div>
+    </div>
+    <p class="fig-help">Attention and MLP layers hold almost all of the 7.1 billion parameters. These are the layers that quantization makes smaller.</p>
+  </div>
+</figure>
+
+<div class="prose">
+<h3>C. Prefix KV cache</h3>
+<p>In attention, each token makes three vectors: a query (Q), a key (K) and a value (V). A token uses its query to look at the keys of other tokens. Then it takes their values.</p>
+<p>In this model, the text tokens cannot look at the image tokens (<code>causal_condition: true</code>). Thus the K and V of the text tokens do not change between steps. The model calculates them at step 1 and keeps them in a cache. Steps 2 to 8 use the cache again. Click a row in the grid.</p>
+</div>
+<figure id="fig8">
+  <figcaption><span class="fn">Figure 8</span><span class="ft">Which token looks at which token</span></figcaption>
+  <div class="fig-body">
+    <div class="controls">
+      <button type="button" id="a-s1" aria-pressed="true">Step 1</button>
+      <button type="button" id="a-s2" aria-pressed="false">Steps 2 to 8</button>
+    </div>
+    <div class="attn-wrap">
+      <svg id="a-grid" viewBox="0 0 340 340" role="img" aria-label="Attention grid. Rows are tokens that look. Columns are tokens that are looked at."></svg>
+      <div class="legend">
+        <div><span style="background:var(--te)"></span>Text looks at text</div>
+        <div><span style="background:var(--dit)"></span>Image looks at image</div>
+        <div><span style="background:var(--vae)"></span>Image looks at text</div>
+        <div><span style="background:var(--paper)"></span>Blocked: text does not look at image</div>
+        <div class="readout" id="a-read" style="margin-top:6px"></div>
+      </div>
+    </div>
+    <p class="fig-help">The grid shows 5 text tokens and 12 image tokens. A real 2048 × 2048 image has 16,384 image tokens. Rows are the tokens that look (queries). Columns are the tokens that they look at (keys).</p>
+  </div>
+</figure>
+
+<div class="prose">
+<h3>D. Why the model is "Turbo"</h3>
+<p>A typical base diffusion model uses about 50 steps. It also uses classifier-free guidance (CFG). With CFG, the transformer runs two times at each step: one time with the prompt and one time without it. The model then moves the result away from the "no prompt" output.</p>
+<p>The Turbo checkpoint is <em>distilled</em> from Qwen-Image-2.1. During training, it learned to copy the result of the slow model in 8 steps. It also learned to follow the prompt without CFG. Thus the guidance value is 1.0, and the transformer runs one time per step.</p>
+</div>
+<figure id="fig9">
+  <figcaption><span class="fn">Figure 9</span><span class="ft">Transformer runs for one image</span></figcaption>
+  <div class="fig-body">
+    <div class="bars">
+      <div class="bar-row"><span>Typical base model<br><span class="mono" style="font-size:.75rem;color:var(--muted)">50 steps × 2 (CFG)</span></span><div class="bar-track"><div class="bar-fill" style="width:100%"><div style="width:100%;background:var(--rule-strong)">100 runs</div></div></div></div>
+      <div class="bar-row"><span>Turbo<br><span class="mono" style="font-size:.75rem;color:var(--muted)">8 steps × 1</span></span><div class="bar-track"><div class="bar-fill" style="width:8%"><div style="width:100%;background:var(--dit)"></div></div><span class="bar-val" style="position:absolute;left:9%;top:4px">8 runs</span></div></div>
+    </div>
+    <p class="fig-help">The base model values are typical for this class of model. They are not measured values of Qwen-Image-2.1.</p>
+  </div>
+</figure>
+</section>
+
+<!-- 5 -->
+<section id="memory">
+<h2><span class="num">5.</span>Memory on a 24 GB Mac</h2>
+<div class="prose">
+<p>On Apple silicon, the CPU and the GPU use the same memory. macOS does not give all of it to the GPU. On a 24 GB Mac, the default GPU limit is approximately 16 to 18 GB. The weights in bf16 are 32.4 GB. Thus you must make the weights smaller, load the parts one at a time, or do both.</p>
+<p>Which part do you quantize?</p>
+<ul>
+<li><span class="tag te">TE</span> The text encoder runs one time per image. It is the largest part. Use 4-bit. The quality loss is small, and you save about 12.6 GB.</li>
+<li><span class="tag dit">DiT</span> The transformer runs 8 times, and its errors add up across the steps. Use 8-bit for best quality, or 6-bit to save more.</li>
+<li><span class="tag vae">VAE</span> Keep it in bf16.</li>
+</ul>
+</div>
+<figure id="fig10">
+  <figcaption><span class="fn">Figure 10</span><span class="ft">Memory calculator</span></figcaption>
+  <div class="fig-body">
+    <div class="controls">
+      <label>Text encoder <select id="m-te"><option value="16">bf16</option><option value="8">8-bit</option><option value="6">6-bit</option><option value="4" selected>4-bit</option></select></label>
+      <label>Transformer <select id="m-dit"><option value="16">bf16</option><option value="8" selected>8-bit</option><option value="6">6-bit</option><option value="4">4-bit</option></select></label>
+      <label>Image size <select id="m-res"></select></label>
+    </div>
+    <div class="controls">
+      <label><input type="checkbox" id="m-stage"> Load one stage at a time</label>
+      <label><input type="checkbox" id="m-tile"> Decode the VAE in tiles</label>
+    </div>
+    <div class="bars" id="m-bars"></div>
+    <div class="readout" id="m-read"></div>
+    <p class="fig-help">Dashed lines: the approximate default GPU limit (17 GB) and the total memory (24 GB). Weight sizes use the real parameter counts. 4-bit and 6-bit include the cost of the group scales. Working memory values are estimates.</p>
+  </div>
+</figure>
+<div class="callout note"><b>NOTE</b><p>You can increase the GPU limit with <code>sudo sysctl iogpu.wired_limit_mb=20480</code>. The value goes back to the default when you restart the Mac. Keep some memory for macOS and your other applications.</p></div>
+<div class="callout warning"><b>WARNING</b><p>Do not set the GPU limit near the total memory. If macOS has too little memory, the system can stop responding and you can lose unsaved work.</p></div>
+</section>
+
+<!-- 6 -->
+<section id="glossary">
+<h2><span class="num">6.</span>Terms</h2>
+<dl class="gloss">
+<dt>Token</dt><dd>One piece of input for a transformer. A text token is a part of a word. An image token is one latent cell.</dd>
+<dt>Vector</dt><dd>A list of numbers. In this model, most vectors have 4,096 values.</dd>
+<dt>Attention</dt><dd>The operation that lets each token use information from other tokens.</dd>
+<dt>Latent</dt><dd>The compressed form of the image. The VAE makes it, and the transformer works on it.</dd>
+<dt>σ (sigma)</dt><dd>The noise level. 1 is only noise. 0 is a clean latent.</dd>
+<dt>Flow matching</dt><dd>A training method. The model learns the straight direction from data to noise.</dd>
+<dt>CFG</dt><dd>Classifier-free guidance. Two runs per step that push the result toward the prompt. The Turbo model does not need it.</dd>
+<dt>Distillation</dt><dd>Training a model to copy the output of a slower model with less work.</dd>
+<dt>KV cache</dt><dd>Stored keys and values that the model uses again instead of calculating them again.</dd>
+<dt>bf16</dt><dd>A 16-bit number format. It uses 2 bytes for each weight.</dd>
+<dt>Quantization</dt><dd>Storing weights with fewer bits, for example 8 or 4, plus a scale for each group of weights.</dd>
+</dl>
+</section>
+
+<footer>
+<p>Sources (configuration values):</p>
+<ul>
+<li><a href="https://huggingface.co/Qwen/Qwen-Image-2.1-Turbo">Qwen/Qwen-Image-2.1-Turbo model card</a>, including <code>model_index.json</code> (σ schedule), <code>transformer/config.json</code>, <code>text_encoder/config.json</code>, <code>vae/config.json</code></li>
+<li><a href="https://github.com/QwenLM/Qwen-Image-2.1">QwenLM/Qwen-Image-2.1 on GitHub</a></li>
+</ul>
+</footer>
+</div>
+
+<script>
+(function(){
+const $=s=>document.querySelector(s);
+const escapeHTML=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const tok=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim();
+function rgb(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(c=>c+c).join('');const n=parseInt(h,16);return[(n>>16)&255,(n>>8)&255,n&255];}
+function mix(a,b,t){return[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t,a[2]+(b[2]-a[2])*t];}
+function rng(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296;};}
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function gauss(r){let u=0,v=0;while(u===0)u=r();while(v===0)v=r();return Math.sqrt(-2*Math.log(u))*Math.cos(2*Math.PI*v);}
+const fmt=n=>n.toLocaleString('en-US');
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+const SIGMAS=[1.0,0.978453,0.95418,0.926626,0.89508,0.845148,0.704534,0.414568,0];
+const RES=[["1:1",2048,2048],["4:3",2400,1792],["3:4",1792,2400],["3:2",2528,1696],["2:3",1696,2528],["16:9",2752,1536],["9:16",1536,2752],["1:1 small",1024,1024]];
+const state={res:0,tokens:[]};
+
+/* ---------- shared scene ---------- */
+const S=256;
+const scene=document.createElement('canvas');scene.width=scene.height=S;
+(function paint(){
+  const c=scene.getContext('2d');
+  let g=c.createLinearGradient(0,0,0,S*.6);g.addColorStop(0,'#24508f');g.addColorStop(.75,'#e7a86f');g.addColorStop(1,'#f6d29a');
+  c.fillStyle=g;c.fillRect(0,0,S,S*.6);
+  c.fillStyle='#fff3c8';c.beginPath();c.arc(S*.72,S*.47,S*.08,0,Math.PI*2);c.fill();
+  g=c.createLinearGradient(0,S*.6,0,S);g.addColorStop(0,'#2a5e8a');g.addColorStop(1,'#0f2c4a');
+  c.fillStyle=g;c.fillRect(0,S*.6,S,S*.4);
+  c.fillStyle='rgba(255,230,180,.55)';for(let i=0;i<9;i++){c.fillRect(S*.66+(i%3)*6-10,S*.63+i*9,26-i*2,2);}
+  // yacht
+  c.fillStyle='#14161a';c.beginPath();c.moveTo(S*.12,S*.6);c.lineTo(S*.6,S*.6);c.lineTo(S*.56,S*.68);c.lineTo(S*.17,S*.68);c.closePath();c.fill();
+  c.fillStyle='#f2f2ee';c.fillRect(S*.2,S*.535,S*.3,S*.065);c.fillRect(S*.26,S*.49,S*.16,S*.05);
+  c.fillStyle='#f0c419';c.fillRect(S*.43,S*.47,S*.045,S*.07);
+  c.strokeStyle='#f2f2ee';c.lineWidth=2;c.beginPath();c.moveTo(S*.31,S*.49);c.lineTo(S*.31,S*.33);c.stroke();
+  c.fillStyle='#2a3440';for(let i=0;i<5;i++)c.fillRect(S*.22+i*S*.05,S*.555,S*.03,S*.02);
+  c.fillStyle='rgba(255,255,255,.7)';c.fillRect(S*.08,S*.675,S*.14,2);c.fillRect(S*.04,S*.69,S*.12,2);
+})();
+const x0=(function(){const d=scene.getContext('2d').getImageData(0,0,S,S).data;const a=new Float32Array(S*S*3);for(let i=0,j=0;i<d.length;i+=4){a[j++]=d[i]/127.5-1;a[j++]=d[i+1]/127.5-1;a[j++]=d[i+2]/127.5-1;}return a;})();
+const eps=(function(){const r=rng(42);const a=new Float32Array(S*S*3);for(let i=0;i<a.length;i++)a[i]=gauss(r);return a;})();
+
+/* ---------- Fig 1 pipeline ---------- */
+const STAGES=[
+ {k:'Input',n:'Prompt',part:'io',t:'You write a text description of the image. For edit mode, you also give an input image.',shape:()=>['text','"'+escapeHTML($('#t-in').value.slice(0,40))+($('#t-in').value.length>40?'…':'')+'"']},
+ {k:'Tokenizer',n:'Token IDs',part:'te',t:'The tokenizer cuts the prompt into tokens. Each token gets an ID from a vocabulary of 151,936 entries.',shape:()=>['['+T()+']',T()+' integers']},
+ {k:'Text encoder',n:'Prompt vectors',part:'te',t:'Qwen3-VL (36 layers) changes each token ID into a vector of 4,096 values. Attention puts the context of the full prompt into each vector. This runs one time.',shape:()=>['['+T()+', 4096]',fmt(T()*4096)+' values']},
+ {k:'Sampler',n:'Random noise',part:'dit',t:'The sampler makes a latent of pure noise (σ = 1). The noise has the same shape as the final latent. A different seed gives different noise and thus a different image.',shape:()=>{const [w,h]=wh();return['['+h/16+', '+w/16+', 64]',fmt(h/16*w/16*64)+' values']}},
+ {k:'Transformer × 8',n:'Denoised latent',part:'dit',t:'The DiT (32 blocks) predicts a direction at each of the 8 σ values. The sampler moves the latent one step each time. The text vectors stay in a KV cache.',shape:()=>{const [w,h]=wh();return['['+h/16+', '+w/16+', 64]',fmt(h/16*w/16)+' image tokens + '+T()+' text tokens']}},
+ {k:'VAE decoder',n:'Pixels',part:'vae',t:'The VAE decoder unpacks each latent cell into a 16 × 16 block of pixels. This runs one time.',shape:()=>{const [w,h]=wh();return['['+h+', '+w+', 3]',fmt(h*w*3)+' values']}},
+ {k:'Output',n:'Image',part:'io',t:'The pipeline changes the values to 8-bit colour and saves the image file.',shape:()=>{const [w,h]=wh();return[w+' × '+h,'PNG image']}}
+];
+const T=()=>Math.max(1,state.tokens.length);
+const wh=()=>[RES[state.res][1],RES[state.res][2]];
+let cur=0;
+const pipe=$('#pipe');
+STAGES.forEach((s,i)=>{const b=document.createElement('button');b.type='button';b.className='st';b.dataset.part=s.part;b.innerHTML='<small>'+s.k+'</small><span>'+s.n+'</span>';b.addEventListener('click',()=>{cur=i;renderPipe();});pipe.appendChild(b);});
+function renderPipe(){
+  [...pipe.children].forEach((b,i)=>b.setAttribute('aria-pressed',i===cur));
+  const s=STAGES[cur],sh=s.shape();
+  $('#p-text').innerHTML='<h4>'+(cur+1)+'. '+s.k+'</h4><p>'+s.t+'</p>';
+  $('#p-shape').innerHTML='Output shape<span class="big">'+sh[0]+'</span>'+sh[1];
+}
+function fillRes(sel){RES.forEach((r,i)=>{const o=document.createElement('option');o.value=i;o.textContent=r[1]+' × '+r[2]+' ('+r[0]+')';sel.appendChild(o);});sel.value=state.res;sel.addEventListener('change',()=>{state.res=+sel.value;syncRes();});}
+let playT=null;
+$('#p-play').addEventListener('click',()=>{
+  clearInterval(playT);cur=0;renderPipe();
+  playT=setInterval(()=>{cur++;if(cur>=STAGES.length){clearInterval(playT);cur=STAGES.length-1;return;}renderPipe();const b=pipe.children[cur];b.classList.remove('flow');void b.offsetWidth;b.classList.add('flow');},reduce?1200:700);
+});
+
+/* ---------- Fig 2 tokens ---------- */
+function tokenize(text){
+  const out=[],re=/\s*[A-Za-z]+|\s*\d|\s*[^\sA-Za-z\d]/g;let m;
+  while((m=re.exec(text))){const sp=/^\s/.test(m[0]);const w=m[0].trim();
+    if(/^[A-Za-z]+$/.test(w)&&w.length>7){let i=0,k=0;while(i<w.length){const n=i===0?5:4;out.push({t:w.slice(i,i+n),sp:sp&&k===0});i+=n;k++;}}
+    else out.push({t:w,sp});}
+  return out;
+}
+const D=48;
+function baseVec(t){const r=rng(hash(t.toLowerCase()));const v=[];for(let i=0;i<D;i++)v.push(gauss(r)*.6);return v;}
+function contextual(toks){
+  const base=toks.map(o=>baseVec(o.t));
+  return base.map((v,i)=>{const acc=new Array(D).fill(0);let ws=0;base.forEach((u,j)=>{if(j===i)return;const w=Math.exp(-Math.abs(i-j)/2.5);ws+=w;for(let d=0;d<D;d++)acc[d]+=w*u[d];});return v.map((x,d)=>.5*x+.5*(ws?acc[d]/ws:0)*1.6);});
+}
+function idOf(o){return hash((o.sp?' ':'')+o.t)%151936;}
+let showAfter=false;
+function renderTokens(){
+  const toks=tokenize($('#t-in').value);state.tokens=toks;
+  $('#t-chips').innerHTML=toks.map(o=>'<span class="chip'+(o.sp?' sp':'')+'"><b>'+o.t.replace(/&/g,'&amp;').replace(/</g,'&lt;')+'</b><i>'+idOf(o)+'</i></span>').join('');
+  $('#t-count').textContent=toks.length+' tokens';
+  drawHeat();renderPipe();updateBlock();renderMem();
+}
+function drawHeat(){
+  const cv=$('#t-heat'),toks=state.tokens.slice(0,28);
+  const W=cv.parentElement.clientWidth-28,rowH=16,lab=92;
+  const dpr=window.devicePixelRatio||1;
+  const H=Math.max(rowH,toks.length*rowH);
+  cv.style.width=W+'px';cv.style.height=H+'px';cv.width=W*dpr;cv.height=H*dpr;
+  const c=cv.getContext('2d');c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,W,H);
+  const vecs=showAfter?contextual(toks):toks.map(o=>baseVec(o.t));
+  const neg=rgb(tok('--te')),pos=rgb(tok('--dit')),mid=rgb(tok('--panel'));
+  const cw=(W-lab)/D;
+  c.font='11px "JetBrains Mono", monospace';c.textBaseline='middle';c.fillStyle=tok('--ink');
+  toks.forEach((o,i)=>{
+    c.fillStyle=tok('--ink');c.fillText((o.sp?'·':'')+o.t.slice(0,10),0,i*rowH+rowH/2);
+    vecs[i].forEach((v,d)=>{const t=Math.max(-1,Math.min(1,v));const col=t<0?mix(mid,neg,-t):mix(mid,pos,t);c.fillStyle='rgb('+col.map(Math.round).join(',')+')';c.fillRect(lab+d*cw,i*rowH+1,Math.ceil(cw),rowH-2);});
+  });
+  $('#t-lbl').textContent=(showAfter?'After 36 layers: each vector holds context':'Before the encoder: one fixed vector per token')+' (48 of 4,096 values)';
+}
+function setView(after){showAfter=after;$('#t-before').setAttribute('aria-pressed',!after);$('#t-after').setAttribute('aria-pressed',after);drawHeat();}
+$('#t-before').addEventListener('click',()=>setView(false));
+$('#t-after').addEventListener('click',()=>setView(true));
+$('#t-in').addEventListener('input',renderTokens);
+
+/* ---------- Fig 3 bank ---------- */
+(function(){
+  const a='a small boat near the river bank',b='a big stone bank on a busy money street';
+  function bankVec(s,after){const toks=tokenize(s);const i=toks.findIndex(o=>o.t==='bank');return after?contextual(toks)[i]:baseVec('bank');}
+  function cos(u,v){let d=0,x=0,y=0;for(let i=0;i<u.length;i++){d+=u[i]*v[i];x+=u[i]*u[i];y+=v[i]*v[i];}return d/Math.sqrt(x*y);}
+  const before=cos(bankVec(a,false),bankVec(b,false)),after=cos(bankVec(a,true),bankVec(b,true));
+  $('#bank').innerHTML='Sentence 1: "'+a+'"<br>Sentence 2: "'+b+'"<br><br>Similarity of "bank", before the encoder: <b>'+before.toFixed(2)+'</b><br>Similarity of "bank", after the encoder:  <b>'+after.toFixed(2)+'</b>';
+})();
+
+/* ---------- Fig 4 VAE ---------- */
+const G=16,CELL=S/G;
+const cellStats=[];
+for(let i=0;i<G;i++)for(let j=0;j<G;j++){let r=0,g=0,b=0,e=0;for(let y=0;y<CELL;y++)for(let x=0;x<CELL;x++){const p=((i*CELL+y)*S+(j*CELL+x))*3;r+=x0[p];g+=x0[p+1];b+=x0[p+2];if(x>0)e+=Math.abs(x0[p]-x0[p-3]);}const n=CELL*CELL;cellStats.push([r/n,g/n,b/n,e/n*6]);}
+const W64=(function(){const r=rng(7);const m=[];for(let c=0;c<64;c++)m.push([gauss(r),gauss(r),gauss(r),gauss(r),gauss(r)*.3]);return m;})();
+let hov=null;
+function drawVae(){
+  const ci=$('#v-img').getContext('2d'),cl=$('#v-lat').getContext('2d');
+  ci.drawImage(scene,0,0);
+  ci.strokeStyle='rgba(255,255,255,.18)';ci.lineWidth=1;
+  for(let k=1;k<G;k++){ci.beginPath();ci.moveTo(k*CELL+.5,0);ci.lineTo(k*CELL+.5,S);ci.stroke();ci.beginPath();ci.moveTo(0,k*CELL+.5);ci.lineTo(S,k*CELL+.5);ci.stroke();}
+  const neg=rgb(tok('--te')),pos=rgb(tok('--dit')),mid=rgb(tok('--panel'));
+  cl.fillStyle=tok('--paper');cl.fillRect(0,0,S,S);
+  cellStats.forEach((st,idx)=>{const i=Math.floor(idx/G),j=idx%G;
+    for(let ch=0;ch<64;ch++){const w=W64[ch];const v=Math.tanh(w[0]*st[0]+w[1]*st[1]+w[2]*st[2]+w[3]*st[3]+w[4]);const col=v<0?mix(mid,neg,-v):mix(mid,pos,v);cl.fillStyle='rgb('+col.map(Math.round).join(',')+')';cl.fillRect(j*CELL+(ch%8)*2,i*CELL+Math.floor(ch/8)*2,2,2);}
+  });
+  if(hov){const [i,j]=hov;[ci,cl].forEach(c=>{c.lineWidth=2;c.strokeStyle=tok('--hilite');c.strokeRect(j*CELL+1,i*CELL+1,CELL-2,CELL-2);c.strokeStyle=tok('--ink');c.lineWidth=1;c.strokeRect(j*CELL-1.5,i*CELL-1.5,CELL+3,CELL+3);});
+    $('#v-read').textContent='Latent cell row '+i+', column '+j+' holds 64 values. It describes pixels x '+(j*16)+'–'+(j*16+15)+', y '+(i*16)+'–'+(i*16+15)+' (256 pixels × 3 = 768 values).';}
+}
+['#v-img','#v-lat'].forEach(id=>{const cv=$(id);
+  cv.addEventListener('pointermove',e=>{const r=cv.getBoundingClientRect();const x=(e.clientX-r.left)/r.width*S,y=(e.clientY-r.top)/r.height*S;hov=[Math.min(G-1,Math.floor(y/CELL)),Math.min(G-1,Math.floor(x/CELL))];drawVae();});
+});
+$('#v-img').addEventListener('keydown',e=>{if(!hov)hov=[8,8];const m={ArrowUp:[-1,0],ArrowDown:[1,0],ArrowLeft:[0,-1],ArrowRight:[0,1]}[e.key];if(!m)return;e.preventDefault();hov=[Math.max(0,Math.min(G-1,hov[0]+m[0])),Math.max(0,Math.min(G-1,hov[1]+m[1]))];drawVae();});
+$('#v-table tbody').innerHTML=RES.map(r=>{const [n,w,h]=r;return'<tr><td>'+n+'</td><td class="n">'+w+' × '+h+'</td><td class="n">'+fmt(w*h*3)+'</td><td class="n">'+w/16+' × '+h/16+'</td><td class="n">'+fmt(w/16*h/16*64)+'</td><td class="n"><b>'+fmt(w/16*h/16)+'</b></td></tr>';}).join('');
+
+/* ---------- Fig 6 denoise ---------- */
+const small=document.createElement('canvas');
+function drawStep(k){
+  const s=SIGMAS[k];
+  const c=$('#d-noisy').getContext('2d'),img=c.createImageData(S,S),d=img.data;
+  for(let p=0,q=0;q<x0.length;p+=4,q+=3){for(let ch=0;ch<3;ch++){const v=(1-s)*x0[q+ch]+s*eps[q+ch];d[p+ch]=Math.max(0,Math.min(255,(v+1)*127.5));}d[p+3]=255;}
+  c.putImageData(img,0,0);
+  const pc=$('#d-pred').getContext('2d');
+  if(s===0){pc.drawImage(scene,0,0);}else{
+    const n=Math.max(3,Math.round(S/(1+60*s*s*s)));small.width=small.height=n;
+    const sc=small.getContext('2d');sc.imageSmoothingEnabled=true;sc.drawImage(scene,0,0,n,n);
+    pc.imageSmoothingEnabled=true;pc.drawImage(small,0,0,S,S);
+  }
+  $('#d-lbl').textContent=k===0?'start · σ = 1.000 (pure noise)':(k===8?'step 8 done · σ = 0 (clean)':'after step '+k+' · σ = '+s.toFixed(3));
+  drawChart(k);
+}
+function drawChart(k){
+  const svg=$('#d-chart'),L=40,R=286,Tp=14,B=180;
+  const X=i=>L+i*(R-L)/8,Y=v=>Tp+(1-v)*(B-Tp);
+  const ink=tok('--ink'),mu=tok('--muted'),ru=tok('--rule'),acc=tok('--dit');
+  let h='';
+  [0,.5,1].forEach(v=>{h+='<line x1="'+L+'" x2="'+R+'" y1="'+Y(v)+'" y2="'+Y(v)+'" stroke="'+ru+'"/><text x="'+(L-6)+'" y="'+(Y(v)+4)+'" text-anchor="end" font-size="11" fill="'+mu+'" font-family="JetBrains Mono, monospace">'+v.toFixed(1)+'</text>';});
+  for(let i=0;i<=8;i++)h+='<text x="'+X(i)+'" y="'+(B+16)+'" text-anchor="middle" font-size="11" fill="'+mu+'" font-family="JetBrains Mono, monospace">'+i+'</text>';
+  h+='<text x="'+((L+R)/2)+'" y="'+(B+34)+'" text-anchor="middle" font-size="11" fill="'+mu+'" font-family="JetBrains Mono, monospace">step</text>';
+  h+='<text x="10" y="'+(Tp+4)+'" font-size="12" fill="'+mu+'" font-family="JetBrains Mono, monospace">σ</text>';
+  h+='<polyline fill="none" stroke="'+ink+'" stroke-width="1.5" points="'+SIGMAS.map((v,i)=>X(i)+','+Y(v)).join(' ')+'"/>';
+  SIGMAS.forEach((v,i)=>{h+='<circle cx="'+X(i)+'" cy="'+Y(v)+'" r="'+(i===k?6:3)+'" fill="'+(i===k?acc:ink)+'"/>';});
+  if(k>0){h+='<line x1="'+X(k)+'" x2="'+X(k)+'" y1="'+Y(SIGMAS[k-1])+'" y2="'+Y(SIGMAS[k])+'" stroke="'+acc+'" stroke-width="3"/>';
+    h+='<text x="'+Math.min(X(k)-8,R-60)+'" y="'+(Y((SIGMAS[k-1]+SIGMAS[k])/2)+4)+'" text-anchor="end" font-size="11" fill="'+acc+'" font-family="JetBrains Mono, monospace">Δσ '+(SIGMAS[k-1]-SIGMAS[k]).toFixed(3)+'</text>';}
+  svg.innerHTML=h;
+}
+const dStep=$('#d-step');dStep.addEventListener('input',()=>drawStep(+dStep.value));
+let dT=null;
+$('#d-play').addEventListener('click',()=>{clearInterval(dT);let k=0;dStep.value=0;drawStep(0);dT=setInterval(()=>{k++;dStep.value=k;drawStep(k);if(k>=8)clearInterval(dT);},reduce?1400:800);});
+
+/* ---------- Fig 7 block ---------- */
+function updateBlock(){const [w,h]=wh();$('#b-img').textContent=fmt(w/16*h/16)+' × 4096';$('#b-txt').textContent=T()+' × 4096';}
+
+/* ---------- Fig 8 attention ---------- */
+const NT=5,NI=12,NN=NT+NI;let aStep=1,aRow=NT+3;
+function drawAttn(){
+  const svg=$('#a-grid'),off=28,cs=(340-off-4)/NN;
+  const te=tok('--te'),dit=tok('--dit'),vae=tok('--vae'),pap=tok('--paper'),ink=tok('--ink'),mu=tok('--muted'),ru=tok('--rule-strong');
+  let h='';
+  h+='<text x="'+(off+NT*cs/2)+'" y="12" text-anchor="middle" font-size="10" fill="'+mu+'" font-family="JetBrains Mono, monospace">text</text>';
+  h+='<text x="'+(off+NT*cs+NI*cs/2)+'" y="12" text-anchor="middle" font-size="10" fill="'+mu+'" font-family="JetBrains Mono, monospace">image (keys)</text>';
+  h+='<text x="10" y="'+(off+NT*cs/2)+'" text-anchor="middle" font-size="10" fill="'+mu+'" font-family="JetBrains Mono, monospace" transform="rotate(-90 10 '+(off+NT*cs/2)+')">text</text>';
+  h+='<text x="10" y="'+(off+NT*cs+NI*cs/2)+'" text-anchor="middle" font-size="10" fill="'+mu+'" font-family="JetBrains Mono, monospace" transform="rotate(-90 10 '+(off+NT*cs+NI*cs/2)+')">image (queries)</text>';
+  for(let r=0;r<NN;r++){
+    h+='<g role="button" tabindex="0" data-row="'+r+'" style="cursor:pointer" aria-label="Row '+(r+1)+'">';
+    for(let c=0;c<NN;c++){
+      const tr=r<NT,tc=c<NT;let f=pap,op=1;
+      if(tr&&tc)f=te;else if(!tr&&!tc)f=dit;else if(!tr&&tc)f=vae;else f=pap;
+      if(tr&&aStep>1)op=.22;
+      if(r===aRow&&f!==pap)op=1;else if(f!==pap&&r!==aRow&&!(tr&&aStep>1))op=.55;
+      h+='<rect x="'+(off+c*cs+.5)+'" y="'+(off+r*cs+.5)+'" width="'+(cs-1)+'" height="'+(cs-1)+'" fill="'+f+'" fill-opacity="'+op+'" stroke="'+ru+'" stroke-width=".5"/>';
+    }
+    h+='</g>';
+  }
+  h+='<rect x="'+(off-1)+'" y="'+(off+aRow*cs-1)+'" width="'+(NN*cs+2)+'" height="'+(cs+2)+'" fill="none" stroke="'+ink+'" stroke-width="2"/>';
+  h+='<line x1="'+(off+NT*cs)+'" x2="'+(off+NT*cs)+'" y1="'+off+'" y2="'+(off+NN*cs)+'" stroke="'+ink+'"/><line x1="'+off+'" x2="'+(off+NN*cs)+'" y1="'+(off+NT*cs)+'" y2="'+(off+NT*cs)+'" stroke="'+ink+'"/>';
+  svg.innerHTML=h;
+  svg.querySelectorAll('g[data-row]').forEach(g=>{const go=()=>{aRow=+g.dataset.row;drawAttn();};g.addEventListener('click',go);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();go();}});});
+  let msg;
+  if(aRow<NT){msg=aStep===1?'Text token '+(aRow+1)+' looks only at the text tokens. The model stores its K and V in the cache.':'Text token '+(aRow+1)+': no calculation. The model takes its K and V from the cache.';}
+  else msg='Image token '+(aRow-NT+1)+' looks at all '+NT+' text tokens and all '+NI+' image tokens. The model calculates this row at every step, because the image tokens change.';
+  $('#a-read').textContent=msg;
+}
+function setA(s){aStep=s;$('#a-s1').setAttribute('aria-pressed',s===1);$('#a-s2').setAttribute('aria-pressed',s!==1);drawAttn();}
+$('#a-s1').addEventListener('click',()=>setA(1));$('#a-s2').addEventListener('click',()=>setA(2));
+
+/* ---------- Fig 10 memory ---------- */
+const P_TE=8.767e9,P_DIT=7.115e9,VAE_GB=0.68;
+const BPW={16:16,8:8.25,6:6.5,4:4.5};
+const LIM=17,TOT=24,MAXS=34;
+function renderMem(){
+  const te=P_TE*BPW[$('#m-te').value]/8/1e9,dit=P_DIT*BPW[$('#m-dit').value]/8/1e9;
+  const [w,h]=wh(),N=w/16*h/16,Tt=T()+200;
+  const ditAct=(N+Tt)*4096*2*10/1e9+32*2*Tt*4096*2/1e9;
+  const vaeAct=$('#m-tile').checked?0.35:w*h*144*2*3/1e9;
+  const teAct=0.3;
+  const staged=$('#m-stage').checked;
+  const rows=[];
+  if(staged){
+    rows.push({l:'Stage 1: text encoder',seg:[['TE',te,'--te'],['work',teAct,'--rule-strong']]});
+    rows.push({l:'Stage 2: transformer and VAE',seg:[['DiT',dit,'--dit'],['VAE',VAE_GB,'--vae'],['work',Math.max(ditAct,vaeAct),'--rule-strong']]});
+  } else rows.push({l:'All parts loaded',seg:[['TE',te,'--te'],['DiT',dit,'--dit'],['VAE',VAE_GB,'--vae'],['work',Math.max(ditAct,vaeAct,teAct),'--rule-strong']]});
+  const pct=v=>Math.min(100,v/MAXS*100);
+  let html='';
+  rows.forEach(r=>{const tot=r.seg.reduce((a,s)=>a+s[1],0);r.tot=tot;
+    html+='<div class="bar-row"><span>'+r.l+'<br><span class="mono" style="font-size:.75rem;color:var(--muted)">'+tot.toFixed(1)+' GB</span></span><div class="bar-track"><div class="bar-fill" style="width:'+pct(tot)+'%">'+
+    r.seg.map(s=>'<div style="width:'+(s[1]/tot*100)+'%;background:var('+s[2]+')" title="'+s[0]+' '+s[1].toFixed(2)+' GB">'+(s[1]>1.6?s[0]:'')+'</div>').join('')+
+    '</div><div class="mk lim" style="left:'+pct(LIM)+'%"></div><div class="mk tot" style="left:'+pct(TOT)+'%"></div></div></div>';});
+  html+='<div class="bar-row"><span></span><div class="scale">'+[0,8,16,24,32].map(v=>'<span style="left:'+pct(v)+'%">'+v+' GB</span>').join('')+'</div></div>';
+  $('#m-bars').innerHTML=html;
+  const peak=Math.max(...rows.map(r=>r.tot));
+  let pill;
+  if(peak<=15.5)pill='<span class="pill ok">Fits</span> Peak '+peak.toFixed(1)+' GB is below the default GPU limit.';
+  else if(peak<=LIM+1)pill='<span class="pill tight">Tight</span> Peak '+peak.toFixed(1)+' GB is near the default GPU limit. Close other applications.';
+  else if(peak<=TOT-3)pill='<span class="pill tight">Over the default limit</span> Peak '+peak.toFixed(1)+' GB. Increase the GPU limit (see the note) or use fewer bits.';
+  else pill='<span class="pill bad">Does not fit</span> Peak '+peak.toFixed(1)+' GB. Use fewer bits or load one stage at a time.';
+  $('#m-read').innerHTML=pill+'<br>Text encoder '+te.toFixed(1)+' GB · Transformer '+dit.toFixed(1)+' GB · VAE '+VAE_GB+' GB · Working memory (estimate): transformer '+ditAct.toFixed(1)+' GB, VAE decode '+vaeAct.toFixed(1)+' GB'+(staged?'<br>Load one stage at a time: you load the text encoder, encode the prompt, and remove the text encoder from memory before you load the transformer. This is slower for many images.':'');
+}
+['#m-te','#m-dit','#m-stage','#m-tile'].forEach(id=>$(id).addEventListener('change',renderMem));
+
+/* ---------- sync + theme ---------- */
+const resSels=['#p-res','#m-res'].map(s=>$(s));
+resSels.forEach(fillRes);
+function syncRes(){resSels.forEach(s=>s.value=state.res);renderPipe();updateBlock();renderMem();}
+function redrawThemed(){drawHeat();drawVae();drawStep(+dStep.value);drawAttn();}
+matchMedia('(prefers-color-scheme: dark)').addEventListener('change',redrawThemed);
+new MutationObserver(redrawThemed).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+let rz;addEventListener('resize',()=>{clearTimeout(rz);rz=setTimeout(drawHeat,120);});
+
+renderTokens();drawVae();drawStep(0);drawAttn();renderMem();
+if(document.fonts&&document.fonts.ready)document.fonts.ready.then(drawHeat);
+})();
+</script>
+
+</body></html>

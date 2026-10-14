@@ -1,5 +1,19 @@
 [
   {
+    "slug": "qwen-image-2-1-turbo",
+    "title": "Qwen-Image-2.1-Turbo: Theory of Operation",
+    "date": "2026-10-14",
+    "description": "Follow a prompt through the text encoder, diffusion transformer, and VAE, with interactive diagrams and a calculator for exploring model memory.",
+    "tags": [
+      "ml",
+      "deep-learning",
+      "gpu",
+      "ai-interactive-guide"
+    ],
+    "category": "technical",
+    "readingTime": "15 min"
+  },
+  {
     "slug": "astra-nepal-in-3d",
     "title": "I Asked GPT-6 Astra for a 3D Boudhanath and Got 2,004 Prayer Flags",
     "date": "2026-09-18",
